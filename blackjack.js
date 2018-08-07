@@ -3,7 +3,6 @@ const BlackjackHand = require('./blackjackHand.js');
 const deck = Object.create(Deck);
 deck.createStandardDeck();
 deck.shuffle();
-console.log(deck);
 // not really sure what a game engine was for, so 
 // tried to just build the game right here instead
 // of trying to abstract so much
@@ -39,7 +38,8 @@ console.log(deck);
 // TODO -> export the Deck delegation constructor object in deck.js
 // Object.create standard deck in this file instead of deck.js
 const player = {
-  init(chips) {
+  init(name, chips) {
+    this.name = name;
     this.chips = chips;
     const hand = Object.create(BlackjackHand);
     hand.init();
@@ -53,14 +53,17 @@ const player = {
   disconnect() {
     // in event of player just leaving abruptly
     // he loses his bet
+  },
+  get score() {
+    return this.hand.calcHandValue();
   }
 }
 
 // factory method later
 const player1 = Object.create(player);
-player1.init(100);
+player1.init("john", 100);
 const player2 = Object.create(player);
-player2.init(100);
+player2.init("jane", 100);
 
 const players = [player1, player2];
 
@@ -85,12 +88,13 @@ function playGame(table) {
   // table.deck.insertCard(blankPlasticCard,position);
   let roundEnded = false;
   dealOneToEveryone(table.deck, table.players);
+  dealOneToEveryone(table.deck, table.players);
   checkForNaturals(table.players);
   // checkForSplits();
   // checkForDoubleDowns();
-  do {
-    eachPlayerPlays();
-  } while (!roundEnded);
+  // do {
+  eachPlayerPlays(table.players);
+  // } while (!roundEnded);
   
 }
 playGame(table);
@@ -107,7 +111,7 @@ function dealOneToEveryone(deck, players) {
 function checkForNaturals(players) {
   
   players.forEach((player) => {
-    if (player.hand.calcValue() === 21) {
+    if (player.hand.calcHandValue() === 21) {
       return true
     }
   })
@@ -115,8 +119,16 @@ function checkForNaturals(players) {
   // if dealer is natural, set roundEnded to true
 }
 
-function eachPlayerPlays() {
-
+function eachPlayerPlays(players) {
+  let winner;
+  let points = 0;
+  players.forEach((player) => {
+    if (player.score > points) {
+      points = player.score;
+      winner = player;
+    }
+  });
+  console.log(winner, winner.score);
 }
 
 // compose "deck" object with "blackjackHand" to let it

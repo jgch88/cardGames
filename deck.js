@@ -80,7 +80,7 @@ const Deck = {
     for (let suit of suits) {
       for (let value of Object.keys(values)) {
         const card = Object.create(CardWithTwoSides);
-        card.prepareCard({value, suit}, {isFaceDown: true});
+        card.prepareCard({value: Number(value), suit}, {isFaceDown: true});
         this.cards.push(card);
       }
     }
