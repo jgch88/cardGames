@@ -1,3 +1,9 @@
+const Deck = require('./deck.js');
+const BlackjackHand = require('./blackjackHand.js');
+const deck = Object.create(Deck);
+deck.createStandardDeck();
+deck.shuffle();
+console.log(deck);
 // not really sure what a game engine was for, so 
 // tried to just build the game right here instead
 // of trying to abstract so much
@@ -30,13 +36,19 @@
 // chips: every player has some money to bet (dealer has infinite?)
 // gameState: automate steps 1-3, then current player's turn
 
+// TODO -> export the Deck delegation constructor object in deck.js
+// Object.create standard deck in this file instead of deck.js
 const player = {
   init(chips) {
     this.chips = chips;
-    this.hand; // a deck and its api
+    const hand = Object.create(BlackjackHand);
+    hand.init();
+    this.hand = hand; // a deck and its api
   },
   play(option) {
     // an api to "tell" the game whether player stands/hits
+    // or some modular method to have different AIs
+    // aggressive better, safe better, always burst
   },
   disconnect() {
     // in event of player just leaving abruptly
@@ -62,14 +74,18 @@ function initGame(players, deck) {
   return table;
 }
 
+const table = initGame([player1, player2], deck);
+
+// this is very procedural, refactor to make it
+// a "blackjack game" with methods
 function playGame(table) {
   table.deck.shuffle();
-  table.deck.cut(position);
-  table.deck.insertCard(blankPlasticCard,position);
+  // table.deck.showAllCards();
+  // table.deck.cut(position);
+  // table.deck.insertCard(blankPlasticCard,position);
   let roundEnded = false;
-  dealOneToEveryone();
-  dealOneToEveryone();
-  checkForNaturals();
+  dealOneToEveryone(table.deck, table.players);
+  checkForNaturals(table.players);
   // checkForSplits();
   // checkForDoubleDowns();
   do {
@@ -77,10 +93,11 @@ function playGame(table) {
   } while (!roundEnded);
   
 }
+playGame(table);
 
 function dealOneToEveryone(deck, players) {
 
-  players.forEach((player) => {
+  players.forEach(function(player) {
     // player.hand foreach? splits
     // or use Array.map?
     deck.transferTopCard(player.hand)
@@ -98,6 +115,9 @@ function checkForNaturals(players) {
   // if dealer is natural, set roundEnded to true
 }
 
+function eachPlayerPlays() {
+
+}
 
 // compose "deck" object with "blackjackHand" to let it
 // have a player.hand.calcValue() method

@@ -1,36 +1,5 @@
 const CardWithTwoSides = require('./card');
 
-const standardDeck = [];
-function createStandardDeck(deck) {
-  const suits = ["Clubs", "Diamonds", "Hearts", "Spades"];
-  const values = {
-    1: "Ace",
-    2: "2",
-    3: "3",
-    4: "4",
-    5: "5",
-    6: "6",
-    7: "7",
-    8: "8",
-    9: "9",
-    10: "10",
-    11: "Jack",
-    12: "Queen",
-    13: "King"
-  };
-  for (let suit of suits) {
-    for (let value of Object.keys(values)) {
-      const card = Object.create(CardWithTwoSides);
-      card.prepareCard({value, suit}, {isFaceDown: true});
-      deck.push(card);
-    }
-  }
-  // mutates the deck
-  return deck;
-}
-
-createStandardDeck(standardDeck);
-// console.log(standardDeck[51].readFace());
 
 // maybe use a doublyLinkedList instead of an Array?
 // YAGNI, it's not like n is so huge that we need a dLL
@@ -57,7 +26,6 @@ const Deck = {
       const randomPosition = Math.floor(Math.random() * (this.cards.length - 2));
       this.cards.splice(randomPosition, 0, topCard);
     };
-    this.showAllCards();
   },
   addCardToTop(card) {
     this.cards.push(card);
@@ -85,10 +53,39 @@ const Deck = {
   },
   transferTopCard(otherDeck) {
     // api for passing cards between decks
+    // needs to be an atomic operation
+    const removedCard = this.cards.pop();
+    otherDeck.addCardToTop(removedCard);
+  },
+  createStandardDeck() {
+    // destructive method! use with caution!
+    this.cards = [];
 
+    const suits = ["Clubs", "Diamonds", "Hearts", "Spades"];
+    const values = {
+      1: "Ace",
+      2: "2",
+      3: "3",
+      4: "4",
+      5: "5",
+      6: "6",
+      7: "7",
+      8: "8",
+      9: "9",
+      10: "10",
+      11: "Jack",
+      12: "Queen",
+      13: "King"
+    };
+    for (let suit of suits) {
+      for (let value of Object.keys(values)) {
+        const card = Object.create(CardWithTwoSides);
+        card.prepareCard({value, suit}, {isFaceDown: true});
+        this.cards.push(card);
+      }
+    }
+    // mutates the deck
   }
 }
 
-const deck = Object.create(Deck);
-deck.init(standardDeck);
-deck.shuffle();
+module.exports = Deck;
