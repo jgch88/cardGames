@@ -2,9 +2,24 @@ const Deck = require('./deck.js');
 
 
 const BlackjackHand = Object.create(Deck);
+BlackjackHand.countAces = function() {
+	let aces = this.cards.filter(card => card.value === 1);
+	return aces.length;
+}
 BlackjackHand.calcHandValue = function() {
   // American rules: double ace ISN'T 21!!
-  const sum = this.cards.reduce((acc, curr) => acc.value + curr.value);
+	let sum = 0;
+	let aceCount = this.countAces();
+	let cardValues = this.cards.map(card => card.value);
+	cardValues = cardValues.map(value =>(value > 10) ? 10 : value);
+
+  sum = cardValues.reduce((acc, curr) => acc + curr);
+	sum += aceCount * 10;
+	
+	while (sum > 21 && aceCount > 0) {
+		sum -= 10;
+		aceCount -= 1;
+	}
   return sum;
 }
 
