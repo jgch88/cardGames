@@ -1,8 +1,6 @@
 const Deck = require('./deck.js');
 const BlackjackHand = require('./blackjackHand.js');
-const deck = Object.create(Deck);
-deck.createStandardDeck();
-deck.shuffle();
+const Player = require('./player.js');
 // not really sure what a game engine was for, so 
 // tried to just build the game right here instead
 // of trying to abstract so much
@@ -37,100 +35,68 @@ deck.shuffle();
 
 // TODO -> export the Deck delegation constructor object in deck.js
 // Object.create standard deck in this file instead of deck.js
-const player = {
-  init(name, chips) {
-    this.name = name;
-    this.chips = chips;
-    const hand = Object.create(BlackjackHand);
-    hand.init();
-    this.hand = hand; // a deck and its api
-  },
-  play(option) {
-    // an api to "tell" the game whether player stands/hits
-    // or some modular method to have different AIs
-    // aggressive better, safe better, always burst
-  },
-  disconnect() {
-    // in event of player just leaving abruptly
-    // he loses his bet
-  },
-  get score() {
-    return this.hand.calcHandValue();
-  }
-}
 
 // factory method later
-const player1 = Object.create(player);
-player1.init("john", 100);
-const player2 = Object.create(player);
-player2.init("jane", 100);
 
+const Game = {
+	init(players, deck) {
+		this.players = players;
+		this.deck = deck;
+		this.roundEnded = false;
+	},
+	playGame() {
+		this.deck.shuffle();
+		this.roundEnded = false;
+		// table.deck.showAllCards();
+		// table.deck.cut(position);
+		// table.deck.insertCard(blankPlasticCard,position);
+		this.dealOneToEveryone();
+		this.dealOneToEveryone();
+		this.checkForNaturals();
+		// checkForSplits();
+		// checkForDoubleDowns();
+		// do {
+		this.eachPlayerPlays();
+		
+	},
+	dealOneToEveryone() {
+		this.players.forEach((player) => {
+			// player.hand foreach? splits
+			// or use Array.map?
+			this.deck.transferTopCard(player.hand)
+		});
+	},
+	checkForNaturals() {
+		this.players.forEach((player) => {
+			if (player.hand.calcHandValue() === 21) {
+				return true
+			}
+		})
+		// if dealer is natural, set roundEnded to true
+	},
+	eachPlayerPlays() {
+		let winner;
+		let points = 0;
+		this.players.forEach((player) => {
+			if (player.score > points) {
+				points = player.score;
+				winner = player;
+			}
+		});
+		console.log(winner, winner.score);
+	}
+}
+
+const player1 = Object.create(Player);
+player1.init("john", 100);
+const player2 = Object.create(Player);
+player2.init("jane", 100);
 const players = [player1, player2];
 
-function initGame(players, deck) {
-  // deck should be an array -> player can
-  // possibly have more than one deck (splits)
-  const table = {
-    players,
-    deck
-  };
-  return table;
-}
+const deck = Object.create(Deck);
+deck.createStandardDeck();
+deck.shuffle();
 
-const table = initGame([player1, player2], deck);
-
-// this is very procedural, refactor to make it
-// a "blackjack game" with methods
-function playGame(table) {
-  table.deck.shuffle();
-  // table.deck.showAllCards();
-  // table.deck.cut(position);
-  // table.deck.insertCard(blankPlasticCard,position);
-  let roundEnded = false;
-  dealOneToEveryone(table.deck, table.players);
-  dealOneToEveryone(table.deck, table.players);
-  checkForNaturals(table.players);
-  // checkForSplits();
-  // checkForDoubleDowns();
-  // do {
-  eachPlayerPlays(table.players);
-  // } while (!roundEnded);
-  
-}
-playGame(table);
-
-function dealOneToEveryone(deck, players) {
-
-  players.forEach(function(player) {
-    // player.hand foreach? splits
-    // or use Array.map?
-    deck.transferTopCard(player.hand)
-  })
-}
-
-function checkForNaturals(players) {
-  
-  players.forEach((player) => {
-    if (player.hand.calcHandValue() === 21) {
-      return true
-    }
-  })
-
-  // if dealer is natural, set roundEnded to true
-}
-
-function eachPlayerPlays(players) {
-  let winner;
-  let points = 0;
-  players.forEach((player) => {
-    if (player.score > points) {
-      points = player.score;
-      winner = player;
-    }
-  });
-  console.log(winner, winner.score);
-}
-
-// compose "deck" object with "blackjackHand" to let it
-// have a player.hand.calcValue() method
-//
+const game = Object.create(Game);
+game.init([player1, player2], deck);
+game.playGame();
