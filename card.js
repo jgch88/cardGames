@@ -39,7 +39,7 @@ console.log(twoOfHearts.identify());
 
 // this allows a card to have a 'Face Up' and 'Face Down' state
 const CardWithTwoSides = Object.create(Card);
-CardWithTwoSides.prepareCard = function({value, suit}, {isFaceDown}) {
+CardWithTwoSides.prepareCard = function({value, suit}, {isFaceDown = true} = {}) {
   this.init({value, suit});
   this.isFaceDown = isFaceDown;
 }
