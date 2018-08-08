@@ -11,9 +11,13 @@ const Deck = {
     this.cards = cardArray;
   },
   showAllCards() {
+		let log = ``;
     this.cards.forEach((card) => {
-      console.log(card);
+      // console.log(card);
+			log += card.readFace();
+			log += `\n`;
     })
+		return log;
   },
   shuffle: function shuffle() {
     // did this notation because initially wanted recursive
@@ -30,6 +34,7 @@ const Deck = {
   addCardToTop(card) {
     this.cards.push(card);
   },
+	/*
   removeTopCard() {
 
   },
@@ -51,6 +56,7 @@ const Deck = {
   findCardPosition(card) {
 
   },
+	*/
   transferTopCard(otherDeck) {
     // api for passing cards between decks
     // needs to be an atomic operation
