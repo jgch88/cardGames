@@ -1,5 +1,5 @@
 TN:
-SF:/home/justin/cardGames/blackjackHand.js
+SF:/home/justin/deckOfCards/blackjackHand.js
 FN:5,(anonymous_0)
 FN:6,(anonymous_1)
 FN:9,(anonymous_2)
@@ -41,7 +41,7 @@ BRF:4
 BRH:4
 end_of_record
 TN:
-SF:/home/justin/cardGames/card.js
+SF:/home/justin/deckOfCards/card.js
 FN:42,(anonymous_0)
 FN:46,(anonymous_1)
 FN:49,(anonymous_2)
@@ -83,7 +83,7 @@ BRF:2
 BRH:0
 end_of_record
 TN:
-SF:/home/justin/cardGames/deck.js
+SF:/home/justin/deckOfCards/deck.js
 FN:14,(anonymous_0)
 FN:18,shuffle
 FNF:2

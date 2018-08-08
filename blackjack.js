@@ -33,9 +33,6 @@ const Player = require('./player.js');
 // chips: every player has some money to bet (dealer has infinite?)
 // gameState: automate steps 1-3, then current player's turn
 
-// TODO -> export the Deck delegation constructor object in deck.js
-// Object.create standard deck in this file instead of deck.js
-
 // factory method later
 
 const Game = {
@@ -51,8 +48,25 @@ const Game = {
 		// table.deck.cut(position);
 		// table.deck.insertCard(blankPlasticCard,position);
 		this.dealOneToEveryone();
+    this.players.forEach((player) => {
+      player.hand.cards[0].turnFaceUp();
+    })
+    // everyone gets a face up card, including dealer
+    this.render();
 		this.dealOneToEveryone();
+
+    // array slice out player0 which is dealer, then forEach
+    // flip card faceUp
+    this.players.slice(1).forEach((player) => {
+      player.hand.cards[1].turnFaceUp();
+    })
+    this.render();
+    // everyone gets a second face up card, but dealer's second card is face down
 		this.checkForNaturals();
+    // sequence for naturals -> check players first, before dealer. at any point if players
+    // have naturals they have to challenge dealer, then dealer ONLY checks for natural
+    // IF his first card is a 10/Ace.
+
 		// checkForSplits();
 		// checkForDoubleDowns();
 		// do {
@@ -84,19 +98,34 @@ const Game = {
 			}
 		});
 		console.log(winner, winner.score);
-	}
+	},
+  render() {
+    // show the status of the game.
+    console.log(`******`)
+    this.players.forEach((player) => {
+      console.log(`${player.name}`);
+      player.hand.cards.forEach((card) => {
+        console.log(`   ${card.readFace()}`);
+      })
+    })
+
+    console.log(`******`)
+  }
 }
 
 const player1 = Object.create(Player);
 player1.init("john", 100);
 const player2 = Object.create(Player);
 player2.init("jane", 100);
-const players = [player1, player2];
+const dealer = Object.create(Player);
+dealer.init("Dealer", 10000);
+const players = [dealer, player1, player2];
 
 const deck = Object.create(Deck);
 deck.createStandardDeck();
 deck.shuffle();
 
 const game = Object.create(Game);
-game.init([player1, player2], deck);
+game.init(players, deck);
 game.playGame();
+console.log(players);
