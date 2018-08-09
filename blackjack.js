@@ -1,7 +1,7 @@
 const Deck = require('./deck.js');
 const BlackjackHand = require('./blackjackHand.js');
 const Player = require('./player.js');
-const readline = require('readline');
+const input = require('./input.js');
 // not really sure what a game engine was for, so 
 // tried to just build the game right here instead
 // of trying to abstract so much
@@ -47,7 +47,7 @@ const Game = {
 	playerJoin(player) {
 		this.players.push(player);
 	},
-	playGame() {
+	async playGame() {
 		this.roundEnded = false;
 		// table.deck.showAllCards();
 		// table.deck.cut(position);
@@ -77,7 +77,7 @@ const Game = {
 		// checkForDoubleDowns();
 		// do {
 		while (!this.roundEnded) {
-      this.playerPlays();
+      await this.playerPlays();
 			this.checkForWinner();
 		}
     this.render();
@@ -121,37 +121,39 @@ const Game = {
 			this.roundEnded = true;
 		}
 	},
-  playerPlays() {
-    players = this.players.slice(1);
-    players.forEach(async (player) => {
-      while (player.score < 21) {
-        // let user stand/hit
-        /*
-        const rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout
-        });
-        */
-        
-        let playerInput = "stand";
+  async playerPlays() {
+    return new Promise(resolve => {
+      players = this.players.slice(1);
+      players.forEach(async (player) => {
+        while (player.score < 21) {
+          // let user stand/hit
+          /*
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+          });
+          */
+          
+          let playerInput = await input(`[${player.name}]: stand/hit?`);
 
-        /*
-        await rl.question('stand/hit?', (answer) => {
-          playerInput = answer;
-        });
-        */
-        
-        if (playerInput === "hit") {
+          /*
+          await rl.question('stand/hit?', (answer) => {
+            playerInput = answer;
+          });
+          */
+          
+          if (playerInput === "hit") {
 
 
-        } else if (playerInput === "stand") {
-          break;
-        } else {
-          console.log(`Didn't understand that. Type 'hit' or 'stand'.`);
+          } else if (playerInput === "stand") {
+            break;
+          } else {
+            console.log(`Didn't understand that. Type 'hit' or 'stand'.`);
+          }
         }
-      }
+        resolve(`Player done`);
+      })
     })
-    console.log(players);
 
     // after all players play, dealer plays
   },
@@ -185,3 +187,30 @@ const Game = {
 }
 
 module.exports = Game;
+///
+//
+const CardWithTwoSides = require('./card.js');
+  const player1 = Object.create(Player);
+  player1.init("john", 100);
+  // const player2 = Object.create(Player);
+  // player2.init("jane", 100);
+
+	const dealerCard = Object.create(CardWithTwoSides);
+	dealerCard.prepareCard({value: 1, suit: "Clubs"}, {isFaceDown: false});
+	const dealerCard2 = Object.create(CardWithTwoSides);
+	dealerCard2.prepareCard({value: 12, suit: "Clubs"}, {isFaceDown: false});
+	const playerCard = Object.create(CardWithTwoSides);
+	playerCard.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: false});
+	const playerCard2 = Object.create(CardWithTwoSides);
+	playerCard2.prepareCard({value: 11, suit: "Clubs"}, {isFaceDown: false});
+
+  const deck = Object.create(Deck);
+  deck.init();
+  deck.addCardToTop(playerCard);
+  deck.addCardToTop(dealerCard);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard2);
+  const game = Object.create(Game);
+  game.init(deck);
+  game.playerJoin(player1);
+  game.playGame();
