@@ -78,9 +78,9 @@ const Game = {
 		// do {
 		while (!this.roundEnded) {
       await this.playerPlays();
+      this.render();
 			this.checkForWinner();
 		}
-    this.render();
 	},
 	collectBets() {
 		// this.bets = { player: amt, player2: amt }
@@ -127,24 +127,11 @@ const Game = {
       players.forEach(async (player) => {
         while (player.score < 21) {
           // let user stand/hit
-          /*
-          const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-          });
-          */
           
           let playerInput = await input(`[${player.name}]: stand/hit?`);
-
-          /*
-          await rl.question('stand/hit?', (answer) => {
-            playerInput = answer;
-          });
-          */
-          
           if (playerInput === "hit") {
-
-
+			      this.deck.transferTopCard(player.hand);
+            player.hand.cards[player.hand.cards.length - 1].turnFaceUp();
           } else if (playerInput === "stand") {
             break;
           } else {
@@ -163,14 +150,15 @@ const Game = {
 		let winner;
 		let points = 0;
 		this.players.forEach((player) => {
-			if (player.score > points) {
+			if (player.score > points && player.score <= 21) {
 				points = player.score;
 				winner = player;
 			}
 		});
 
 		this.roundEnded = true;
-		console.log(winner, winner.score);
+		// console.log(winner, winner.score);
+    console.log(`The winner is ${winner.name} with a score of ${winner.score}`);
 	},
   render() {
     // show the status of the game.
@@ -206,10 +194,12 @@ const CardWithTwoSides = require('./card.js');
 
   const deck = Object.create(Deck);
   deck.init();
+  deck.createStandardDeck();
   deck.addCardToTop(playerCard);
   deck.addCardToTop(dealerCard);
   deck.addCardToTop(playerCard2);
   deck.addCardToTop(dealerCard2);
+  console.log(deck.cards);
   const game = Object.create(Game);
   game.init(deck);
   game.playerJoin(player1);
