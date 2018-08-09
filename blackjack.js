@@ -47,7 +47,6 @@ const Game = {
 		this.players.push(player);
 	},
 	playGame() {
-		this.deck.shuffle();
 		this.roundEnded = false;
 		// table.deck.showAllCards();
 		// table.deck.cut(position);
@@ -85,6 +84,7 @@ const Game = {
 		// this.bets = { player: amt, player2: amt }
 	},
 	dealOneToEveryone() {
+    // by right, players get dealt before dealer
 		this.players.forEach((player) => {
 			// player.hand foreach? splits
 			// or use Array.map?
@@ -147,18 +147,4 @@ const Game = {
   }
 }
 
-const player1 = Object.create(Player);
-player1.init("john", 100);
-const player2 = Object.create(Player);
-player2.init("jane", 100);
-
-const deck = Object.create(Deck);
-deck.createStandardDeck();
-deck.shuffle();
-
-const game = Object.create(Game);
-game.init(deck);
-game.playerJoin(player1);
-game.playerJoin(player2);
-game.playGame();
-console.log(game.players);
+module.exports = Game;
