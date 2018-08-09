@@ -1,6 +1,7 @@
 const Deck = require('./deck.js');
 const BlackjackHand = require('./blackjackHand.js');
 const Player = require('./player.js');
+const readline = require('readline');
 // not really sure what a game engine was for, so 
 // tried to just build the game right here instead
 // of trying to abstract so much
@@ -76,7 +77,8 @@ const Game = {
 		// checkForDoubleDowns();
 		// do {
 		while (!this.roundEnded) {
-			this.eachPlayerPlays();
+      this.playerPlays();
+			this.checkForWinner();
 		}
     this.render();
 	},
@@ -119,7 +121,41 @@ const Game = {
 			this.roundEnded = true;
 		}
 	},
-	eachPlayerPlays() {
+  playerPlays() {
+    players = this.players.slice(1);
+    players.forEach(async (player) => {
+      while (player.score < 21) {
+        // let user stand/hit
+        /*
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+        */
+        
+        let playerInput = "stand";
+
+        /*
+        await rl.question('stand/hit?', (answer) => {
+          playerInput = answer;
+        });
+        */
+        
+        if (playerInput === "hit") {
+
+
+        } else if (playerInput === "stand") {
+          break;
+        } else {
+          console.log(`Didn't understand that. Type 'hit' or 'stand'.`);
+        }
+      }
+    })
+    console.log(players);
+
+    // after all players play, dealer plays
+  },
+	checkForWinner() {
 		// this winner implementation is wrong
 		// dealer challenges each player for a separate outcome
 		let winner;
@@ -130,6 +166,7 @@ const Game = {
 				winner = player;
 			}
 		});
+
 		this.roundEnded = true;
 		console.log(winner, winner.score);
 	},

@@ -3,6 +3,8 @@ const Player = require('./player.js');
 const Deck = require('./deck.js');
 const CardWithTwoSides = require('./card.js');
 
+// use before() for setting up player later
+
 
 test('dealer gets blackjack', () => {
   const player1 = Object.create(Player);
@@ -25,14 +27,43 @@ test('dealer gets blackjack', () => {
   deck.addCardToTop(dealerCard);
   deck.addCardToTop(playerCard2);
   deck.addCardToTop(dealerCard2);
-  console.log(deck.cards);
   const game = Object.create(Game);
   game.init(deck);
   game.playerJoin(player1);
   game.playGame();
-  console.log(game.players);
 })
 
+/* 
+test('both dealer and player get to play', () => {
+  const player1 = Object.create(Player);
+  player1.init("john", 100);
+
+	const dealerCard = Object.create(CardWithTwoSides);
+	dealerCard.prepareCard({value: 2, suit: "Clubs"}, {isFaceDown: false});
+	const dealerCard2 = Object.create(CardWithTwoSides);
+	dealerCard2.prepareCard({value: 3, suit: "Clubs"}, {isFaceDown: false});
+	const playerCard = Object.create(CardWithTwoSides);
+	playerCard.prepareCard({value: 2, suit: "Hearts"}, {isFaceDown: false});
+	const playerCard2 = Object.create(CardWithTwoSides);
+	playerCard2.prepareCard({value: 3, suit: "Hearts"}, {isFaceDown: false});
+
+  const deck = Object.create(Deck);
+  deck.init();
+  deck.addCardToTop(playerCard);
+  deck.addCardToTop(dealerCard);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard2);
+  // console.log(deck.cards);
+  const game = Object.create(Game);
+  game.init(deck);
+  game.playerJoin(player1);
+  game.playGame();
+  // console.log(game.players);
+
+  
+})
+
+*/
 // test cases (2 player):
 // 1. player gets blackjack, dealer doesn't
 // 2. both get blackjack
