@@ -13,6 +13,11 @@ const Player = {
     // an api to "tell" the game whether player stands/hits
     // or some modular method to have different AIs
     // aggressive better, safe better, always burst
+		//
+		// dealer AI:  if hand < 17, draw card.
+		//
+		// player options:
+		// hit, stand, (doubledown,split,surrender,insurance)
   },
   disconnect() {
     // in event of player just leaving abruptly

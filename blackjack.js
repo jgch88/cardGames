@@ -36,10 +36,15 @@ const Player = require('./player.js');
 // factory method later
 
 const Game = {
-	init(players, deck) {
-		this.players = players;
+	init(deck) {
+		const dealer = Object.create(Player);
+		dealer.init("Dealer", 10000);
+		this.players = [dealer];
 		this.deck = deck;
 		this.roundEnded = false;
+	},
+	playerJoin(player) {
+		this.players.push(player);
 	},
 	playGame() {
 		this.deck.shuffle();
@@ -47,6 +52,7 @@ const Game = {
 		// table.deck.showAllCards();
 		// table.deck.cut(position);
 		// table.deck.insertCard(blankPlasticCard,position);
+		this.collectBets();
 		this.dealOneToEveryone();
     this.players.forEach((player) => {
       player.hand.cards[0].turnFaceUp();
@@ -70,8 +76,13 @@ const Game = {
 		// checkForSplits();
 		// checkForDoubleDowns();
 		// do {
-		this.eachPlayerPlays();
-		
+		while (!this.roundEnded) {
+			this.eachPlayerPlays();
+		}
+    this.render();
+	},
+	collectBets() {
+		// this.bets = { player: amt, player2: amt }
 	},
 	dealOneToEveryone() {
 		this.players.forEach((player) => {
@@ -81,14 +92,36 @@ const Game = {
 		});
 	},
 	checkForNaturals() {
-		this.players.forEach((player) => {
+		const players = this.players.slice(1);
+		const dealer = this.players[0];
+		const dealerHasNatural = false;
+		
+		players.forEach((player) => {
 			if (player.hand.calcHandValue() === 21) {
+				console.log(`${player.name} has a Blackjack!`);
+				// challenge dealer
+				if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
+					console.log(`Dealer has a 10 card`);
+					const dealerScore = dealer.hand.calcHandValue();
+					if (dealerScore === 21) {
+						console.log(`Dealer also has a Blackjack!`);
+						dealerHasNatural = true;
+						dealer.hand.cards[1].turnFaceUp();
+					} else {
+						console.log(`${player.name} wins $`);
+					}
+				}
 				return true
 			}
 		})
 		// if dealer is natural, set roundEnded to true
+		if (dealerHasNatural) {
+			this.roundEnded = true;
+		}
 	},
 	eachPlayerPlays() {
+		// this winner implementation is wrong
+		// dealer challenges each player for a separate outcome
 		let winner;
 		let points = 0;
 		this.players.forEach((player) => {
@@ -97,6 +130,7 @@ const Game = {
 				winner = player;
 			}
 		});
+		this.roundEnded = true;
 		console.log(winner, winner.score);
 	},
   render() {
@@ -117,15 +151,14 @@ const player1 = Object.create(Player);
 player1.init("john", 100);
 const player2 = Object.create(Player);
 player2.init("jane", 100);
-const dealer = Object.create(Player);
-dealer.init("Dealer", 10000);
-const players = [dealer, player1, player2];
 
 const deck = Object.create(Deck);
 deck.createStandardDeck();
 deck.shuffle();
 
 const game = Object.create(Game);
-game.init(players, deck);
+game.init(deck);
+game.playerJoin(player1);
+game.playerJoin(player2);
 game.playGame();
-console.log(players);
+console.log(game.players);
