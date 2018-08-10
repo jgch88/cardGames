@@ -68,7 +68,41 @@ const Game = {
     })
     this.render();
     // everyone gets a second face up card, but dealer's second card is face down
-		this.checkForNaturals();
+		let dealerHasBlackjack = this.checkForNaturals();
+    if (dealerHasBlackjack) {
+      this.resolveRemainingPlayers();
+    } else {
+      // check if players have blackjack
+      /* forEach async is tricky
+      await this.players.slice(1).forEach(async (player) => {
+        if (player.score === 21) {
+          console.log(`${player.name} has a Blackjack!`);
+          player.hasNatural();
+          player.resolve();
+        } else {
+          await this.playerPlays(player);
+          this.render();
+        }
+      })
+      */
+      let players = this.players.slice(1);
+      for (let index = 0; index < players.length; index++) {
+        if (players[index].score === 21) {
+          console.log(`${players[index].name} has a Blackjack! Dealer loses`);
+          players[index].hasNatural();
+          players[index].resolve();
+        } else {
+          await this.playerPlays(players[index]);
+        }
+      }
+      this.dealerPlays();
+      this.resolveRemainingPlayers();
+    }
+    console.log(`----Final State----`);
+    this.players.forEach((player) => {
+      console.log(`${player.name}: ${player.score}`);
+    })
+    this.render();
     // sequence for naturals -> check players first, before dealer. at any point if players
     // have naturals they have to challenge dealer, then dealer ONLY checks for natural
     // IF his first card is a 10/Ace.
@@ -76,14 +110,12 @@ const Game = {
 		// checkForSplits();
 		// checkForDoubleDowns();
 		// do {
-		while (!this.roundEnded) {
-      await this.playerPlays();
-      this.render();
-			this.checkForWinner();
-		}
 	},
 	collectBets() {
 		// this.bets = { player: amt, player2: amt }
+    
+    // game should have a "bet" object, that has an amt/player property. separation of concerns
+    // game should also be the one responsible for doing player.hand.score! -> strategy pattern for other variations of blackjack, e.g. SG blackjack
 	},
 	dealOneToEveryone() {
     // by right, players get dealt before dealer
@@ -96,8 +128,28 @@ const Game = {
 	checkForNaturals() {
 		const players = this.players.slice(1);
 		const dealer = this.players[0];
-		const dealerHasNatural = false;
+		let dealerHasTenCardOrAce = false;
+		if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
+      dealerHasTenCardOrAce = true;
+			console.log(`Dealer has a 10 card/Ace.`);
+    }
+    if (dealerHasTenCardOrAce) {
+      const dealerScore = dealer.score;
+      if (dealerScore === 21) {
+        dealer.hand.cards[1].turnFaceUp();
+        dealer.hasNatural();
+        console.log(`Dealer has a Blackjack!`);
+        // go straight to resolve
+        return true;
+      }
+      else {
+        return false;
+
+      }
+    }
+
 		
+    /*
 		players.forEach((player) => {
 			if (player.hand.calcHandValue() === 21) {
 				console.log(`${player.name} has a Blackjack!`);
@@ -120,8 +172,27 @@ const Game = {
 		if (dealerHasNatural) {
 			this.roundEnded = true;
 		}
+    */
 	},
-  async playerPlays() {
+  async playerPlays(player) {
+
+    return new Promise(async (resolve) => {
+      while (player.score < 21) {
+        let playerInput = await input(`[${player.name}]: stand/hit?`);
+        if (playerInput === "hit") {
+          this.deck.transferTopCard(player.hand);
+          player.hand.cards[player.hand.cards.length - 1].turnFaceUp();
+        } else if (playerInput === "stand") {
+          break;
+        } else {
+          console.log(`Didn't understand that. Type 'hit' or 'stand'.`);
+        }
+      }
+      // console.log(`${player.name} done playing`);
+      resolve(`${player.name} done playing`);
+    })
+
+    /*
     return new Promise(resolve => {
       players = this.players.slice(1);
       players.forEach(async (player) => {
@@ -141,6 +212,7 @@ const Game = {
         resolve(`Player done`);
       })
     })
+    */
 
     // after all players play, dealer plays
   },
@@ -160,6 +232,47 @@ const Game = {
 		// console.log(winner, winner.score);
     console.log(`The winner is ${winner.name} with a score of ${winner.score}`);
 	},
+  resolvePlayer(player) {
+    const dealer = this.players[0];
+    if (dealer.score > 21) {
+      if (player.score > 21) {
+        console.log(`Both ${player.name} (${player.score}) and Dealer (${dealer.score}) burst`);
+      } else {
+        console.log(`Dealer burst (${dealer.score}), loses to ${player.name} (${player.score})`);
+      }
+      return;
+    }
+    if (player.score > 21) {
+      console.log(`${player.name} burst (${player.score}), Dealer wins`);
+      return;
+    }
+    if (dealer.score > player.score) {
+      console.log(`Dealer (${dealer.score}) beats ${player.name} (${player.score})`);
+    } else if (dealer.score === player.score) {
+      console.log(`Dealer and ${player.name} draw (${dealer.score})`);
+    } else {
+      console.log(`Dealer (${dealer.score}) loses to ${player.name} (${player.score})`);
+    }
+    player.resolve();
+  },
+  resolveRemainingPlayers() {
+    let dealer = this.players[0];
+    dealer.hand.cards.forEach(card => {
+      card.turnFaceUp();
+    });
+    const remainingPlayers = this.players.slice(1).filter(player => !player.resolved);
+
+    remainingPlayers.forEach((player) => {
+      this.resolvePlayer(player);
+    })
+
+  },
+  dealerPlays() {
+    let dealer = this.players[0];
+    while (dealer.score < 17) {
+			this.deck.transferTopCard(dealer.hand);
+    }
+  },
   render() {
     // show the status of the game.
     console.log(`******`)
@@ -180,27 +293,36 @@ module.exports = Game;
 const CardWithTwoSides = require('./card.js');
   const player1 = Object.create(Player);
   player1.init("john", 100);
-  // const player2 = Object.create(Player);
-  // player2.init("jane", 100);
+  const player2 = Object.create(Player);
+  player2.init("jane", 100);
 
 	const dealerCard = Object.create(CardWithTwoSides);
-	dealerCard.prepareCard({value: 1, suit: "Clubs"}, {isFaceDown: false});
+	dealerCard.prepareCard({value: 1, suit: "Clubs"}, {isFaceDown: true});
 	const dealerCard2 = Object.create(CardWithTwoSides);
-	dealerCard2.prepareCard({value: 12, suit: "Clubs"}, {isFaceDown: false});
+	dealerCard2.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: true});
+
 	const playerCard = Object.create(CardWithTwoSides);
-	playerCard.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: false});
+	playerCard.prepareCard({value: 2, suit: "Clubs"}, {isFaceDown: true});
 	const playerCard2 = Object.create(CardWithTwoSides);
-	playerCard2.prepareCard({value: 11, suit: "Clubs"}, {isFaceDown: false});
+	playerCard2.prepareCard({value: 9, suit: "Clubs"}, {isFaceDown: true});
+
+	const player2Card = Object.create(CardWithTwoSides);
+	player2Card.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: true});
+	const player2Card2 = Object.create(CardWithTwoSides);
+	player2Card2.prepareCard({value: 11, suit: "Clubs"}, {isFaceDown: true});
+
 
   const deck = Object.create(Deck);
   deck.init();
   deck.createStandardDeck();
   deck.addCardToTop(playerCard);
+  deck.addCardToTop(player2Card);
   deck.addCardToTop(dealerCard);
   deck.addCardToTop(playerCard2);
+  deck.addCardToTop(player2Card2);
   deck.addCardToTop(dealerCard2);
-  console.log(deck.cards);
   const game = Object.create(Game);
   game.init(deck);
   game.playerJoin(player1);
+  game.playerJoin(player2);
   game.playGame();

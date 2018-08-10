@@ -8,6 +8,8 @@ const Player = {
     const hand = Object.create(BlackjackHand);
     hand.init();
     this.hand = hand; // a deck and its api, use array for splits later on 
+    this.hasBlackJack = false;
+    this.resolved = false;
   },
   play(option) {
     // an api to "tell" the game whether player stands/hits
@@ -25,6 +27,13 @@ const Player = {
   },
   get score() {
     return this.hand.calcHandValue();
+  },
+  hasNatural() {
+    this.hasBlackJack = true;
+  },
+  resolve() {
+    // compare against dealer
+    this.resolved = true;
   }
 }
 
