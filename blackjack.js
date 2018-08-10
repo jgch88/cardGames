@@ -183,10 +183,12 @@ const Game = {
           this.deck.transferTopCard(player.hand);
           player.hand.cards[player.hand.cards.length - 1].turnFaceUp();
         } else if (playerInput === "stand") {
+          this.render();
           break;
         } else {
           console.log(`Didn't understand that. Type 'hit' or 'stand'.`);
         }
+        this.render();
       }
       // console.log(`${player.name} done playing`);
       resolve(`${player.name} done playing`);
@@ -315,12 +317,15 @@ const CardWithTwoSides = require('./card.js');
   const deck = Object.create(Deck);
   deck.init();
   deck.createStandardDeck();
+  /*
   deck.addCardToTop(playerCard);
   deck.addCardToTop(player2Card);
   deck.addCardToTop(dealerCard);
   deck.addCardToTop(playerCard2);
   deck.addCardToTop(player2Card2);
   deck.addCardToTop(dealerCard2);
+  */
+  deck.shuffle();
   const game = Object.create(Game);
   game.init(deck);
   game.playerJoin(player1);
