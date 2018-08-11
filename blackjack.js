@@ -48,6 +48,7 @@ const Game = {
 	},
   async getPlayers() {
     // create players here
+    // TODO: make sure playernames are UNIQUE to easier find the player's bet
     let playerName, playerChips;
     while (playerName !== 'END') {
       const player = Object.create(Player);
@@ -58,7 +59,7 @@ const Game = {
       //playerChips = 1000;
       let playerChips = 0;
       while (playerChips <= 0) {
-        playerChips = parseInt(await input(`How many chips do you wish to exchange?`));
+        playerChips = parseInt(await input(`[${playerName}]: How many chips do you wish to exchange?`));
         if (playerChips <= 0) {
           console.log(`Please exchange at least 1 chip.`);
         }
@@ -146,7 +147,10 @@ const Game = {
           await this.playerPlays(players[index]);
         }
       }
-      this.dealerPlays();
+      const remainingBets = this.bets.filter(bet => !bet.resolved).length;
+      if (remainingBets > 0) {
+        this.dealerPlays();
+      }
       this.resolveRemainingBets();
     }
     console.log(`----Final State----`);
@@ -237,6 +241,17 @@ const Game = {
         if (playerInput === "hit") {
           this.deck.transferTopCard(player.hand);
           player.hand.cards[player.hand.cards.length - 1].turnFaceUp();
+          // bug where by right if player bursts dealer should collect immediately, is currently "drawing" with dealer
+          if (player.score > 21) {
+            console.log(`${player.name} bursts.`)
+            // to get the player's bet, assumes
+            // playernames are unique
+            const playerBet = this.bets.filter(bet => bet.player.name === player.name)[0];
+            playerBet.resolve('playerLoses', 1, this.players[0]);
+            // resolve bet
+            player.displayStatus();
+          }
+          
         } else if (playerInput === "stand") {
           this.render();
           break;
@@ -370,6 +385,10 @@ const Game = {
       }
     })
     this.deck.shuffle();
+    // must turn all cards back face down
+    this.deck.cards.forEach((card) => {
+      card.turnFaceDown();
+    })
     this.bets = [];
     console.log(`******`)
     console.log(`****** Reshuffling and starting a new round.`)
