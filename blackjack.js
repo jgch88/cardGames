@@ -55,18 +55,27 @@ const Game = {
       if (playerName === 'END') {
         break;
       }
-      playerChips = 1000;
+      //playerChips = 1000;
+      let playerChips = 0;
+      while (playerChips <= 0) {
+        playerChips = parseInt(await input(`How many chips do you wish to exchange?`));
+        if (playerChips <= 0) {
+          console.log(`Please exchange at least 1 chip.`);
+        }
+      }
+      console.log(`${playerName} exchanged ${playerChips} chips.`)
       player.init(playerName, playerChips);
       game.playerJoin(player);
       console.log(`Welcome, ${player.name}!`)
-      playerBet = await input(`[${player.name}]: How much would you like to bet?`);
+      playerBet = parseInt(await input(`[${player.name}]: How much would you like to bet?`));
       const bet = Object.create(Bet);
       bet.init({
         betAmount: playerBet,
         player
       })
       this.bets.push(bet);
-      console.log(player);
+      // console.log(player);
+      player.displayStatus();
     }
   },
 	playerJoin(player) {

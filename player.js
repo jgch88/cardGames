@@ -34,6 +34,9 @@ const Player = {
   resolve() {
     // compare against dealer
     this.resolved = true;
+  },
+  displayStatus() {
+    console.log(`[${this.name}] Chips remaining: ${this.chips}`);
   }
 }
 
