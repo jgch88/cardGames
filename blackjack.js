@@ -1,6 +1,7 @@
 const Deck = require('./deck.js');
 const BlackjackHand = require('./blackjackHand.js');
 const Player = require('./player.js');
+const Bet = require('./bet.js');
 const input = require('./input.js');
 // not really sure what a game engine was for, so 
 // tried to just build the game right here instead
@@ -43,6 +44,7 @@ const Game = {
 		this.players = [dealer];
 		this.deck = deck;
 		this.roundEnded = false;
+    this.bets = [];
 	},
   async getPlayers() {
     // create players here
@@ -56,6 +58,15 @@ const Game = {
       playerChips = 1000;
       player.init(playerName, playerChips);
       game.playerJoin(player);
+      console.log(`Welcome, ${player.name}!`)
+      playerBet = await input(`[${player.name}]: How much would you like to bet?`);
+      const bet = Object.create(Bet);
+      bet.init({
+        betAmount: playerBet,
+        player
+      })
+      this.bets.push(bet);
+      console.log(player);
     }
   },
 	playerJoin(player) {
