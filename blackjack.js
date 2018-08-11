@@ -44,11 +44,26 @@ const Game = {
 		this.deck = deck;
 		this.roundEnded = false;
 	},
+  async getPlayers() {
+    // create players here
+    let playerName, playerChips;
+    while (playerName !== 'END') {
+      const player = Object.create(Player);
+      playerName = await input(`Please enter a player name, or type 'END' to stop creating players.`);
+      if (playerName === 'END') {
+        break;
+      }
+      playerChips = 1000;
+      player.init(playerName, playerChips);
+      game.playerJoin(player);
+    }
+  },
 	playerJoin(player) {
 		this.players.push(player);
 	},
 	async playGame() {
 		this.roundEnded = false;
+    await this.getPlayers();
 		// table.deck.showAllCards();
 		// table.deck.cut(position);
 		// table.deck.insertCard(blankPlasticCard,position);
@@ -292,42 +307,49 @@ const Game = {
 module.exports = Game;
 ///
 //
+
+/*
+
 const CardWithTwoSides = require('./card.js');
-  const player1 = Object.create(Player);
-  player1.init("john", 100);
-  const player2 = Object.create(Player);
-  player2.init("jane", 100);
 
-	const dealerCard = Object.create(CardWithTwoSides);
-	dealerCard.prepareCard({value: 1, suit: "Clubs"}, {isFaceDown: true});
-	const dealerCard2 = Object.create(CardWithTwoSides);
-	dealerCard2.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: true});
+const dealerCard = Object.create(CardWithTwoSides);
+dealerCard.prepareCard({value: 1, suit: "Clubs"}, {isFaceDown: true});
+const dealerCard2 = Object.create(CardWithTwoSides);
+dealerCard2.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: true});
 
-	const playerCard = Object.create(CardWithTwoSides);
-	playerCard.prepareCard({value: 2, suit: "Clubs"}, {isFaceDown: true});
-	const playerCard2 = Object.create(CardWithTwoSides);
-	playerCard2.prepareCard({value: 9, suit: "Clubs"}, {isFaceDown: true});
+const playerCard = Object.create(CardWithTwoSides);
+playerCard.prepareCard({value: 2, suit: "Clubs"}, {isFaceDown: true});
+const playerCard2 = Object.create(CardWithTwoSides);
+playerCard2.prepareCard({value: 9, suit: "Clubs"}, {isFaceDown: true});
 
-	const player2Card = Object.create(CardWithTwoSides);
-	player2Card.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: true});
-	const player2Card2 = Object.create(CardWithTwoSides);
-	player2Card2.prepareCard({value: 11, suit: "Clubs"}, {isFaceDown: true});
+const player2Card = Object.create(CardWithTwoSides);
+player2Card.prepareCard({value: 5, suit: "Clubs"}, {isFaceDown: true});
+const player2Card2 = Object.create(CardWithTwoSides);
+player2Card2.prepareCard({value: 11, suit: "Clubs"}, {isFaceDown: true});
+
+*/
 
 
-  const deck = Object.create(Deck);
-  deck.init();
-  deck.createStandardDeck();
-  /*
-  deck.addCardToTop(playerCard);
-  deck.addCardToTop(player2Card);
-  deck.addCardToTop(dealerCard);
-  deck.addCardToTop(playerCard2);
-  deck.addCardToTop(player2Card2);
-  deck.addCardToTop(dealerCard2);
-  */
-  deck.shuffle();
-  const game = Object.create(Game);
-  game.init(deck);
-  game.playerJoin(player1);
-  game.playerJoin(player2);
-  game.playGame();
+const deck = Object.create(Deck);
+deck.init();
+deck.createStandardDeck();
+/*
+deck.addCardToTop(playerCard);
+deck.addCardToTop(player2Card);
+deck.addCardToTop(dealerCard);
+deck.addCardToTop(playerCard2);
+deck.addCardToTop(player2Card2);
+deck.addCardToTop(dealerCard2);
+*/
+deck.shuffle();
+const game = Object.create(Game);
+game.init(deck);
+/*
+const player1 = Object.create(Player);
+player1.init("john", 100);
+const player2 = Object.create(Player);
+player2.init("jane", 100);
+game.playerJoin(player1);
+game.playerJoin(player2);
+*/
+game.playGame();

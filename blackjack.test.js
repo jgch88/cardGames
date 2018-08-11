@@ -32,6 +32,8 @@ test('dealer gets blackjack', () => {
   game.playerJoin(player1);
   game.playGame();
 })
+// tests -> all the various states
+// how many times certain functions were called
 
 /* 
 test('both dealer and player get to play', () => {
