@@ -67,28 +67,43 @@ const Game = {
       player.init(playerName, playerChips);
       game.playerJoin(player);
       console.log(`Welcome, ${player.name}!`)
-      playerBet = parseInt(await input(`[${player.name}]: How much would you like to bet?`));
+      player.displayStatus();
+    }
+  },
+  async collectBets() {
+    let players = this.players.slice(1);
+    for (let index = 0; index < players.length; index++) {
+      let player = players[index];
+      let playerBet = parseInt(await input(`[${player.name}]: How much would you like to bet?`));
       const bet = Object.create(Bet);
       bet.init({
         betAmount: playerBet,
         player
       })
       this.bets.push(bet);
-      // console.log(player);
       player.displayStatus();
     }
+  },
+  async kickPlayers() {
+    // give players the chance to leave the table after every bet
+
   },
 	playerJoin(player) {
 		this.players.push(player);
 	},
 	async playGame() {
+    // while dealer has enough chips...
+    // but how to know how much people will bet?
+    // need to specify the max bet, and that dealer chips is bigger than the maximum number of players * max bet
 		this.roundEnded = false;
+    while (!this.roundEnded) {
     await this.getPlayers();
 		// table.deck.showAllCards();
 		// table.deck.cut(position);
 		// table.deck.insertCard(blankPlasticCard,position);
 		// this.collectBets();
     // console.log(this.bets);
+    await this.collectBets();
 		this.dealOneToEveryone();
     this.players.forEach((player) => {
       player.hand.cards[0].turnFaceUp();
@@ -145,14 +160,18 @@ const Game = {
 
 		// checkForSplits();
 		// checkForDoubleDowns();
-		// do {
+    // cleanup after every round
+    this.cleanUp();
+    }
 	},
+  /*
 	collectBets() {
 		// this.bets = { player: amt, player2: amt }
     
     // game should have a "bet" object, that has an amt/player property. separation of concerns
     // game should also be the one responsible for doing player.hand.score! -> strategy pattern for other variations of blackjack, e.g. SG blackjack
 	},
+  */
 	dealOneToEveryone() {
     // by right, players get dealt before dealer
 		this.players.forEach((player) => {
@@ -341,6 +360,19 @@ const Game = {
       })
     })
 
+    console.log(`******`)
+  },
+  cleanUp() {
+    this.players.forEach((player) => {
+      // move cards from player back to deck
+      while (player.hand.cards.length > 0) {
+        player.hand.transferTopCard(this.deck);
+      }
+    })
+    this.deck.shuffle();
+    this.bets = [];
+    console.log(`******`)
+    console.log(`****** Reshuffling and starting a new round.`)
     console.log(`******`)
   }
 }
