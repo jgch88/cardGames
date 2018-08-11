@@ -7,6 +7,7 @@ const Bet = {
       this.betAmount = betAmount;
       this.insurance = false;
       this.player = player;
+      this.resolved = false;
     }
   },
   resolve(playerOutcome, multiplier,  dealer) {
@@ -32,6 +33,7 @@ const Bet = {
     } else {
       throw `Couldn't resolve bet`;
     }
+    this.resolved = true;
   }
 }
 

@@ -87,7 +87,8 @@ const Game = {
 		// table.deck.showAllCards();
 		// table.deck.cut(position);
 		// table.deck.insertCard(blankPlasticCard,position);
-		this.collectBets();
+		// this.collectBets();
+    // console.log(this.bets);
 		this.dealOneToEveryone();
     this.players.forEach((player) => {
       player.hand.cards[0].turnFaceUp();
@@ -105,7 +106,7 @@ const Game = {
     // everyone gets a second face up card, but dealer's second card is face down
 		let dealerHasBlackjack = this.checkForNaturals();
     if (dealerHasBlackjack) {
-      this.resolveRemainingPlayers();
+      this.resolveRemainingBets();
     } else {
       // check if players have blackjack
       /* forEach async is tricky
@@ -131,7 +132,7 @@ const Game = {
         }
       }
       this.dealerPlays();
-      this.resolveRemainingPlayers();
+      this.resolveRemainingBets();
     }
     console.log(`----Final State----`);
     this.players.forEach((player) => {
@@ -269,38 +270,58 @@ const Game = {
 		// console.log(winner, winner.score);
     console.log(`The winner is ${winner.name} with a score of ${winner.score}`);
 	},
-  resolvePlayer(player) {
+  resolveBet(bet) {
+    // resolveBet(bet)
     const dealer = this.players[0];
+    let player = bet.player;
     if (dealer.score > 21) {
       if (player.score > 21) {
         console.log(`Both ${player.name} (${player.score}) and Dealer (${dealer.score}) burst`);
+        bet.resolve('playerDraws', 1, dealer);
+        player.displayStatus();
       } else {
         console.log(`Dealer burst (${dealer.score}), loses to ${player.name} (${player.score})`);
+        bet.resolve('playerWins', 1, dealer);
+        player.displayStatus();
       }
       return;
     }
     if (player.score > 21) {
       console.log(`${player.name} burst (${player.score}), Dealer wins`);
+      bet.resolve('playerLoses', 1, dealer);
+      player.displayStatus();
       return;
     }
     if (dealer.score > player.score) {
       console.log(`Dealer (${dealer.score}) beats ${player.name} (${player.score})`);
+      bet.resolve('playerLoses', 1, dealer);
+      player.displayStatus();
     } else if (dealer.score === player.score) {
       console.log(`Dealer and ${player.name} draw (${dealer.score})`);
+      bet.resolve('playerDraws', 1, dealer);
+      player.displayStatus();
     } else {
       console.log(`Dealer (${dealer.score}) loses to ${player.name} (${player.score})`);
+      bet.resolve('playerWins', 1, dealer);
+      player.displayStatus();
     }
     player.resolve();
   },
-  resolveRemainingPlayers() {
+  resolveRemainingBets() {
+    // resolveRemainingBets()
     let dealer = this.players[0];
     dealer.hand.cards.forEach(card => {
       card.turnFaceUp();
     });
+    /* 
     const remainingPlayers = this.players.slice(1).filter(player => !player.resolved);
-
     remainingPlayers.forEach((player) => {
-      this.resolvePlayer(player);
+      this.resolveBet(player);
+    })
+    */
+    const remainingBets = this.bets.filter(bet => !bet.resolved);
+    remainingBets.forEach((bet) => {
+      this.resolveBet(bet);
     })
 
   },

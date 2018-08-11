@@ -36,7 +36,7 @@ const Player = {
     this.resolved = true;
   },
   displayStatus() {
-    console.log(`[${this.name}] Chips remaining: ${this.chips}`);
+    console.log(`[${this.name}] Chips: ${this.chips}`);
   }
 }
 
