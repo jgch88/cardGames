@@ -48,13 +48,16 @@ const Game = {
 	},
   async getPlayers() {
     // create players here
-    // TODO: make sure playernames are UNIQUE to easier find the player's bet
     let playerName, playerChips;
     while (playerName !== 'END') {
       const player = Object.create(Player);
       playerName = await input(`Please enter a player name, or type 'END' to stop creating players.`);
       if (playerName === 'END') {
         break;
+      }
+      if (this.players.filter(player => player.name === playerName).length > 0) {
+        console.log(`Another player is using the name ${playerName}. Please use a different name.`);
+        continue;
       }
       //playerChips = 1000;
       let playerChips = 0;
@@ -66,7 +69,7 @@ const Game = {
       }
       console.log(`${playerName} exchanged ${playerChips} chips.`)
       player.init(playerName, playerChips);
-      game.playerJoin(player);
+      this.playerJoin(player);
       console.log(`Welcome, ${player.name}!`)
       player.displayStatus();
     }
