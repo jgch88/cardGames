@@ -2,7 +2,7 @@
 	"scripts": {
 		"test": "jest",
 		"build-client": "browserify public/main.js > public/bundle.js",
-		"br": "browserify -t [ babelify --presets [ react ] ] public/main.js -o public/bundle.js"
+		"br": "browserify -t [ babelify --presets [ react ] ] src/main.js -o public/bundle.js"
 	},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",

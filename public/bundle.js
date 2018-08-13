@@ -2,6 +2,79 @@
 /** @jsx h */
 const { h, render, Component } = preact;
 
+// Card component states:
+// 1. value
+// 2. suit
+// 3. isFaceDown
+
+const Card = function Card(props) {
+  return h(
+    "table",
+    null,
+    h(
+      "thead",
+      null,
+      h(
+        "tr",
+        null,
+        h(
+          "th",
+          null,
+          props.isFaceDown ? "" : props.suit
+        )
+      )
+    ),
+    h(
+      "tbody",
+      null,
+      h(
+        "tr",
+        null,
+        h(
+          "td",
+          null,
+          props.isFaceDown ? "" : props.value
+        )
+      )
+    )
+  );
+};
+
+/*
+class Card extends Component {
+  constructor({value = 1, suit = "Spades"} = {}, {isFaceDown = true} = {}) {
+    super();
+    this.value = value;
+    this.suit = suit;
+    this.isFaceDown = isFaceDown;
+  }
+  render() {
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Suit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Value</td>
+          </tr>
+        </tbody>
+      </table>
+    )
+  }
+}
+*/
+
+module.exports = Card;
+
+},{}],2:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const Card = require('./components/card');
+
 class Clock extends Component {
   constructor() {
     super();
@@ -29,5 +102,6 @@ class Clock extends Component {
 }
 
 render(h(Clock, null), document.body);
+render(h(Card, { suit: "Spades", value: 1, isFaceDown: false }), document.body);
 
-},{}]},{},[1]);
+},{"./components/card":1}]},{},[2]);

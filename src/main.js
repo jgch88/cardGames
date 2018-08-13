@@ -1,6 +1,7 @@
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const Card = require('./components/card');
 
 class Clock extends Component {
   constructor() {
@@ -25,3 +26,4 @@ class Clock extends Component {
 }
 
 render(<Clock />, document.body);
+render(<Card suit={"Spades"} value={1} isFaceDown={false} />, document.body);
