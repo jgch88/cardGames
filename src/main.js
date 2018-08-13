@@ -2,6 +2,7 @@
 const { h, render, Component } = preact;
 
 const Card = require('./components/card');
+const Deck = require('./components/deck');
 
 class Clock extends Component {
   constructor() {
@@ -27,3 +28,10 @@ class Clock extends Component {
 
 render(<Clock />, document.body);
 render(<Card suit={"Spades"} value={1} isFaceDown={false} />, document.body);
+render(<Deck 
+  cards={[
+    <Card suit={"Spades"} value={1} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+  ]}
+/>, document.body);
+

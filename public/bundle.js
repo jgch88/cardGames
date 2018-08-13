@@ -7,6 +7,9 @@ const { h, render, Component } = preact;
 // 2. suit
 // 3. isFaceDown
 
+// Decided to use functional components because
+// we don't want the players to manage state at all!
+// That would be the server's responsibility.
 const Card = function Card(props) {
   return h(
     "table",
@@ -73,7 +76,38 @@ module.exports = Card;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+// Deck is a collection of cards
+
+const Deck = function Deck(props) {
+  return h(
+    "table",
+    null,
+    h(
+      "tbody",
+      null,
+      h(
+        "tr",
+        null,
+        props.cards.map(card => {
+          return h(
+            "td",
+            null,
+            card
+          );
+        })
+      )
+    )
+  );
+};
+
+module.exports = Deck;
+
+},{}],3:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const Card = require('./components/card');
+const Deck = require('./components/deck');
 
 class Clock extends Component {
   constructor() {
@@ -94,7 +128,7 @@ class Clock extends Component {
   render(props, state) {
     let time = new Date(state.time).toLocaleTimeString();
     return h(
-      "span",
+      'span',
       null,
       time
     );
@@ -103,5 +137,8 @@ class Clock extends Component {
 
 render(h(Clock, null), document.body);
 render(h(Card, { suit: "Spades", value: 1, isFaceDown: false }), document.body);
+render(h(Deck, {
+  cards: [h(Card, { suit: "Spades", value: 1, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
+}), document.body);
 
-},{"./components/card":1}]},{},[2]);
+},{"./components/card":1,"./components/deck":2}]},{},[3]);
