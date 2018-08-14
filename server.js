@@ -15,3 +15,13 @@ io.on('connection', (socket) => {
   console.log(`new connection`);
 
 })
+
+// how to init the game and have the server listen for state changes?
+
+
+// abstract the game object so that
+// methods can modify this game object
+// via ajax/web sockets
+// i.e. refactor out the playerTurns
+// need to transform a "sequential" based thing 
+// back to coexist with the "event loop/listener" model
