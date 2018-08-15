@@ -2,6 +2,7 @@ const Deck = require('./deck.js');
 const Player = require('./player.js');
 const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = require('./gettingPlayersState.js');
+const gettingPlaysState = require('./gettingPlaysState.js');
 
 // make it such that Game has methods -> which are spammable,
 // but methods are only allowable in certain states (state pattern)
@@ -90,13 +91,18 @@ const Game = {
 }
 
   
-
+// test cases via simulation
+// use routes via server to handle the listening of these
+// moves
 const game = Object.create(Game);
 game.init();
 game.joinGame('John', 100);
 game.joinGame('Jane', 100);
 game.joinGame('John', 100); // player name in use
+game.placeBet('John', 50); // can't bet during this stage
+game.play('John', 'stand'); // can't play during this stage
 game.joinGame('Jae', 0); // not enough chips
+
 game.changeState(gettingBetsState);
 game.joinGame('Jane', 100); // invalid, can't join (request ignored);
 game.placeBet('John', 50);
@@ -104,6 +110,8 @@ game.placeBet('Jon', 50); // player not found
 game.placeBet('Jane', 500); // not enough chips
 game.placeBet('Jane', 50);
 
+game.changeState(gettingPlaysState);
+game.play('John', 'stand');
 
 module.exports = Game;
 

@@ -5,7 +5,7 @@ const gettingBetsState = {
     console.log(`[State]: Getting bets`);
   },
   joinGame() {
-    throw `Game is in progress! Join the next round`;
+    throw `Betting has started! Join the next round`;
   },
   leaveGame() {
   },
@@ -28,6 +28,7 @@ const gettingBetsState = {
     console.log(`[${player.name}]: Bet ${amount} chips`);
   },
   play() {
+    throw `Betting is in progress. Please be patient`;
   }
 }
 

@@ -24,8 +24,10 @@ const gettingPlayersState = {
   leaveGame() {
   },
   placeBet() {
+    throw `Waiting for other players to join. Please be patient`;
   },
   play() {
+    throw `Waiting for other players to join. Please be patient`;
   }
 }
 
