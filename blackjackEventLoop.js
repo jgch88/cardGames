@@ -3,7 +3,6 @@ const Player = require('./player.js');
 const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = require('./gettingPlayersState.js');
 const gettingPlaysState = require('./gettingPlaysState.js');
-
 // make it such that Game has methods -> which are spammable,
 // but methods are only allowable in certain states (state pattern)
 // e.g. can't do getPlayers() before init();
@@ -43,7 +42,7 @@ const Game = {
 
     this.bets = [];
 
-    this.currentPlayer;
+    this.currentPlayer = null;
 
     console.log(`Game initialised`);
     
@@ -125,7 +124,16 @@ game.placeBet('Jane', 500); // not enough chips
 game.placeBet('Jane', 50);
 
 game.changeState(gettingPlaysState);
-game.play('John', 'stand');
+game.play('Jaz', 'stand'); // not Jaz's turn
+game.play('John', 'hit');
+game.play('John', 'hit');
+game.play('John', 'hit');
+game.play('John', 'hit');
+game.play('John', 'hit');
+game.play('John', 'hit'); // intentionally want John to burst
+
+game.play('Jane', 'stand');
+game.play('Jaz', 'stand');
 
 module.exports = Game;
 

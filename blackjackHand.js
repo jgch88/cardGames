@@ -10,12 +10,28 @@ BlackjackHand.calcHandValue = function() {
   // American rules: double ace ISN'T 21!!
 	let sum = 0;
 	let aceCount = this.countAces();
+  // added in face up filter so dealer's score isn't revealed!
+  // but this breaks when dealer HAS blackjack
+	// let cardValues = this.cards.filter(card => !card.isFaceDown).map(card => card.value);
 	let cardValues = this.cards.map(card => card.value);
 	cardValues = cardValues.map(value =>(value > 10) ? 10 : value);
 
   sum = cardValues.reduce((acc, curr) => acc + curr);
 	sum += aceCount * 10;
 	
+	while (sum > 21 && aceCount > 0) {
+		sum -= 10;
+		aceCount -= 1;
+	}
+  return sum;
+}
+BlackjackHand.calcShownHandValue = function() {
+	let sum = 0;
+	let aceCount = this.countAces();
+	let cardValues = this.cards.filter(card => !card.isFaceDown).map(card => card.value);
+	cardValues = cardValues.map(value =>(value > 10) ? 10 : value);
+  sum = cardValues.reduce((acc, curr) => acc + curr);
+	sum += aceCount * 10;
 	while (sum > 21 && aceCount > 0) {
 		sum -= 10;
 		aceCount -= 1;

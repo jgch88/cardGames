@@ -28,6 +28,10 @@ const Player = {
   get score() {
     return this.hand.calcHandValue();
   },
+  get shownScore() {
+    // so that dealer's other card isn't exposed when player bursts
+    return this.hand.calcShownHandValue();
+  },
   hasNatural() {
     this.hasBlackJack = true;
   },
@@ -36,7 +40,7 @@ const Player = {
     this.resolved = true;
   },
   displayStatus() {
-    console.log(`[${this.name}] Chips: ${this.chips}`);
+    console.log(`[${this.name}]: Current Chips: ${this.chips}`);
   }
 }
 

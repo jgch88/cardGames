@@ -1,5 +1,9 @@
+const dealerHasBlackjackState = require('./dealerHasBlackjackState.js');
+const dealerNoBlackjackState = require('./dealerNoBlackjackState.js');
+
 const gettingPlaysState = {
   init(game) {
+    console.log(`[State]: Dealing cards. Checking if dealer has natural.`);
     this.game = game;
 
     // deal two cards to each person
@@ -13,12 +17,10 @@ const gettingPlaysState = {
       player.hand.cards[1].turnFaceUp();
     });
     game.render();
-    console.log(`[State]: Waiting for players to play`);
 
+    this.checkIfDealerHasBlackjack();
     // set current player
     // maybe should put the bet inside the player object later
-    game.currentPlayer = game.players[1].name;
-    console.log(`[State]: Current player: ${game.currentPlayer}`);
 
   },
   joinGame() {
@@ -38,6 +40,7 @@ const gettingPlaysState = {
       throw `It is not ${playerName}'s turn!`;
     }
   },
+  // helper functions
   dealOneToEveryone(players) {
     // deal to players before dealer
     players.slice(1).forEach(player => {
@@ -45,6 +48,22 @@ const gettingPlaysState = {
     })
     this.game.deck.transferTopCard(players[0].hand);
 
+  },
+  checkIfDealerHasBlackjack() {
+    const dealer = this.game.players[0];
+    if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
+      console.log(`[Dealer]: Has a 10 card/Ace.`);
+      if (dealer.score === 21) {
+        dealer.hand.cards[1].turnFaceUp();
+        dealer.hasNatural();
+        console.log(`[Dealer]: Has a Blackjack!`);
+        this.game.changeState(dealerHasBlackjackState);
+      } else {
+        this.game.changeState(dealerNoBlackjackState);
+      }
+    } else {
+      this.game.changeState(dealerNoBlackjackState);
+    }
   }
 }
 
