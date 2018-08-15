@@ -54,7 +54,7 @@ const Game = {
   changeState(newState) {
     console.log(`Changing state`);
     this.state = Object.create(newState);
-    this.state.init();
+    this.state.init(this);
   },
   // gettingPlayers
   joinGame(playerName, chips) {
@@ -88,6 +88,18 @@ const Game = {
       console.log(`[Error]: ${e}`);
     }
   },
+  // helper methods
+  render() {
+    // show the status of the game.
+    console.log(`******`)
+    this.players.forEach((player) => {
+      console.log(`${player.name}`);
+      player.hand.cards.forEach((card) => {
+        console.log(`   ${card.readFace()}`);
+      })
+    })
+    console.log(`******`)
+  },
 }
 
   
@@ -99,6 +111,7 @@ game.init();
 game.joinGame('John', 100);
 game.joinGame('Jane', 100);
 game.joinGame('John', 100); // player name in use
+game.joinGame('Jaz', 100);
 game.placeBet('John', 50); // can't bet during this stage
 game.play('John', 'stand'); // can't play during this stage
 game.joinGame('Jae', 0); // not enough chips
@@ -106,6 +119,7 @@ game.joinGame('Jae', 0); // not enough chips
 game.changeState(gettingBetsState);
 game.joinGame('Jane', 100); // invalid, can't join (request ignored);
 game.placeBet('John', 50);
+game.placeBet('Jaz', 5);
 game.placeBet('Jon', 50); // player not found
 game.placeBet('Jane', 500); // not enough chips
 game.placeBet('Jane', 50);
