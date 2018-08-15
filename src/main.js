@@ -14,6 +14,11 @@ render(<Deck
   cards={[
     <Card suit={"Spades"} value={1} isFaceDown={false} />,
     <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
   ]}
 />, document.body);
 

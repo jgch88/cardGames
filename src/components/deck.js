@@ -5,15 +5,17 @@ const { h, render, Component } = preact;
 
 const Deck = function Deck(props) {
   return (
-    <table>
-      <tbody>
-        <tr>
-          { props.cards.map((card) => {
-            return <td>{card}</td>;
-          }) }
-        </tr>
-      </tbody>
-    </table>
+    <div class="horizontalScroll">
+      <table>
+        <tbody>
+          <tr>
+            { props.cards.map((card) => {
+              return <td>{card}</td>;
+            }) }
+          </tr>
+        </tbody>
+      </table>
+    </div>
   )
 }
 

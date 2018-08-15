@@ -1,0 +1,7 @@
+@viewport {
+  width: device-width;
+}
+
+.horizontalScroll {
+  overflow-x: scroll;
+}

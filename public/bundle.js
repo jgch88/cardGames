@@ -129,21 +129,25 @@ const { h, render, Component } = preact;
 
 const Deck = function Deck(props) {
   return h(
-    "table",
-    null,
+    "div",
+    { "class": "horizontalScroll" },
     h(
-      "tbody",
+      "table",
       null,
       h(
-        "tr",
+        "tbody",
         null,
-        props.cards.map(card => {
-          return h(
-            "td",
-            null,
-            card
-          );
-        })
+        h(
+          "tr",
+          null,
+          props.cards.map(card => {
+            return h(
+              "td",
+              null,
+              card
+            );
+          })
+        )
       )
     )
   );
@@ -165,7 +169,7 @@ const socket = io();
 render(h(Clock, null), document.body);
 render(h(Card, { suit: "Spades", value: 1, isFaceDown: false }), document.body);
 render(h(Deck, {
-  cards: [h(Card, { suit: "Spades", value: 1, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
+  cards: [h(Card, { suit: "Spades", value: 1, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
 }), document.body);
 
 const joinGame = () => {
