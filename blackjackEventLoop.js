@@ -42,6 +42,8 @@ const Game = {
 
     this.bets = [];
 
+    this.currentPlayer;
+
     console.log(`Game initialised`);
     
     this.state = Object.create(gettingPlayersState);
@@ -55,22 +57,35 @@ const Game = {
   },
   // gettingPlayers
   joinGame(playerName, chips) {
-    this.state.joinGame(playerName, chips, this);
-
+    try {
+      this.state.joinGame(playerName, chips, this);
+    } catch(e) {
+      console.log(`[Error]: ${e}`);
+    }
   },
   leaveGame(playerName) {
-    this.state.leaveGame(playerName, this);
-
+    try {
+      this.state.leaveGame(playerName, this);
+    } catch(e) {
+      console.log(`[Error]: ${e}`);
+    }
   },
   // gettingBets
   placeBet(playerName, amount) {
-    this.state.placeBet(playerName, amount, this);
-
+    try {
+      this.state.placeBet(playerName, amount, this);
+    } catch(e) {
+      console.log(`[Error]: ${e}`);
+    }
   },
   // gettingPlays
   play(playerName, move) {
     // moves: "hit" or "stand"
-    this.state.play(playerName, move, this);
+    try {
+      this.state.play(playerName, move, this);
+    } catch(e) {
+      console.log(`[Error]: ${e}`);
+    }
   },
 }
 
@@ -78,18 +93,16 @@ const Game = {
 
 const game = Object.create(Game);
 game.init();
-// console.log(game);
-// console.log(game.state.context);
-// game.changeState(gettingPlayersState);
 game.joinGame('John', 100);
 game.joinGame('Jane', 100);
-// game.joinGame('John', 100); // player name in use
-// game.joinGame('Jae', 0); // not enough chips
+game.joinGame('John', 100); // player name in use
+game.joinGame('Jae', 0); // not enough chips
 game.changeState(gettingBetsState);
 game.joinGame('Jane', 100); // invalid, can't join (request ignored);
 game.placeBet('John', 50);
-// game.placeBet('Jon', 50); // player not found
-// game.placeBet('Jane', 500); // not enough chips
+game.placeBet('Jon', 50); // player not found
+game.placeBet('Jane', 500); // not enough chips
+game.placeBet('Jane', 50);
 
 
 module.exports = Game;

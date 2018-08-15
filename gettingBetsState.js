@@ -5,6 +5,7 @@ const gettingBetsState = {
     console.log(`[State]: Getting bets`);
   },
   joinGame() {
+    throw `Game is in progress! Join the next round`;
   },
   leaveGame() {
   },

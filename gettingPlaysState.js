@@ -1,6 +1,6 @@
-const gettingPlayersState = {
+const gettingPlaysState = {
   init() {
-    console.log(`[State]: Getting players`);
+    console.log(`[State]: Waiting for players to play`);
   },
   joinGame() {
   },
@@ -9,7 +9,8 @@ const gettingPlayersState = {
   placeBet() {
   },
   play() {
+    // there should be a currentPlayer property on the game, only the current player gets to play a move
   }
 }
 
-module.exports = gettingPlayersState;
+module.exports = gettingPlaysState;
