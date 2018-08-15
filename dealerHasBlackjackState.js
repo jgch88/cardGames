@@ -19,7 +19,7 @@ const dealerHasBlackjackState = {
   play() {
   },
   checkIfPlayersHaveBlackjack() {
-    const players = this.game.players.slice(1);
+    const players = this.game.bettingPlayers;
     players.forEach(player => {
       if (player.score === 21) {
         console.log(`[${player.name}]: Blackjack!`);
@@ -27,12 +27,12 @@ const dealerHasBlackjackState = {
         player.resolve();
         // resolve bet!
         const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];
-        playerBet.resolve('playerDraws', 1, this.game.players[0]);
+        playerBet.resolve('playerDraws', 1, this.game.dealer);
       } else {
         console.log(`[${player.name}]: No Blackjack.`);
         player.resolve();
         const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];
-        playerBet.resolve('playerLoses', 1, this.game.players[0]);
+        playerBet.resolve('playerLoses', 1, this.game.dealer);
       }
     })
   },

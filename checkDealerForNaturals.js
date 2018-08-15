@@ -1,19 +1,26 @@
 const dealerHasBlackjackState = require('./dealerHasBlackjackState.js');
 const dealerNoBlackjackState = require('./dealerNoBlackjackState.js');
 
-const gettingPlaysState = {
+const checkDealerForNaturals = {
   init(game) {
     console.log(`[State]: Dealing cards. Checking if dealer has natural.`);
     this.game = game;
+    // this.game.bettingPlayers = this.game.bets.map(bet => bet.player);
+    const bettingPlayers = this.game.bets.map(bet => bet.player);
+    // to preserve the order in which players are "seated" rather than order in which players "bet"
+    this.game.bettingPlayers = this.game.players.filter(player => bettingPlayers.indexOf(player) !== -1);
+    // major bug where i didn't consider that we deal cards
+    // only to Bets not Players!
 
     // deal two cards to each person
     // starting from the first player
-    this.dealOneToEveryone(game.players);
-    game.players.forEach((player) => {
+    this.dealOneToEveryone(game.bettingPlayers);
+    game.bettingPlayers.forEach((player) => {
       player.hand.cards[0].turnFaceUp();
     });
-    this.dealOneToEveryone(game.players);
-    game.players.slice(1).forEach((player) => {
+    this.game.dealer.hand.cards[0].turnFaceUp();
+    this.dealOneToEveryone(game.bettingPlayers);
+    game.bettingPlayers.forEach((player) => {
       player.hand.cards[1].turnFaceUp();
     });
     game.render();
@@ -43,14 +50,14 @@ const gettingPlaysState = {
   // helper functions
   dealOneToEveryone(players) {
     // deal to players before dealer
-    players.slice(1).forEach(player => {
+    players.forEach(player => {
       this.game.deck.transferTopCard(player.hand);
     })
-    this.game.deck.transferTopCard(players[0].hand);
+    this.game.deck.transferTopCard(this.game.dealer.hand);
 
   },
   checkIfDealerHasBlackjack() {
-    const dealer = this.game.players[0];
+    const dealer = this.game.dealer;
     if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
       console.log(`[Dealer]: Has a 10 card/Ace.`);
       if (dealer.score === 21) {
@@ -67,4 +74,4 @@ const gettingPlaysState = {
   }
 }
 
-module.exports = gettingPlaysState;
+module.exports = checkDealerForNaturals;

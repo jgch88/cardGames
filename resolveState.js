@@ -2,7 +2,7 @@ const resolveState = {
   init(game) {
     console.log(`[State]: Resolving remaining bets`);
     this.game = game;
-    const dealer = this.game.players[0];
+    const dealer = this.game.dealer;
     dealer.hand.cards.forEach(card => {
       card.turnFaceUp();
     });
@@ -26,7 +26,7 @@ const resolveState = {
   play() {
   },
   dealerPlays() {
-    const dealer = this.game.players[0];
+    const dealer = this.game.dealer;
     while (dealer.score < 17) {
       console.log(`[Dealer]: 'hit'`);
       this.game.deck.transferTopCard(dealer.hand);
@@ -35,7 +35,7 @@ const resolveState = {
     }
   },
   resolveBet(bet) {
-    const dealer = this.game.players[0];
+    const dealer = this.game.dealer;
     const player = bet.player;
     if (dealer.score > 21) {
       if (player.score > 21) {

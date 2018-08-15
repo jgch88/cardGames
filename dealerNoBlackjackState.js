@@ -30,7 +30,7 @@ const dealerNoBlackjackState = {
           console.log(`[${this.game.currentPlayer.name}]: bursts (${this.game.currentPlayer.score}).`);
           // resolve bet!
           const playerBet = this.game.bets.filter(bet => bet.player.name === this.game.currentPlayer.name)[0];
-          playerBet.resolve('playerLoses', 1, this.game.players[0]);
+          playerBet.resolve('playerLoses', 1, this.game.dealer);
           // resolve player!
           this.game.currentPlayer.resolve();
           this.game.currentPlayer = this.getNextPlayer();
@@ -38,7 +38,7 @@ const dealerNoBlackjackState = {
           console.log(`[${this.game.currentPlayer.name}]: Blackjack!`);
           // resolve bet!
           const playerBet = this.game.bets.filter(bet => bet.player.name === this.game.currentPlayer.name)[0];
-          playerBet.resolve('playerWins', 1, this.game.players[0]);
+          playerBet.resolve('playerWins', 1, this.game.dealer);
           // resolve player!
           this.game.currentPlayer.resolve();
           this.game.currentPlayer = this.getNextPlayer();
@@ -56,7 +56,7 @@ const dealerNoBlackjackState = {
     }
   },
   checkIfPlayersHaveBlackjack() {
-    const players = this.game.players.slice(1);
+    const players = this.game.bettingPlayers;
     players.forEach(player => {
       if (player.score === 21) {
         console.log(`[${player.name}]: Blackjack!`);
@@ -64,7 +64,7 @@ const dealerNoBlackjackState = {
         player.resolve();
         // resolve bet!
         const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];
-        playerBet.resolve('playerWins', 1, this.game.players[0]);
+        playerBet.resolve('playerWins', 1, this.game.dealer);
       } else {
         console.log(`[${player.name}]: No Blackjack.`);
       }
@@ -72,7 +72,7 @@ const dealerNoBlackjackState = {
   },
   getNextPlayer() {
     // don't let those players who have already got a Blackjack play
-    const remainingPlayers = this.game.players.slice(1).filter(player => !player.resolved);
+    const remainingPlayers = this.game.bettingPlayers.filter(player => !player.resolved);
     // what if there's no first player??
     // change state to resolve!
     if (remainingPlayers.length === 0) {
