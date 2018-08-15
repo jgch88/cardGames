@@ -16,25 +16,26 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`new connection`);
+  console.log(`New socket connected.`);
   // how to get socket ID?
   // console.log(socket.id);
-  console.log(game.players);
+  console.log(`[Game players]: ${game.players.map(player => player.name)}`);
 
   socket.on('disconnect', (reason) => {
-    console.log(`Disconnected: ${reason}`);
-    const playerIndex = game.players.indexOf(socket.id);
+    console.log(`[${socket.id}] Disconnected: ${reason}`);
+    const playerIndex = game.players.map(player => player.name).indexOf(socket.id);
     game.players.splice(playerIndex, 1);
     // also remove their bets if they disconnect?
     // otherwise there's going to be problems with bet and 
     // player resolution
     // dealer pockets the money?
-    console.log(game.players);
+    console.log(`[Game players]: ${game.players.map(player => player.name)}`);
   })
 
   socket.on('joinGame', (chips) => {
-    console.log(chips);
+    // console.log(chips);
     game.joinGame(`${socket.id}`, chips.chips);
+    console.log(`[Game players]: ${game.players.map(player => player.name)}`);
     // error handle to emit something back
   })
 
