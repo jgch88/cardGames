@@ -2,6 +2,23 @@
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const Button = function Button(props) {
+  return h(
+    "button",
+    {
+      key: props.id,
+      id: props.id,
+      onClick: props.clickHandler },
+    props.text
+  );
+};
+
+module.exports = Button;
+
+},{}],2:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 // Card component states:
 // 1. value
 // 2. suit
@@ -72,7 +89,39 @@ class Card extends Component {
 
 module.exports = Card;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+class Clock extends Component {
+  constructor() {
+    super();
+    this.state.time = Date.now();
+  }
+
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.setState({ time: Date.now() });
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  render(props, state) {
+    let time = new Date(state.time).toLocaleTimeString();
+    return h(
+      "span",
+      null,
+      time
+    );
+  }
+}
+
+module.exports = Clock;
+
+},{}],4:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -102,38 +151,16 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
 const Card = require('./components/card');
 const Deck = require('./components/deck');
+const Clock = require('./components/clock');
+const Button = require('./components/button.js');
 
-class Clock extends Component {
-  constructor() {
-    super();
-    this.state.time = Date.now();
-  }
-
-  componentDidMount() {
-    this.timer = setInterval(() => {
-      this.setState({ time: Date.now() });
-    }, 1000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
-
-  render(props, state) {
-    let time = new Date(state.time).toLocaleTimeString();
-    return h(
-      'span',
-      null,
-      time
-    );
-  }
-}
+const socket = io();
 
 render(h(Clock, null), document.body);
 render(h(Card, { suit: "Spades", value: 1, isFaceDown: false }), document.body);
@@ -141,4 +168,14 @@ render(h(Deck, {
   cards: [h(Card, { suit: "Spades", value: 1, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
 }), document.body);
 
-},{"./components/card":1,"./components/deck":2}]},{},[3]);
+const joinGame = () => {
+  const chips = window.prompt("How many chips would you like to exchange?", 500);
+  console.log(chips);
+  socket.emit('joinGame', { chips: chips });
+};
+
+render(h(Button, { text: "Join Game", id: "joinGame", clickHandler: joinGame }), document.body);
+render(h(Button, { text: "Hit", id: "hit" }), document.body);
+render(h(Button, { text: "Stand", id: "stand" }), document.body);
+
+},{"./components/button.js":1,"./components/card":2,"./components/clock":3,"./components/deck":4}]},{},[5]);

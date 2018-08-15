@@ -107,6 +107,7 @@ const Game = {
   },
 }
 
+/*
   
 // test cases via simulation
 // use routes via server to handle the listening of these
@@ -143,6 +144,8 @@ game.play('Jane', 'stand');
 game.play('Jaz', 'stand');
 // there's an error where the player array order is differnt from the bet order...
 // fixed it in gettingPlaysState.js
+
+*/
 
 module.exports = Game;
 
