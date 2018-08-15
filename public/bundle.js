@@ -178,4 +178,8 @@ render(h(Button, { text: "Join Game", id: "joinGame", clickHandler: joinGame }),
 render(h(Button, { text: "Hit", id: "hit" }), document.body);
 render(h(Button, { text: "Stand", id: "stand" }), document.body);
 
+socket.on('playerJoined', player => {
+  console.log(player);
+});
+
 },{"./components/button.js":1,"./components/card":2,"./components/clock":3,"./components/deck":4}]},{},[5]);

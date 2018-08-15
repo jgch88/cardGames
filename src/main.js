@@ -27,4 +27,6 @@ render(<Button text={"Join Game"} id={"joinGame"} clickHandler={joinGame}/>, doc
 render(<Button text={"Hit"} id={"hit"}/>, document.body);
 render(<Button text={"Stand"} id={"stand"}/>, document.body);
 
-
+socket.on('playerJoined', (player) => {
+  console.log(player);
+});

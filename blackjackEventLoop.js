@@ -44,6 +44,10 @@ const Game = {
 
     this.bets = [];
 
+    // to attach the server's socket.io 
+    // for broadcasting
+    this.io;
+
     this.currentPlayer = null;
 
     console.log(`Game initialised`);
@@ -61,6 +65,7 @@ const Game = {
   joinGame(playerName, chips) {
     try {
       this.state.joinGame(playerName, chips, this);
+      this.io.emit('playerJoined', {playerName});
     } catch(e) {
       console.log(`[Error]: ${e}`);
     }
@@ -105,6 +110,9 @@ const Game = {
     })
     console.log(`******`)
   },
+  addSocket(socket) {
+    this.io = socket;
+  }
 }
 
 /*
