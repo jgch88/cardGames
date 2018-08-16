@@ -31,20 +31,10 @@ class BlackjackTable extends Component {
     return h(
       'div',
       null,
-      this.state.dealerCards.length > 0 ? h(
-        'h1',
-        null,
-        'Dealer'
-      ) : "",
-      this.state.dealerCards.map((card, index) => {
-        // update later
-        return h(Card, { key: index, value: card.value, suit: card.suit, isFaceDown: card.isFaceDown });
-      }),
-      h(
-        'div',
-        null,
-        JSON.stringify(this.state.players)
-      )
+      h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
+      Object.keys(this.state.players).map((player, index) => {
+        return h(Deck, { playerName: player, key: index, cards: this.state.players[player] });
+      })
     );
   }
 }
@@ -177,6 +167,7 @@ module.exports = Clock;
 },{}],5:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
+const Card = require('./card.js');
 
 // Deck is a collection of cards
 
@@ -184,6 +175,11 @@ const Deck = function Deck(props) {
   return h(
     "div",
     { "class": "horizontalScroll" },
+    h(
+      "div",
+      null,
+      props.cards.length > 0 ? props.playerName : ""
+    ),
     h(
       "table",
       null,
@@ -197,7 +193,7 @@ const Deck = function Deck(props) {
             return h(
               "td",
               null,
-              card
+              h(Card, { suit: card.suit, value: card.value, isFaceDown: card.isFaceDown })
             );
           })
         )
@@ -208,7 +204,7 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{}],6:[function(require,module,exports){
+},{"./card.js":3}],6:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 

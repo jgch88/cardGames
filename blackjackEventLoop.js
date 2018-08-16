@@ -139,7 +139,7 @@ const Game = {
       // shouldn't expose player.name though, probably use positionIds or something
       renderedState.players[player.name] = [];
       player.hand.cards.forEach((card) => {
-        renderedState.players[player.name].push(card.readFace());
+        renderedState.players[player.name].push(card);
       });
     });
 

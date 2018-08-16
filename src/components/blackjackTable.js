@@ -29,12 +29,10 @@ class BlackjackTable extends Component {
   render() {
     return (
       <div>
-        {this.state.dealerCards.length > 0 ? <h1>Dealer</h1> : ""}
-        {this.state.dealerCards.map((card, index) => {
-          // update later
-          return <Card key={index} value={card.value} suit={card.suit} isFaceDown={card.isFaceDown}/>;
+        <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
+        {Object.keys(this.state.players).map((player, index) => {
+          return <Deck playerName={player} key={index} cards={this.state.players[player]} />
         })}
-        <div>{JSON.stringify(this.state.players)}</div>
       </div>
     );
   }
