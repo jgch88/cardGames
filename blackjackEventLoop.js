@@ -101,17 +101,39 @@ const Game = {
     console.log(`Dealer`);
     this.dealer.hand.cards.forEach(card => {
       console.log(`   ${card.readFace()}`);
-    }) 
+    });
     this.bettingPlayers.forEach((player) => {
       console.log(`${player.name}`);
       player.hand.cards.forEach((card) => {
         console.log(`   ${card.readFace()}`);
       })
-    })
-    console.log(`******`)
+    });
+    console.log(`******`);
+
+    this.io.emit('render', this.renderState());
   },
   addSocket(socket) {
     this.io = socket;
+  },
+  renderState() {
+    // generate front facing "state"
+    const renderedState = {};
+    renderedState.dealerCards = [];
+
+    this.dealer.hand.cards.forEach(card => {
+      renderedState.dealerCards.push(card.readFace());
+    });
+
+    renderedState.players = {};
+    this.bettingPlayers.forEach((player) => {
+      // shouldn't expose player.name though, probably use positionIds or something
+      renderedState.players[player.name] = [];
+      player.hand.cards.forEach((card) => {
+        renderedState.players[player.name].push(card.readFace());
+      });
+    });
+
+    return renderedState;
   }
 }
 

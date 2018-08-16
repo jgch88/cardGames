@@ -35,3 +35,7 @@ render(<Button text={"Stand"} id={"stand"}/>, document.body);
 socket.on('playerJoined', (player) => {
   console.log(player);
 });
+
+socket.on('render', (state) => {
+  console.log(state);
+})

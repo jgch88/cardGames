@@ -186,4 +186,8 @@ socket.on('playerJoined', player => {
   console.log(player);
 });
 
+socket.on('render', state => {
+  console.log(state);
+});
+
 },{"./components/button.js":1,"./components/card":2,"./components/clock":3,"./components/deck":4}]},{},[5]);
