@@ -3,6 +3,7 @@ const resolveState = require('./resolveState.js');
 const dealerHasBlackjackState = {
   init(game) {
     console.log(`[State]: Dealer has a blackjack! Checking if players have blackjack.`);
+    this.name = 'dealerHasBlackjackState';
     this.game = game;
     this.checkIfPlayersHaveBlackjack();
     

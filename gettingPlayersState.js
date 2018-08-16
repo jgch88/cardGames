@@ -4,6 +4,7 @@ const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = {
   init() {
     console.log(`[State]: Getting players`);
+    this.name = 'gettingPlayersState';
   },
   joinGame(playerName, chips, game) {
     // maybe playerName will be playerId because of socket.io

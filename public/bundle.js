@@ -178,12 +178,42 @@ const joinGame = () => {
   socket.emit('joinGame', { chips: chips });
 };
 
+const placeBet = () => {
+  const chips = window.prompt("How many chips would you like to bet?", 10);
+  console.log(chips);
+  socket.emit('placeBet', { chips: chips });
+};
+
+const hit = () => {
+  socket.emit('play', 'hit');
+};
+
+const stand = () => {
+  socket.emit('play', 'stand');
+};
+
+const goToBettingState = () => {
+  socket.emit('changeState', 'gettingBetsState');
+};
+
+const goToCheckDealerForNaturalsState = () => {
+  socket.emit('changeState', 'checkDealerForNaturals');
+};
+
 render(h(Button, { text: "Join Game", id: "joinGame", clickHandler: joinGame }), document.body);
-render(h(Button, { text: "Hit", id: "hit" }), document.body);
-render(h(Button, { text: "Stand", id: "stand" }), document.body);
+render(h(Button, { text: "Place Bet", id: "placeBet", clickHandler: placeBet }), document.body);
+render(h(Button, { text: "Hit", id: "hit", clickHandler: hit }), document.body);
+render(h(Button, { text: "Stand", id: "stand", clickHandler: stand }), document.body);
+
+render(h(Button, { text: "Go to Betting State", id: "getBets", clickHandler: goToBettingState }), document.body);
+render(h(Button, { text: "Play", id: "play", clickHandler: goToCheckDealerForNaturalsState }), document.body);
 
 socket.on('playerJoined', player => {
   console.log(player);
+});
+
+socket.on('connect', function () {
+  console.log(socket.id);
 });
 
 socket.on('render', state => {

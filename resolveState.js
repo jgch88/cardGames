@@ -1,6 +1,9 @@
+const gettingPlayersState = require('./gettingPlayersState.js');
+
 const resolveState = {
   init(game) {
     console.log(`[State]: Resolving remaining bets`);
+    this.name = 'resolveState';
     this.game = game;
     const dealer = this.game.dealer;
     dealer.hand.cards.forEach(card => {
@@ -16,6 +19,9 @@ const resolveState = {
       this.resolveBet(bet);
     });
     console.log(`[State]: All bets resolved! Round over.`);
+
+    this.cleanUp();
+    this.game.changeState(gettingPlayersState);
   },
   joinGame() {
   },
@@ -57,6 +63,22 @@ const resolveState = {
       bet.resolve('playerWins', 1, dealer);
     }
   },
+  cleanUp() {
+    this.game.bettingPlayers.forEach((player) => {
+      while (player.hand.cards.length > 0) {
+        player.hand.transferTopCard(this.game.deck);
+      }
+    })
+    while (this.game.dealer.hand.cards.length > 0) {
+      this.game.dealer.hand.transferTopCard(this.game.deck);
+    }
+    this.game.deck.shuffle();
+    this.game.deck.cards.forEach(card => {
+      card.turnFaceDown();
+    })
+    this.game.bets = [];
+    console.log(`[State]: Discarding cards, reshuffling.`);
+  }
 }
 
 module.exports = resolveState;

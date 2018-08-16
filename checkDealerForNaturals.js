@@ -5,6 +5,7 @@ const checkDealerForNaturals = {
   init(game) {
     console.log(`[State]: Dealing cards. Checking if dealer has natural.`);
     this.game = game;
+    this.name = 'checkDealerForNaturals';
     // this.game.bettingPlayers = this.game.bets.map(bet => bet.player);
     const bettingPlayers = this.game.bets.map(bet => bet.player);
     // to preserve the order in which players are "seated" rather than order in which players "bet"

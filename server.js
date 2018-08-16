@@ -5,6 +5,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const BlackjackGame = require('./blackjackEventLoop.js');
 
+const gettingPlayersState = require('./gettingPlayersState.js');
 const gettingBetsState = require('./gettingBetsState.js');
 const checkDealerForNaturals = require('./checkDealerForNaturals.js');
 
@@ -39,11 +40,33 @@ io.on('connection', (socket) => {
   socket.on('joinGame', (chips) => {
     // console.log(chips);
     game.joinGame(`${socket.id}`, chips.chips);
-    game.changeState(gettingBetsState);
-    game.placeBet(`${socket.id}`, 1);
-    game.changeState(checkDealerForNaturals);
     console.log(`[Game players]: ${game.players.map(player => player.name)}`);
     // error handle to emit something back
+  })
+
+  socket.on('placeBet', (chips) => {
+    game.placeBet(`${socket.id}`, chips.chips);
+
+  })
+
+  socket.on('play', (move) => {
+    game.play(socket.id, move);
+  });
+
+  socket.on('changeState', (newState) => {
+    if (newState === 'gettingBetsState') {
+      if (game.state.name === 'gettingPlayersState') {
+        game.changeState(gettingBetsState)
+      } else {
+        console.log(`[State]: Can't change to ${newState}`);
+      }
+    } else if (newState === 'checkDealerForNaturals') {
+      if (game.state.name === 'gettingBetsState') {
+        game.changeState(checkDealerForNaturals);
+      } else {
+        console.log(`[State]: Can't change to ${newState}`);
+      }
+    }
   })
 
 })

@@ -3,6 +3,7 @@ const Bet = require('./bet.js');
 const gettingBetsState = {
   init() {
     console.log(`[State]: Getting bets`);
+    this.name = 'gettingBetsState';
   },
   joinGame() {
     throw `Betting has started! Join the next round`;

@@ -7,6 +7,7 @@ const dealerNoBlackjackState = {
   // no need! check in getNextPlayer;
   init(game) {
     console.log(`[State]: Dealer has no blackjack. Checking if players have blackjack.`);
+    this.name = 'dealerNoBlackjackState';
     this.game = game;
     this.checkIfPlayersHaveBlackjack();
     // set CurrentPlayer
