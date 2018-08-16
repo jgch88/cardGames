@@ -16,6 +16,8 @@ const socket = io();
 render(<Clock />, document.body);
 // render(<Card suit={"Spades"} value={1} isFaceDown={false} />, document.body);
 render(<BlackjackTable io={socket}/>, document.body);
+
+/*
 render(<Deck 
   cards={[
     <Card suit={"Spades"} value={2} isFaceDown={false} />,
@@ -32,6 +34,7 @@ render(<Deck
     <Card suit={"Spades"} value={2} isFaceDown={false} />,
   ]}
 />, document.body);
+*/
 
 const joinGame = () => {
   const chips = window.prompt("How many chips would you like to exchange?", 500);

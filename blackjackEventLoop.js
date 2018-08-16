@@ -117,11 +117,21 @@ const Game = {
   },
   renderState() {
     // generate front facing "state"
+    const blankCard = {
+      value: 0,
+      suit: "-",
+      isFaceDown: true,
+    };
+
     const renderedState = {};
     renderedState.dealerCards = [];
 
     this.dealer.hand.cards.forEach(card => {
-      renderedState.dealerCards.push(card.readFace());
+      if (card.isFaceDown) {
+        renderedState.dealerCards.push(blankCard);
+      } else {
+        renderedState.dealerCards.push(card);
+      }
     });
 
     renderedState.players = {};
@@ -134,7 +144,7 @@ const Game = {
     });
 
     return renderedState;
-  }
+  },
 }
 
 /*

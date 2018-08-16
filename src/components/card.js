@@ -14,12 +14,12 @@ const Card = function Card(props) {
     <table class="card">
       <thead>
         <tr>
-          <th>{props.isFaceDown ? "" : props.suit}</th>
+          <th>{props.isFaceDown ? "Face Down" : props.suit}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>{props.isFaceDown ? "" : props.value}</td>
+          <td>{props.isFaceDown ? "---" : props.value}</td>
         </tr>
       </tbody>
     </table>

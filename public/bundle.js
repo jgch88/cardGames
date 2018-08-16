@@ -1,13 +1,15 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
+const Deck = require('./deck.js');
+const Card = require('./card.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dealerCards: [],
-      players: []
+      players: {}
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -17,6 +19,7 @@ class BlackjackTable extends Component {
     this.socket.on('render', ({ dealerCards, players
     }) => {
       console.log(`got socket stuff`);
+      console.log(`got players ${JSON.stringify(players)}`);
       this.setState({
         dealerCards,
         players
@@ -28,17 +31,27 @@ class BlackjackTable extends Component {
     return h(
       'div',
       null,
-      'ABC ',
-      this.state.dealerCards,
-      ' ',
-      this.state.players
+      this.state.dealerCards.length > 0 ? h(
+        'h1',
+        null,
+        'Dealer'
+      ) : "",
+      this.state.dealerCards.map((card, index) => {
+        // update later
+        return h(Card, { key: index, value: card.value, suit: card.suit, isFaceDown: card.isFaceDown });
+      }),
+      h(
+        'div',
+        null,
+        JSON.stringify(this.state.players)
+      )
     );
   }
 }
 
 module.exports = BlackjackTable;
 
-},{}],2:[function(require,module,exports){
+},{"./card.js":3,"./deck.js":5}],2:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -80,7 +93,7 @@ const Card = function Card(props) {
         h(
           "th",
           null,
-          props.isFaceDown ? "" : props.suit
+          props.isFaceDown ? "Face Down" : props.suit
         )
       )
     ),
@@ -93,7 +106,7 @@ const Card = function Card(props) {
         h(
           "td",
           null,
-          props.isFaceDown ? "" : props.value
+          props.isFaceDown ? "---" : props.value
         )
       )
     )
@@ -214,12 +227,25 @@ const socket = io();
 render(h(Clock, null), document.body);
 // render(<Card suit={"Spades"} value={1} isFaceDown={false} />, document.body);
 render(h(BlackjackTable, { io: socket }), document.body);
-render(h(Deck, {
-  cards: [h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
-}), document.body);
-render(h(Deck, {
-  cards: [h(Card, { suit: "Spades", value: 1, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
-}), document.body);
+
+/*
+render(<Deck 
+  cards={[
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+  ]}
+/>, document.body);
+render(<Deck 
+  cards={[
+    <Card suit={"Spades"} value={1} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+    <Card suit={"Spades"} value={2} isFaceDown={false} />,
+  ]}
+/>, document.body);
+*/
 
 const joinGame = () => {
   const chips = window.prompt("How many chips would you like to exchange?", 500);
