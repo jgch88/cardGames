@@ -74,6 +74,7 @@ const dealerNoBlackjackState = {
   getNextPlayer() {
     // don't let those players who have already got a Blackjack play
     const remainingPlayers = this.game.bettingPlayers.filter(player => !player.resolved);
+    // console.log(`Remaining players: ${remainingPlayers}`); // this helped me figure out players.resolve needed to be reset in cleanUp()
     // what if there's no first player??
     // change state to resolve!
     if (remainingPlayers.length === 0) {

@@ -25,13 +25,13 @@ render(<Deck
 const joinGame = () => {
   const chips = window.prompt("How many chips would you like to exchange?", 500);
   console.log(chips);
-  socket.emit('joinGame', {chips: chips});
+  socket.emit('joinGame', {chips: Number(chips)});
 }
 
 const placeBet = () => {
   const chips = window.prompt("How many chips would you like to bet?", 10);
   console.log(chips);
-  socket.emit('placeBet', {chips: chips});
+  socket.emit('placeBet', {chips: Number(chips)});
 }
 
 const hit = () => {

@@ -68,6 +68,7 @@ const resolveState = {
       while (player.hand.cards.length > 0) {
         player.hand.transferTopCard(this.game.deck);
       }
+      player.resolved = false;
     })
     while (this.game.dealer.hand.cards.length > 0) {
       this.game.dealer.hand.transferTopCard(this.game.deck);
