@@ -11,7 +11,7 @@ const { h, render, Component } = preact;
 // That would be the server's responsibility.
 const Card = function Card(props) {
   return (
-    <table>
+    <table class="card">
       <thead>
         <tr>
           <th>{props.isFaceDown ? "" : props.suit}</th>

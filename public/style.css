@@ -5,3 +5,7 @@
 .horizontalScroll {
   overflow-x: scroll;
 }
+
+.card {
+  width: 30%;
+}

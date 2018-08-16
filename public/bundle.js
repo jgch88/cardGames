@@ -2,6 +2,46 @@
 /** @jsx h */
 const { h, render, Component } = preact;
 
+class BlackjackTable extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dealerCards: [],
+      players: []
+    };
+    this.socket = props.io;
+    console.log(`socket embedded`);
+  }
+
+  componentDidMount() {
+    this.socket.on('render', ({ dealerCards, players
+    }) => {
+      console.log(`got socket stuff`);
+      this.setState({
+        dealerCards,
+        players
+      });
+    });
+  }
+
+  render() {
+    return h(
+      'div',
+      null,
+      'ABC ',
+      this.state.dealerCards,
+      ' ',
+      this.state.players
+    );
+  }
+}
+
+module.exports = BlackjackTable;
+
+},{}],2:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const Button = function Button(props) {
   return h(
     "button",
@@ -15,7 +55,7 @@ const Button = function Button(props) {
 
 module.exports = Button;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -30,7 +70,7 @@ const { h, render, Component } = preact;
 const Card = function Card(props) {
   return h(
     "table",
-    null,
+    { "class": "card" },
     h(
       "thead",
       null,
@@ -89,7 +129,7 @@ class Card extends Component {
 
 module.exports = Card;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -121,7 +161,7 @@ class Clock extends Component {
 
 module.exports = Clock;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -155,7 +195,7 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -163,11 +203,20 @@ const Card = require('./components/card');
 const Deck = require('./components/deck');
 const Clock = require('./components/clock');
 const Button = require('./components/button.js');
+const BlackjackTable = require('./components/blackjackTable.js');
 
 const socket = io();
 
+// need a GAME react component composed of dealer/player decks
+// need actual state in it... shouldn't be functional
+// which i can call setState on...
+
 render(h(Clock, null), document.body);
-render(h(Card, { suit: "Spades", value: 1, isFaceDown: false }), document.body);
+// render(<Card suit={"Spades"} value={1} isFaceDown={false} />, document.body);
+render(h(BlackjackTable, { io: socket }), document.body);
+render(h(Deck, {
+  cards: [h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
+}), document.body);
 render(h(Deck, {
   cards: [h(Card, { suit: "Spades", value: 1, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false }), h(Card, { suit: "Spades", value: 2, isFaceDown: false })]
 }), document.body);
@@ -220,4 +269,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/button.js":1,"./components/card":2,"./components/clock":3,"./components/deck":4}]},{},[5]);
+},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[6]);
