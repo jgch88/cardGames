@@ -31,7 +31,7 @@ class BlackjackTable extends Component {
       <div>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         {Object.keys(this.state.players).map((player, index) => {
-          return <Deck playerName={player} key={index} cards={this.state.players[player]} />
+          return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />
         })}
       </div>
     );

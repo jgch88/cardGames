@@ -33,7 +33,7 @@ class BlackjackTable extends Component {
       null,
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       Object.keys(this.state.players).map((player, index) => {
-        return h(Deck, { playerName: player, key: index, cards: this.state.players[player] });
+        return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
       })
     );
   }
@@ -67,10 +67,33 @@ const { h, render, Component } = preact;
 // 2. suit
 // 3. isFaceDown
 
-// Decided to use functional components because
-// we don't want the players to manage state at all!
-// That would be the server's responsibility.
-const Card = function Card(props) {
+// for a better rendering
+const values = {
+  1: "Ace",
+  2: "2",
+  3: "3",
+  4: "4",
+  5: "5",
+  6: "6",
+  7: "7",
+  8: "8",
+  9: "9",
+  10: "10",
+  11: "Jack",
+  12: "Queen",
+  13: "King"
+};
+
+const suits = {
+  "Clubs": "\u2663",
+  "Diamonds": "\u2666",
+  "Hearts": "\u2665",
+  "Spades": "\u2660"
+
+  // Decided to use functional components because
+  // we don't want the players to manage state at all!
+  // That would be the server's responsibility.
+};const Card = function Card(props) {
   return h(
     "table",
     { "class": "card" },
@@ -83,7 +106,7 @@ const Card = function Card(props) {
         h(
           "th",
           null,
-          props.isFaceDown ? "Face Down" : props.suit
+          props.isFaceDown ? "Face Down" : suits[props.suit]
         )
       )
     ),
@@ -96,7 +119,7 @@ const Card = function Card(props) {
         h(
           "td",
           null,
-          props.isFaceDown ? "---" : props.value
+          props.isFaceDown ? "---" : values[props.value]
         )
       )
     )
@@ -172,13 +195,18 @@ const Card = require('./card.js');
 // Deck is a collection of cards
 
 const Deck = function Deck(props) {
+  const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     "div",
     { "class": "horizontalScroll" },
-    h(
+    props.isPlayersDeck ? h(
+      "h3",
+      null,
+      playerNameText
+    ) : h(
       "div",
       null,
-      props.cards.length > 0 ? props.playerName : ""
+      playerNameText
     ),
     h(
       "table",

@@ -5,9 +5,10 @@ const Card = require('./card.js');
 // Deck is a collection of cards
 
 const Deck = function Deck(props) {
+  const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return (
     <div class="horizontalScroll">
-      <div>{ props.cards.length > 0 ? props.playerName : "" }</div>
+      {props.isPlayersDeck ? <h3>{playerNameText}</h3> : <div>{playerNameText}</div>}
       <table>
         <tbody>
           <tr>
