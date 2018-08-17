@@ -3,6 +3,7 @@
 const { h, render, Component } = preact;
 const Deck = require('./deck.js');
 const Card = require('./card.js');
+const MessageLog = require('./messageLog.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -34,14 +35,15 @@ class BlackjackTable extends Component {
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       Object.keys(this.state.players).map((player, index) => {
         return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
-      })
+      }),
+      h(MessageLog, { messages: ['a', 'b'] })
     );
   }
 }
 
 module.exports = BlackjackTable;
 
-},{"./card.js":3,"./deck.js":5}],2:[function(require,module,exports){
+},{"./card.js":3,"./deck.js":5,"./messageLog.js":6}],2:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -236,6 +238,31 @@ module.exports = Deck;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const MessageLog = function MessageLog(props) {
+  return h(
+    "div",
+    null,
+    h(
+      "div",
+      null,
+      "Message Log"
+    ),
+    props.messages.map(message => {
+      return h(
+        "div",
+        null,
+        message
+      );
+    })
+  );
+};
+
+module.exports = MessageLog;
+
+},{}],7:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const Card = require('./components/card');
 const Deck = require('./components/deck');
 const Clock = require('./components/clock');
@@ -319,4 +346,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[6]);
+},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[7]);
