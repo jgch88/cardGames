@@ -18,13 +18,16 @@ class BlackjackTable extends Component {
   }
 
   componentDidMount() {
-    this.socket.on('render', ({ dealerCards, players, messages
-    }) => {
+    this.socket.on('render', ({ dealerCards, players }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
       this.setState({
         dealerCards,
-        players,
+        players
+      });
+    });
+    this.socket.on('message', ({ messages }) => {
+      this.setState({
         messages
       });
     });
@@ -73,7 +76,7 @@ const { h, render, Component } = preact;
 
 // for a better rendering
 const values = {
-  1: "Ace",
+  1: "A",
   2: "2",
   3: "3",
   4: "4",
@@ -83,9 +86,9 @@ const values = {
   8: "8",
   9: "9",
   10: "10",
-  11: "Jack",
-  12: "Queen",
-  13: "King"
+  11: "J",
+  12: "Q",
+  13: "K"
 };
 
 const suits = {
@@ -241,6 +244,7 @@ module.exports = Deck;
 const { h, render, Component } = preact;
 
 const MessageLog = function MessageLog(props) {
+  // need to reverse the messages without mutating the state
   return h(
     "div",
     null,
@@ -249,7 +253,7 @@ const MessageLog = function MessageLog(props) {
       null,
       "Message Log"
     ),
-    props.messages.map(message => {
+    props.messages.slice().reverse().map(message => {
       return h(
         "div",
         null,

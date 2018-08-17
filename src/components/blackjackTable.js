@@ -17,15 +17,18 @@ class BlackjackTable extends Component {
   }
 
   componentDidMount() {
-    this.socket.on('render', ({ dealerCards, players, messages
-    }) => {
+    this.socket.on('render', ({ dealerCards, players }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
       this.setState({
         dealerCards,
         players,
-        messages
       });
+    });
+    this.socket.on('message', ({ messages }) => {
+      this.setState({
+        messages,
+      })
     })
   }
 

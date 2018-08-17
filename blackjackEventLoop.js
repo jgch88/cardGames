@@ -30,7 +30,7 @@ const GameState = {
 }
 
 const Game = {
-  init() {
+  init(socket) {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
@@ -47,19 +47,19 @@ const Game = {
 
     // to attach the server's socket.io 
     // for broadcasting
-    this.io;
+    this.io = socket;
 
     this.currentPlayer = null;
 
+    const messageLog = Object.create(MessageLog);
+    messageLog.init(4) // 4 messages
+    this.messageLog = messageLog;
+    this.sendMessageLogMessages(`Game initialised`);
     console.log(`Game initialised`);
     
     this.state = Object.create(gettingPlayersState);
-    this.state.init();
+    this.state.init(this);
 
-    const messageLog = Object.create(MessageLog);
-    messageLog.init(4)
-    this.messageLog = messageLog;
-    messageLog.addMessage(`Game initialised`);
     // console.log(this);
   },
   changeState(newState) {
@@ -118,9 +118,11 @@ const Game = {
 
     this.io.emit('render', this.renderState());
   },
+  /*
   addSocket(socket) {
     this.io = socket;
   },
+  */
   renderState() {
     // generate front facing "state"
     const blankCard = {
@@ -149,10 +151,16 @@ const Game = {
       });
     });
 
-    renderedState.messages = this.messageLog.messages;
-
     return renderedState;
   },
+  getMessageLogMessages() {
+    return {messages: this.messageLog.messages}
+  },
+  sendMessageLogMessages(message) {
+    // the front end "console.log" api, last xno of console messages
+    this.messageLog.addMessage(message);
+    this.io.emit('message', this.getMessageLogMessages());
+  }
 }
 
 /*

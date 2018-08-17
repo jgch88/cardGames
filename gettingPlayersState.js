@@ -2,8 +2,10 @@ const Player = require('./player.js');
 const gettingBetsState = require('./gettingBetsState.js');
 
 const gettingPlayersState = {
-  init() {
+  init(game) {
     console.log(`[State]: Getting players`);
+    this.game = game;
+    this.game.sendMessageLogMessages(`[State]: Getting players`);
     this.name = 'gettingPlayersState';
   },
   joinGame(playerName, chips, game) {
@@ -21,6 +23,7 @@ const gettingPlayersState = {
     player.init(playerName, chips);
     game.players.push(player);
     console.log(`[${player.name}]: Joined with ${chips} chips`);
+    this.game.sendMessageLogMessages(`[${player.name}]: Joined with ${chips} chips`);
   },
   leaveGame() {
   },

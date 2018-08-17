@@ -82,6 +82,7 @@ const dealerNoBlackjackState = {
       this.game.changeState(resolveState);
       return null;
     } else {
+      this.game.messageLog.addMessage(`[${remainingPlayers[0].name}]: stand/hit?`);
       console.log(`[${remainingPlayers[0].name}]: stand/hit?`);
       return remainingPlayers[0];
     }

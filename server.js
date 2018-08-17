@@ -12,8 +12,7 @@ const checkDealerForNaturals = require('./checkDealerForNaturals.js');
 server.listen(4000, () => console.log(`Listening on port 4000`));
 
 const game = Object.create(BlackjackGame);
-game.init();
-game.addSocket(io);
+game.init(io);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {

@@ -8,7 +8,7 @@ const { h, render, Component } = preact;
 
 // for a better rendering
 const values = {
-  1: "Ace",
+  1: "A",
   2: "2",
   3: "3",
   4: "4",
@@ -18,9 +18,9 @@ const values = {
   8: "8",
   9: "9",
   10: "10",
-  11: "Jack",
-  12: "Queen",
-  13: "King"
+  11: "J",
+  12: "Q",
+  13: "K"
 }
 
 const suits = {
