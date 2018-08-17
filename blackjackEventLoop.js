@@ -3,6 +3,7 @@ const Player = require('./player.js');
 const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = require('./gettingPlayersState.js');
 const checkDealerForNaturals = require('./checkDealerForNaturals.js');
+const MessageLog = require('./messageLog.js');
 // make it such that Game has methods -> which are spammable,
 // but methods are only allowable in certain states (state pattern)
 // e.g. can't do getPlayers() before init();
@@ -54,6 +55,11 @@ const Game = {
     
     this.state = Object.create(gettingPlayersState);
     this.state.init();
+
+    const messageLog = Object.create(MessageLog);
+    messageLog.init(4)
+    this.messageLog = messageLog;
+    messageLog.addMessage(`Game initialised`);
     // console.log(this);
   },
   changeState(newState) {
@@ -124,8 +130,8 @@ const Game = {
     };
 
     const renderedState = {};
-    renderedState.dealerCards = [];
 
+    renderedState.dealerCards = [];
     this.dealer.hand.cards.forEach(card => {
       if (card.isFaceDown) {
         renderedState.dealerCards.push(blankCard);
@@ -142,6 +148,8 @@ const Game = {
         renderedState.players[player.name].push(card);
       });
     });
+
+    renderedState.messages = this.messageLog.messages;
 
     return renderedState;
   },

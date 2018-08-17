@@ -10,20 +10,22 @@ class BlackjackTable extends Component {
     super(props);
     this.state = {
       dealerCards: [],
-      players: {}
+      players: {},
+      messages: []
     };
     this.socket = props.io;
     console.log(`socket embedded`);
   }
 
   componentDidMount() {
-    this.socket.on('render', ({ dealerCards, players
+    this.socket.on('render', ({ dealerCards, players, messages
     }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
       this.setState({
         dealerCards,
-        players
+        players,
+        messages
       });
     });
   }
@@ -36,7 +38,7 @@ class BlackjackTable extends Component {
       Object.keys(this.state.players).map((player, index) => {
         return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
       }),
-      h(MessageLog, { messages: ['a', 'b'] })
+      h(MessageLog, { messages: this.state.messages })
     );
   }
 }
