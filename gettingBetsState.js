@@ -1,8 +1,9 @@
 const Bet = require('./bet.js');
 
 const gettingBetsState = {
-  init() {
-    console.log(`[State]: Getting bets`);
+  init(game) {
+    this.game = game;
+    this.game.sendMessageLogMessages(`[State]: Getting bets`);
     this.name = 'gettingBetsState';
   },
   joinGame() {
@@ -26,7 +27,7 @@ const gettingBetsState = {
       player
     })
     game.bets.push(bet);
-    console.log(`[${player.name}]: Bet ${amount} chips`);
+    this.game.sendMessageLogMessages(`[${player.name}]: Bet ${amount} chips`);
   },
   play() {
     throw `Betting is in progress. Please be patient`;

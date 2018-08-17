@@ -55,7 +55,6 @@ const Game = {
     messageLog.init(4) // 4 messages
     this.messageLog = messageLog;
     this.sendMessageLogMessages(`Game initialised`);
-    console.log(`Game initialised`);
     
     this.state = Object.create(gettingPlayersState);
     this.state.init(this);
@@ -157,7 +156,8 @@ const Game = {
     return {messages: this.messageLog.messages}
   },
   sendMessageLogMessages(message) {
-    // the front end "console.log" api, last xno of console messages
+    // the front end "console.log" api, last x no of console messages
+    console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
   }

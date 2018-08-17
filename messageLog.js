@@ -8,7 +8,7 @@ const MessageLog = {
   },
   addMessage(message) {
     if (this.messages.length === this.maxMessages) {
-      this.messages.unshift();
+      this.messages.shift();
       this.messages.push(message);
     } else {
       this.messages.push(message);

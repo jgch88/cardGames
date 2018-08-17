@@ -3,8 +3,9 @@ const dealerNoBlackjackState = require('./dealerNoBlackjackState.js');
 
 const checkDealerForNaturals = {
   init(game) {
-    console.log(`[State]: Dealing cards. Checking if dealer has natural.`);
+    const greeting = `[State]: Dealing cards. Checking if dealer has natural.`;
     this.game = game;
+    this.game.sendMessageLogMessages(greeting);
     this.name = 'checkDealerForNaturals';
     // this.game.bettingPlayers = this.game.bets.map(bet => bet.player);
     const bettingPlayers = this.game.bets.map(bet => bet.player);
@@ -42,7 +43,7 @@ const checkDealerForNaturals = {
   play(playerName, move, game) {
     // there should be a currentPlayer property on the game, only the current player gets to play a move
     if (game.currentPlayer === playerName) {
-      console.log(`[${playerName}]: '${move}'`);
+      this.game.sendMessageLogMessages(`[${playerName}]: '${move}'`);
 
     } else {
       throw `It is not ${playerName}'s turn!`;
@@ -60,11 +61,11 @@ const checkDealerForNaturals = {
   checkIfDealerHasBlackjack() {
     const dealer = this.game.dealer;
     if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
-      console.log(`[Dealer]: Has a 10 card/Ace.`);
+      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
       if (dealer.score === 21) {
         dealer.hand.cards[1].turnFaceUp();
         dealer.hasNatural();
-        console.log(`[Dealer]: Has a Blackjack!`);
+        this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
         this.game.changeState(dealerHasBlackjackState);
       } else {
         this.game.changeState(dealerNoBlackjackState);

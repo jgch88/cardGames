@@ -15,6 +15,7 @@ const Bet = {
     // depending on whether
     // this player wins/loses/draws
     const betAmount = this.betAmount;
+    this.resolved = true;
     if (playerOutcome === 'playerWins') {
       this.player.chips += betAmount;
       this.betAmount -= betAmount;
@@ -22,22 +23,23 @@ const Bet = {
       const winnings = multiplier * betAmount;
       dealer.chips -= winnings;
       this.player.chips += winnings;
-      console.log(`[BetResult]: [${this.player.name}] (${this.player.score}) wins [Dealer] (${dealer.shownScore})`)
+      this.player.displayStatus();
+      return `[BetResult]: [${this.player.name}] (${this.player.score}) wins [Dealer] (${dealer.shownScore})`;
 
     } else if (playerOutcome === 'playerDraws') {
       this.player.chips += betAmount;
       this.betAmount -= betAmount;
-      console.log(`[BetResult]: [${this.player.name}] (${this.player.score}) draws with [Dealer] (${dealer.shownScore})`)
+      this.player.displayStatus();
+      return `[BetResult]: [${this.player.name}] (${this.player.score}) draws with [Dealer] (${dealer.shownScore})`;
 
     } else if (playerOutcome === 'playerLoses') {
       dealer.chips += betAmount;
       this.betAmount -= betAmount;
-      console.log(`[BetResult]: [${this.player.name}] (${this.player.score}) loses to [Dealer] (${dealer.shownScore})`)
+      this.player.displayStatus();
+      return `[BetResult]: [${this.player.name}] (${this.player.score}) loses to [Dealer] (${dealer.shownScore})`;
     } else {
       throw `Couldn't resolve bet`;
     }
-    this.resolved = true;
-    this.player.displayStatus();
   }
 }
 
