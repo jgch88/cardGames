@@ -45,6 +45,13 @@ const Game = {
 
     this.bets = [];
 
+    this.lastEmittedState = {
+      dealerCards: [],
+      players: {},
+      messages: [],
+      gameState: 'gettingPlayersState',
+    };
+
     // to attach the server's socket.io 
     // for broadcasting
     this.io = socket;
@@ -55,9 +62,11 @@ const Game = {
     messageLog.init(4) // 4 messages
     this.messageLog = messageLog;
     this.sendMessageLogMessages(`Game initialised`);
+
     
     this.state = Object.create(gettingPlayersState);
     this.state.init(this);
+
 
     // console.log(this);
   },
@@ -66,6 +75,7 @@ const Game = {
     this.state = Object.create(newState);
     this.state.init(this);
     this.sendGameState(this.state.name);
+    this.lastEmittedState.gameState = this.state.name;
   },
   // gettingPlayers
   joinGame(playerName, chips) {
@@ -151,6 +161,12 @@ const Game = {
       });
     });
 
+    // rename dealerCards to dealer later
+    this.lastEmittedState.dealerCards = renderedState.dealerCards;
+    this.lastEmittedState.players = renderedState.players;
+
+    console.log(renderedState);
+
     return renderedState;
   },
   getMessageLogMessages() {
@@ -161,9 +177,14 @@ const Game = {
     console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
+    this.lastEmittedState.messages = this.getMessageLogMessages();
   },
   sendGameState(gameState) {
     this.io.emit('gameState',{ gameState });
+  },
+  sendLastEmittedState() {
+    this.io.emit('lastEmittedState', this.lastEmittedState);
+    console.log(this.lastEmittedState);
   }
 }
 
