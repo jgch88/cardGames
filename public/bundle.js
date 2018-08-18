@@ -20,6 +20,8 @@ class BlackjackTable extends Component {
   }
 
   componentDidMount() {
+    this.socket.emit('newSocketReady');
+    console.log('ready');
     this.socket.on('render', ({ dealerCards, players }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
@@ -36,6 +38,15 @@ class BlackjackTable extends Component {
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
         gameState
+      });
+    });
+    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState }) => {
+      console.log(players, messages, gameState, dealerCards);
+      this.setState({
+        gameState,
+        messages,
+        players,
+        dealerCards
       });
     });
   }

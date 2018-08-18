@@ -177,7 +177,7 @@ const Game = {
     console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
-    this.lastEmittedState.messages = this.getMessageLogMessages();
+    this.lastEmittedState.messages = this.getMessageLogMessages().messages;
   },
   sendGameState(gameState) {
     this.io.emit('gameState',{ gameState });

@@ -24,7 +24,11 @@ io.on('connection', (socket) => {
   // how to get socket ID?
   // console.log(socket.id);
   console.log(`[Game players]: ${game.players.map(player => player.name)}`);
-  game.sendLastEmittedState();
+
+  socket.on('newSocketReady', () => {
+    console.log('ready');
+    game.sendLastEmittedState();
+  })
   
   socket.on('disconnect', (reason) => {
     console.log(`[${socket.id}] Disconnected: ${reason}`);
