@@ -5,6 +5,7 @@ const Deck = require('./deck.js');
 const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
+const PlayerStatus = require('./playerStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -55,6 +56,7 @@ class BlackjackTable extends Component {
     return h(
       'div',
       null,
+      h(PlayerStatus, null),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       Object.keys(this.state.players).map((player, index) => {
         return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
@@ -67,7 +69,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7}],2:[function(require,module,exports){
+},{"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7,"./playerStatus.js":8}],2:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -309,6 +311,35 @@ module.exports = MessageLog;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const PlayerStatus = function PlayerStatus(props) {
+  const playerStatus = {
+    name: 'abc',
+    chips: '123'
+  };
+  return h(
+    'div',
+    {
+      'class': 'playerStatus'
+    },
+    h(
+      'span',
+      null,
+      'PlayerName'
+    ),
+    h(
+      'span',
+      null,
+      'Chips: 1000'
+    )
+  );
+};
+
+module.exports = PlayerStatus;
+
+},{}],9:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const Card = require('./components/card');
 const Deck = require('./components/deck');
 const Clock = require('./components/clock');
@@ -392,4 +423,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[8]);
+},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[9]);

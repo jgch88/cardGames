@@ -4,6 +4,7 @@ const Deck = require('./deck.js');
 const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
+const PlayerStatus = require('./playerStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class BlackjackTable extends Component {
   render() {
     return (
       <div>
+        <PlayerStatus />
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         {Object.keys(this.state.players).map((player, index) => {
           return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />

@@ -14,3 +14,14 @@
   width: 100%;
   text-align: center;
 }
+
+.playerStatus {
+  width: 100%;
+  text-align: center;
+  display: flex;
+}
+
+/* descendent selector */
+.playerStatus > *{
+  flex-grow: 1;
+}
