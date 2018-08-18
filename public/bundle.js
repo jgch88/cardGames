@@ -4,6 +4,7 @@ const { h, render, Component } = preact;
 const Deck = require('./deck.js');
 const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
+const GameStateStatus = require('./gameStateStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -11,7 +12,8 @@ class BlackjackTable extends Component {
     this.state = {
       dealerCards: [],
       players: {},
-      messages: []
+      messages: [],
+      gameState: ''
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -31,6 +33,11 @@ class BlackjackTable extends Component {
         messages
       });
     });
+    this.socket.on('gameState', ({ gameState }) => {
+      this.setState({
+        gameState
+      });
+    });
   }
 
   render() {
@@ -41,14 +48,15 @@ class BlackjackTable extends Component {
       Object.keys(this.state.players).map((player, index) => {
         return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
       }),
-      h(MessageLog, { messages: this.state.messages })
+      h(MessageLog, { messages: this.state.messages }),
+      h(GameStateStatus, { gameState: this.state.gameState })
     );
   }
 }
 
 module.exports = BlackjackTable;
 
-},{"./card.js":3,"./deck.js":5,"./messageLog.js":6}],2:[function(require,module,exports){
+},{"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7}],2:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -243,6 +251,27 @@ module.exports = Deck;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const GameStateStatus = function GameStateStatus(props) {
+  const gameStates = {
+    gettingPlayersState: 'Waiting for Players to join',
+    gettingBetsState: 'Waiting for bets to be placed'
+  };
+  let renderedState = gameStates[props.gameState] ? gameStates[props.gameState] : props.gameState;
+  return h(
+    'div',
+    {
+      'class': 'gameStateStatus'
+    },
+    renderedState
+  );
+};
+
+module.exports = GameStateStatus;
+
+},{}],7:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const MessageLog = function MessageLog(props) {
   // need to reverse the messages without mutating the state
   return h(
@@ -265,7 +294,7 @@ const MessageLog = function MessageLog(props) {
 
 module.exports = MessageLog;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -352,4 +381,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[7]);
+},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[8]);

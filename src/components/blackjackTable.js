@@ -3,6 +3,7 @@ const { h, render, Component } = preact;
 const Deck = require('./deck.js');
 const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
+const GameStateStatus = require('./gameStateStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class BlackjackTable extends Component {
       dealerCards: [],
       players: {},
       messages: [],
+      gameState: '',
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -29,7 +31,12 @@ class BlackjackTable extends Component {
       this.setState({
         messages,
       })
-    })
+    });
+    this.socket.on('gameState', ({ gameState }) => {
+      this.setState({
+        gameState,
+      })
+    });
   }
 
   render() {
@@ -40,6 +47,7 @@ class BlackjackTable extends Component {
           return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />
         })}
         <MessageLog messages={this.state.messages} />
+      <GameStateStatus gameState={this.state.gameState}/>
       </div>
     );
   }

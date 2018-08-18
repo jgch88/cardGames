@@ -65,6 +65,7 @@ const Game = {
     console.log(`Changing state`);
     this.state = Object.create(newState);
     this.state.init(this);
+    this.sendGameState(this.state.name);
   },
   // gettingPlayers
   joinGame(playerName, chips) {
@@ -160,6 +161,9 @@ const Game = {
     console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
+  },
+  sendGameState(gameState) {
+    this.io.emit('gameState',{ gameState });
   }
 }
 
