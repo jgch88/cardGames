@@ -141,34 +141,24 @@ const suits = {
   // we don't want the players to manage state at all!
   // That would be the server's responsibility.
 };const Card = function Card(props) {
+  const borderStyle = {
+    border: '1px solid black'
+  };
+  const redHexColourStyle = {
+    color: '#D30000'
+  };
   return h(
-    "table",
-    { "class": "card" },
+    "div",
+    { style: borderStyle },
     h(
-      "thead",
-      null,
-      h(
-        "tr",
-        null,
-        h(
-          "th",
-          null,
-          props.isFaceDown ? "Face Down" : suits[props.suit]
-        )
-      )
+      "div",
+      { style: props.suit == "Hearts" || props.suit == "Diamonds" ? redHexColourStyle : `` },
+      props.isFaceDown ? "Face Down" : suits[props.suit]
     ),
     h(
-      "tbody",
-      null,
-      h(
-        "tr",
-        null,
-        h(
-          "td",
-          null,
-          props.isFaceDown ? "---" : values[props.value]
-        )
-      )
+      "div",
+      { style: props.suit == "Hearts" || props.suit == "Diamonds" ? redHexColourStyle : `` },
+      props.isFaceDown ? "---" : values[props.value]
     )
   );
 };
@@ -242,13 +232,19 @@ const Card = require('./card.js');
 // Deck is a collection of cards
 
 const Deck = function Deck(props) {
+  const playerNameStyle = {
+    fontWeight: `bold`
+  };
+  const cardWidthStyle = {
+    width: `10%`
+  };
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     "div",
     { "class": "horizontalScroll" },
     props.isPlayersDeck ? h(
-      "h3",
-      null,
+      "div",
+      { style: playerNameStyle },
       playerNameText
     ) : h(
       "div",
@@ -262,8 +258,8 @@ const Deck = function Deck(props) {
         "tbody",
         null,
         h(
-          "tr",
-          null,
+          "td",
+          { style: cardWidthStyle },
           props.cards.map(card => {
             return h(
               "td",

@@ -34,19 +34,21 @@ const suits = {
 // we don't want the players to manage state at all!
 // That would be the server's responsibility.
 const Card = function Card(props) {
+  const borderStyle = {
+    border: '1px solid black',
+  };
+  const redHexColourStyle = {
+    color: '#D30000',
+  };
   return (
-    <table class="card">
-      <thead>
-        <tr>
-          <th>{props.isFaceDown ? "Face Down" : suits[props.suit]}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{props.isFaceDown ? "---" : values[props.value]}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div style={borderStyle}>
+      <div style={(props.suit == "Hearts" || props.suit == "Diamonds") ? redHexColourStyle : ``}>
+          {props.isFaceDown ? "Face Down" : suits[props.suit]}
+      </div>
+      <div style={(props.suit == "Hearts" || props.suit == "Diamonds") ? redHexColourStyle : ``}>
+          {props.isFaceDown ? "---" : values[props.value]}
+      </div>
+    </div>
   )
 }
 
