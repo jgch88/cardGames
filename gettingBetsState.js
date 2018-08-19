@@ -27,6 +27,8 @@ const gettingBetsState = {
       player
     })
     game.bets.push(bet);
+    // update new chips after betting
+    this.game.getPlayerChipsInHand();
     this.game.sendMessageLogMessages(`[${player.name}]: Bet ${amount} chips`);
   },
   play() {

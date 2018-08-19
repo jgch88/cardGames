@@ -188,6 +188,18 @@ const Game = {
     this.io.emit('lastEmittedState', this.lastEmittedState);
     console.log(this.lastEmittedState);
   },
+  getPlayerChipsInHand() {
+    // this is me designing the backend API for frontend to use!!
+    // create current minified state
+    // from players{}
+    let chipsInHand = {};
+    this.players.map(player => {chipsInHand[player.name] = player.chips});
+    this.io.emit('chipsInHand', chipsInHand);
+  },
+  getPlayerBetAmounts() {
+    // get current minified state of 
+    // playerBets
+  }
 }
 
 /*

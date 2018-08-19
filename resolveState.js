@@ -89,6 +89,7 @@ const resolveState = {
       dealerCards: [],
       players: {},
     }
+    this.game.getPlayerChipsInHand();
   }
 }
 

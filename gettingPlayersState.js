@@ -21,9 +21,9 @@ const gettingPlayersState = {
     const player = Object.create(Player);
     player.init(playerName, chips);
     game.players.push(player);
-    const chipsInHand = {};
-    chipsInHand[playerName] = chips;
-    this.game.io.emit('chipsInHand', chipsInHand);
+    this.game.getPlayerChipsInHand();
+
+
     this.game.sendMessageLogMessages(`[${player.name}]: Joined with ${chips} chips`);
   },
   leaveGame() {
