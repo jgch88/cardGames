@@ -2,8 +2,22 @@
   width: device-width;
 }
 
+.fillWindow {
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.deckTable {
+  height: 80vh;
+}
+
 .horizontalScroll {
   overflow-x: scroll;
+}
+
+.playerHands {
+  height: 30vh;
+  overflow: auto;
 }
 
 .cardContainer {
@@ -18,6 +32,16 @@
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.messageLog {
+  height: 15vh;
+  overflow: auto;
+}
+
+.actions {
+  height: 8vh;
+  overflow: hidden;
 }
 
 .gameStateStatus {

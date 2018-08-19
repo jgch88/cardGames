@@ -5,6 +5,7 @@ const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
 const PlayerStatus = require('./playerStatus.js');
+const Button = require('./button.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ class BlackjackTable extends Component {
       console.log(chipsInHand);
       // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
       // console.log(newChipsInHand);
+      // build new state in blackjackEventLoop.
       this.setState({
         chipsInHand,
       })
@@ -50,6 +52,7 @@ class BlackjackTable extends Component {
       this.setState({
         betAmounts,
       })
+      console.log(betAmounts);
     });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
@@ -67,18 +70,68 @@ class BlackjackTable extends Component {
         chipsInHand
       })
     });
+    this.joinGame = () => {
+      const chips = window.prompt("How many chips would you like to exchange?", 500);
+      console.log(chips);
+      this.socket.emit('joinGame', {chips: Number(chips)});
+    };
+    this.placeBet = () => {
+      const chips = window.prompt("How many chips would you like to bet?", 10);
+      console.log(chips);
+      this.socket.emit('placeBet', {chips: Number(chips)});
+    };
+    this.hit = () => {
+      this.socket.emit('play', 'hit');
+    };
+    this.stand = () => {
+      this.socket.emit('play', 'stand');
+    };
+    this.goToBettingState = () => {
+      this.socket.emit('changeState', 'gettingBetsState');
+      this.setState({
+        betAmounts: {}
+      })
+    };
+    this.goToCheckDealerForNaturalsState = () => {
+      this.socket.emit('changeState', 'checkDealerForNaturals');
+    };
+    this.playerHasJoined = () => {
+      return this.socket.id in this.state.chipsInHand;
+    };
+    this.playerHasBet = () => {
+      return this.socket.id in this.state.betAmounts;
+    }
   }
+
 
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
-      <div>
+      <div class="deckTable">
         <PlayerStatus playerName={this.socket.id} gameState={this.state}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
+        <div class="horizontalScroll playerHands">
         {Object.keys(this.state.players).map((player, index) => {
           return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />
         })}
-        <MessageLog messages={this.state.messages} />
+        </div>
+        <div class="actions">
+          {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
+          <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
+          {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
+          <Button text={"Go to Betting State"} clickHandler={this.goToBettingState}/> : ''}
+          {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? 
+          <Button text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
+          {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
+          <Button text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
+          {this.state.gameState === 'dealerNoBlackjackState' ? 
+          <div><Button text={"Hit"} clickHandler={this.hit}/><Button text={"Stand"} clickHandler={this.stand}/></div> : ''}
+          
+        </div>
+        MessageLog
+        <div class="messageLog">
+          <MessageLog messages={this.state.messages} />
+        </div>
       <GameStateStatus gameState={this.state.gameState}/>
       </div>
     );

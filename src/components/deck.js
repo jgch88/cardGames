@@ -12,7 +12,7 @@ const Deck = function Deck(props) {
   }
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return (
-    <div class="horizontalScroll">
+    <div>
       {props.isPlayersDeck ? <div style={playerNameStyle}>{playerNameText}</div> : <div>{playerNameText}</div>}
             { props.cards.map((card) => {
               return <td><Card suit={card.suit} value={card.value} isFaceDown={card.isFaceDown} /></td>;

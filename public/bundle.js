@@ -6,6 +6,7 @@ const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
 const PlayerStatus = require('./playerStatus.js');
+const Button = require('./button.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -43,6 +44,7 @@ class BlackjackTable extends Component {
       console.log(chipsInHand);
       // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
       // console.log(newChipsInHand);
+      // build new state in blackjackEventLoop.
       this.setState({
         chipsInHand
       });
@@ -51,6 +53,7 @@ class BlackjackTable extends Component {
       this.setState({
         betAmounts
       });
+      console.log(betAmounts);
     });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
@@ -68,19 +71,73 @@ class BlackjackTable extends Component {
         chipsInHand
       });
     });
+    this.joinGame = () => {
+      const chips = window.prompt("How many chips would you like to exchange?", 500);
+      console.log(chips);
+      this.socket.emit('joinGame', { chips: Number(chips) });
+    };
+    this.placeBet = () => {
+      const chips = window.prompt("How many chips would you like to bet?", 10);
+      console.log(chips);
+      this.socket.emit('placeBet', { chips: Number(chips) });
+    };
+    this.hit = () => {
+      this.socket.emit('play', 'hit');
+    };
+    this.stand = () => {
+      this.socket.emit('play', 'stand');
+    };
+    this.goToBettingState = () => {
+      this.socket.emit('changeState', 'gettingBetsState');
+      this.setState({
+        betAmounts: {}
+      });
+    };
+    this.goToCheckDealerForNaturalsState = () => {
+      this.socket.emit('changeState', 'checkDealerForNaturals');
+    };
+    this.playerHasJoined = () => {
+      return this.socket.id in this.state.chipsInHand;
+    };
+    this.playerHasBet = () => {
+      return this.socket.id in this.state.betAmounts;
+    };
   }
 
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return h(
       'div',
-      null,
+      { 'class': 'deckTable' },
       h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
-      Object.keys(this.state.players).map((player, index) => {
-        return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
-      }),
-      h(MessageLog, { messages: this.state.messages }),
+      h(
+        'div',
+        { 'class': 'horizontalScroll playerHands' },
+        Object.keys(this.state.players).map((player, index) => {
+          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
+        })
+      ),
+      h(
+        'div',
+        { 'class': 'actions' },
+        this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
+        this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(Button, { text: "Go to Betting State", clickHandler: this.goToBettingState }) : '',
+        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? h(Button, { text: "Place Bet", clickHandler: this.placeBet }) : '',
+        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
+        this.state.gameState === 'dealerNoBlackjackState' ? h(
+          'div',
+          null,
+          h(Button, { text: "Hit", clickHandler: this.hit }),
+          h(Button, { text: "Stand", clickHandler: this.stand })
+        ) : ''
+      ),
+      'MessageLog',
+      h(
+        'div',
+        { 'class': 'messageLog' },
+        h(MessageLog, { messages: this.state.messages })
+      ),
       h(GameStateStatus, { gameState: this.state.gameState })
     );
   }
@@ -88,7 +145,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7,"./playerStatus.js":8}],2:[function(require,module,exports){
+},{"./button.js":2,"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7,"./playerStatus.js":8}],2:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -252,7 +309,7 @@ const Deck = function Deck(props) {
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     "div",
-    { "class": "horizontalScroll" },
+    null,
     props.isPlayersDeck ? h(
       "div",
       { style: playerNameStyle },
@@ -281,7 +338,11 @@ const { h, render, Component } = preact;
 const GameStateStatus = function GameStateStatus(props) {
   const gameStates = {
     gettingPlayersState: 'Waiting for Players to join',
-    gettingBetsState: 'Waiting for bets to be placed'
+    gettingBetsState: 'Waiting for bets to be placed',
+    checkDealerForNaturals: 'Checking if Dealer has Blackjack',
+    dealerHasBlackjackState: 'Dealer Blackjack!',
+    dealerNoBlackjackState: 'Playing',
+    resolveState: 'Resolving bets'
   };
   let renderedState = gameStates[props.gameState] ? gameStates[props.gameState] : props.gameState;
   return h(
@@ -304,11 +365,6 @@ const MessageLog = function MessageLog(props) {
   return h(
     "div",
     null,
-    h(
-      "div",
-      null,
-      "Message Log"
-    ),
     props.messages.slice().reverse().map(message => {
       return h(
         "div",
@@ -364,63 +420,7 @@ const socket = io();
 // which i can call setState on...
 
 render(h(Clock, null), document.body);
-// render(<Card suit={"Spades"} value={1} isFaceDown={false} />, document.body);
 render(h(BlackjackTable, { io: socket }), document.body);
-
-/*
-render(<Deck 
-  cards={[
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-  ]}
-/>, document.body);
-render(<Deck 
-  cards={[
-    <Card suit={"Spades"} value={1} isFaceDown={false} />,
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-    <Card suit={"Spades"} value={2} isFaceDown={false} />,
-  ]}
-/>, document.body);
-*/
-
-const joinGame = () => {
-  const chips = window.prompt("How many chips would you like to exchange?", 500);
-  console.log(chips);
-  socket.emit('joinGame', { chips: Number(chips) });
-};
-
-const placeBet = () => {
-  const chips = window.prompt("How many chips would you like to bet?", 10);
-  console.log(chips);
-  socket.emit('placeBet', { chips: Number(chips) });
-};
-
-const hit = () => {
-  socket.emit('play', 'hit');
-};
-
-const stand = () => {
-  socket.emit('play', 'stand');
-};
-
-const goToBettingState = () => {
-  socket.emit('changeState', 'gettingBetsState');
-};
-
-const goToCheckDealerForNaturalsState = () => {
-  socket.emit('changeState', 'checkDealerForNaturals');
-};
-
-render(h(Button, { text: "Join Game", id: "joinGame", clickHandler: joinGame }), document.body);
-render(h(Button, { text: "Place Bet", id: "placeBet", clickHandler: placeBet }), document.body);
-render(h(Button, { text: "Hit", id: "hit", clickHandler: hit }), document.body);
-render(h(Button, { text: "Stand", id: "stand", clickHandler: stand }), document.body);
-
-render(h(Button, { text: "Go to Betting State", id: "getBets", clickHandler: goToBettingState }), document.body);
-render(h(Button, { text: "Play", id: "play", clickHandler: goToCheckDealerForNaturalsState }), document.body);
 
 socket.on('playerJoined', player => {
   console.log(player);

@@ -50,8 +50,8 @@ const Game = {
       players: {},
       messages: [],
       gameState: 'gettingPlayersState',
-      chipsInHand: [],
-      betAmounts: [],
+      chipsInHand: {},
+      betAmounts: {},
     };
 
     // to attach the server's socket.io 
@@ -188,6 +188,8 @@ const Game = {
     this.io.emit('lastEmittedState', this.lastEmittedState);
     console.log(this.lastEmittedState);
   },
+
+  // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!
     // create current minified state
@@ -199,7 +201,12 @@ const Game = {
   getPlayerBetAmounts() {
     // get current minified state of 
     // playerBets
-  }
+    let betAmounts = {};
+    this.bettingPlayers.map(player => {
+      betAmounts[player.name] = this.bets.filter(bet => bet.player.name === player.name)[0].betAmount;
+    });
+    this.io.emit('betAmounts', betAmounts);
+  },
 }
 
 /*
