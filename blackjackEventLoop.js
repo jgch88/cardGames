@@ -41,7 +41,7 @@ const Game = {
 		dealer.init("Dealer", 10000);
     this.dealer = dealer;
     this.players = [];
-    this.bettingPlayers;
+    this.bettingPlayers = [];
 
     this.bets = [];
 
@@ -61,7 +61,7 @@ const Game = {
     this.currentPlayer = null;
 
     const messageLog = Object.create(MessageLog);
-    messageLog.init(4) // 4 messages
+    messageLog.init(12) // 4 messages
     this.messageLog = messageLog;
     this.sendMessageLogMessages(`Game initialised`);
 
@@ -203,8 +203,16 @@ const Game = {
     // playerBets
     let betAmounts = {};
     this.bettingPlayers.map(player => {
+      const playerBet = this.bets.filter(bet => bet.player.name === player.name)
+      if (playerBet.length > 0) {
+        betAmounts[player.name] = playerBet[0].betAmount;
+      }
+    })
+    /*
+    this.bettingPlayers.map(player => {
       betAmounts[player.name] = this.bets.filter(bet => bet.player.name === player.name)[0].betAmount;
     });
+    */
     this.io.emit('betAmounts', betAmounts);
   },
 }

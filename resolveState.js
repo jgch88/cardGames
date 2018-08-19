@@ -88,8 +88,10 @@ const resolveState = {
       ...this.game.lastEmittedState,
       dealerCards: [],
       players: {},
+      betAmounts: {},
     }
     this.game.getPlayerChipsInHand();
+    this.game.getPlayerBetAmounts();
   }
 }
 
