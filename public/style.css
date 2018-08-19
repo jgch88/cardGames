@@ -6,8 +6,18 @@
   overflow-x: scroll;
 }
 
-.card {
-  width: 30%;
+.cardContainer {
+  width: 52px;
+  height: 91px;
+  border: 1px solid black;
+}
+
+.cardContent {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .gameStateStatus {

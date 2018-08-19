@@ -9,21 +9,14 @@ const Deck = function Deck(props) {
     fontWeight: `bold`,
   }
   const cardWidthStyle = {
-    width: `10%`,
   }
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return (
     <div class="horizontalScroll">
       {props.isPlayersDeck ? <div style={playerNameStyle}>{playerNameText}</div> : <div>{playerNameText}</div>}
-      <table>
-        <tbody>
-          <td style={cardWidthStyle}>
             { props.cards.map((card) => {
               return <td><Card suit={card.suit} value={card.value} isFaceDown={card.isFaceDown} /></td>;
             }) }
-          </td>
-        </tbody>
-      </table>
     </div>
   )
 }

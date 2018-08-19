@@ -142,7 +142,16 @@ const suits = {
   // That would be the server's responsibility.
 };const Card = function Card(props) {
   const borderStyle = {
+    width: '52px',
+    height: '91px',
     border: '1px solid black'
+  };
+  const centerStyle = {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    position: 'relative',
+    top: '50',
+    translate: 'translateY(-50%)'
   };
   const redHexColourStyle = {
     color: '#D30000'
@@ -152,13 +161,17 @@ const suits = {
     { style: borderStyle },
     h(
       "div",
-      { style: props.suit == "Hearts" || props.suit == "Diamonds" ? redHexColourStyle : `` },
-      props.isFaceDown ? "Face Down" : suits[props.suit]
-    ),
-    h(
-      "div",
-      { style: props.suit == "Hearts" || props.suit == "Diamonds" ? redHexColourStyle : `` },
-      props.isFaceDown ? "---" : values[props.value]
+      { style: props.suit == "Hearts" || props.suit == "Diamonds" ? Object.assign(redHexColourStyle, centerStyle) : centerStyle },
+      h(
+        "div",
+        { style: centerStyle },
+        props.isFaceDown ? "Face Down" : suits[props.suit]
+      ),
+      h(
+        "div",
+        null,
+        props.isFaceDown ? "-" : values[props.value]
+      )
     )
   );
 };
@@ -235,9 +248,7 @@ const Deck = function Deck(props) {
   const playerNameStyle = {
     fontWeight: `bold`
   };
-  const cardWidthStyle = {
-    width: `10%`
-  };
+  const cardWidthStyle = {};
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     "div",
@@ -251,25 +262,13 @@ const Deck = function Deck(props) {
       null,
       playerNameText
     ),
-    h(
-      "table",
-      null,
-      h(
-        "tbody",
+    props.cards.map(card => {
+      return h(
+        "td",
         null,
-        h(
-          "td",
-          { style: cardWidthStyle },
-          props.cards.map(card => {
-            return h(
-              "td",
-              null,
-              h(Card, { suit: card.suit, value: card.value, isFaceDown: card.isFaceDown })
-            );
-          })
-        )
-      )
-    )
+        h(Card, { suit: card.suit, value: card.value, isFaceDown: card.isFaceDown })
+      );
+    })
   );
 };
 
