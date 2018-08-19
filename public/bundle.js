@@ -5,6 +5,7 @@ const Deck = require('./deck.js');
 const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
+const PlayerStatus = require('./playerStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -13,7 +14,9 @@ class BlackjackTable extends Component {
       dealerCards: [],
       players: {},
       messages: [],
-      gameState: ''
+      gameState: '',
+      chipsInHand: {},
+      betAmounts: {}
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -22,6 +25,7 @@ class BlackjackTable extends Component {
   componentDidMount() {
     this.socket.emit('newSocketReady');
     console.log('ready');
+    console.log(this.state.chipsInHand);
     this.socket.on('render', ({ dealerCards, players }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
@@ -35,26 +39,43 @@ class BlackjackTable extends Component {
         messages
       });
     });
+    this.socket.on('chipsInHand', chipsInHand => {
+      console.log(chipsInHand);
+      // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
+      // console.log(newChipsInHand);
+      this.setState({
+        chipsInHand
+      });
+    });
+    this.socket.on('betAmounts', betAmounts => {
+      this.setState({
+        betAmounts
+      });
+    });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
         gameState
       });
     });
-    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState }) => {
+    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
       console.log(players, messages, gameState, dealerCards);
       this.setState({
         gameState,
         messages,
         players,
-        dealerCards
+        dealerCards,
+        betAmounts,
+        chipsInHand
       });
     });
   }
 
   render() {
+    // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return h(
       'div',
       null,
+      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       Object.keys(this.state.players).map((player, index) => {
         return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
@@ -67,7 +88,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7}],2:[function(require,module,exports){
+},{"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7,"./playerStatus.js":8}],2:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -309,6 +330,32 @@ module.exports = MessageLog;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const PlayerStatus = function PlayerStatus(props) {
+  return h(
+    "div",
+    {
+      "class": "playerStatus"
+    },
+    h(
+      "span",
+      null,
+      props.playerName
+    ),
+    props.playerName in props.gameState.chipsInHand && h(
+      "span",
+      null,
+      "Chips: ",
+      props.gameState.chipsInHand[props.playerName]
+    )
+  );
+};
+
+module.exports = PlayerStatus;
+
+},{}],9:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const Card = require('./components/card');
 const Deck = require('./components/deck');
 const Clock = require('./components/clock');
@@ -392,4 +439,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[8]);
+},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[9]);
