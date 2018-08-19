@@ -341,7 +341,7 @@ const PlayerStatus = function PlayerStatus(props) {
       null,
       props.playerName
     ),
-    Object.keys(props.gameState.chipsInHand).length > 0 && h(
+    props.playerName in props.gameState.chipsInHand && h(
       "span",
       null,
       "Chips: ",
