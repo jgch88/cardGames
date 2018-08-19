@@ -14,6 +14,8 @@ class BlackjackTable extends Component {
       players: {},
       messages: [],
       gameState: '',
+      chipsInHand: {},
+      betAmounts: {},
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -22,6 +24,7 @@ class BlackjackTable extends Component {
   componentDidMount() {
     this.socket.emit('newSocketReady');
     console.log('ready');
+    console.log(this.state.chipsInHand);
     this.socket.on('render', ({ dealerCards, players }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
@@ -35,26 +38,42 @@ class BlackjackTable extends Component {
         messages,
       })
     });
+    this.socket.on('chipsInHand', (chipsInHand) => {
+      console.log(chipsInHand);
+      // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
+      // console.log(newChipsInHand);
+      this.setState({
+        chipsInHand,
+      })
+    });
+    this.socket.on('betAmounts', (betAmounts) => {
+      this.setState({
+        betAmounts,
+      })
+    });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
         gameState,
       })
     });
-    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState }) => {
+    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
       console.log(players, messages, gameState, dealerCards);
       this.setState({
         gameState,
         messages,
         players,
-        dealerCards
+        dealerCards,
+        betAmounts,
+        chipsInHand
       })
     });
   }
 
   render() {
+    // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
       <div>
-        <PlayerStatus />
+        <PlayerStatus playerName={this.socket.id} gameState={this.state}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         {Object.keys(this.state.players).map((player, index) => {
           return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />

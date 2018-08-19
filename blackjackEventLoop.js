@@ -50,6 +50,8 @@ const Game = {
       players: {},
       messages: [],
       gameState: 'gettingPlayersState',
+      chipsInHand: [],
+      betAmounts: [],
     };
 
     // to attach the server's socket.io 
@@ -185,7 +187,7 @@ const Game = {
   sendLastEmittedState() {
     this.io.emit('lastEmittedState', this.lastEmittedState);
     console.log(this.lastEmittedState);
-  }
+  },
 }
 
 /*

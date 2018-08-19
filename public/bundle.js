@@ -14,7 +14,9 @@ class BlackjackTable extends Component {
       dealerCards: [],
       players: {},
       messages: [],
-      gameState: ''
+      gameState: '',
+      chipsInHand: {},
+      betAmounts: {}
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -23,6 +25,7 @@ class BlackjackTable extends Component {
   componentDidMount() {
     this.socket.emit('newSocketReady');
     console.log('ready');
+    console.log(this.state.chipsInHand);
     this.socket.on('render', ({ dealerCards, players }) => {
       console.log(`got socket stuff`);
       console.log(`got players ${JSON.stringify(players)}`);
@@ -36,27 +39,43 @@ class BlackjackTable extends Component {
         messages
       });
     });
+    this.socket.on('chipsInHand', chipsInHand => {
+      console.log(chipsInHand);
+      // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
+      // console.log(newChipsInHand);
+      this.setState({
+        chipsInHand
+      });
+    });
+    this.socket.on('betAmounts', betAmounts => {
+      this.setState({
+        betAmounts
+      });
+    });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
         gameState
       });
     });
-    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState }) => {
+    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
       console.log(players, messages, gameState, dealerCards);
       this.setState({
         gameState,
         messages,
         players,
-        dealerCards
+        dealerCards,
+        betAmounts,
+        chipsInHand
       });
     });
   }
 
   render() {
+    // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return h(
       'div',
       null,
-      h(PlayerStatus, null),
+      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       Object.keys(this.state.players).map((player, index) => {
         return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
@@ -312,24 +331,21 @@ module.exports = MessageLog;
 const { h, render, Component } = preact;
 
 const PlayerStatus = function PlayerStatus(props) {
-  const playerStatus = {
-    name: 'abc',
-    chips: '123'
-  };
   return h(
-    'div',
+    "div",
     {
-      'class': 'playerStatus'
+      "class": "playerStatus"
     },
     h(
-      'span',
+      "span",
       null,
-      'PlayerName'
+      props.playerName
     ),
-    h(
-      'span',
+    Object.keys(props.gameState.chipsInHand).length > 0 && h(
+      "span",
       null,
-      'Chips: 1000'
+      "Chips: ",
+      props.gameState.chipsInHand[props.playerName]
     )
   );
 };
