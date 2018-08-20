@@ -21,6 +21,8 @@ const gettingBetsState = {
     // bets filter later in "play" state
     // some people might be spectating
     
+    // MAJOR BUG: players can bet more than once...
+    
     const bet = Object.create(Bet);
     bet.init({
       betAmount: amount,
@@ -30,6 +32,11 @@ const gettingBetsState = {
     // update new chips after betting
     this.game.getPlayerChipsInHand();
     this.game.sendMessageLogMessages(`[${player.name}]: Bet ${amount} chips`);
+    // this.game.bettingPlayers = this.game.bets.map(bet => bet.player);
+    const bettingPlayers = this.game.bets.map(bet => bet.player);
+    // to preserve the order in which players are "seated" rather than order in which players "bet"
+    this.game.bettingPlayers = this.game.players.filter(player => bettingPlayers.indexOf(player) !== -1);
+    this.game.getPlayerBetAmounts();
   },
   play() {
     throw `Betting is in progress. Please be patient`;

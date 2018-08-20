@@ -41,7 +41,7 @@ const Game = {
 		dealer.init("Dealer", 10000);
     this.dealer = dealer;
     this.players = [];
-    this.bettingPlayers;
+    this.bettingPlayers = [];
 
     this.bets = [];
 
@@ -50,8 +50,8 @@ const Game = {
       players: {},
       messages: [],
       gameState: 'gettingPlayersState',
-      chipsInHand: [],
-      betAmounts: [],
+      chipsInHand: {},
+      betAmounts: {},
     };
 
     // to attach the server's socket.io 
@@ -61,7 +61,7 @@ const Game = {
     this.currentPlayer = null;
 
     const messageLog = Object.create(MessageLog);
-    messageLog.init(4) // 4 messages
+    messageLog.init(12) // 4 messages
     this.messageLog = messageLog;
     this.sendMessageLogMessages(`Game initialised`);
 
@@ -188,6 +188,8 @@ const Game = {
     this.io.emit('lastEmittedState', this.lastEmittedState);
     console.log(this.lastEmittedState);
   },
+
+  // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!
     // create current minified state
@@ -199,7 +201,20 @@ const Game = {
   getPlayerBetAmounts() {
     // get current minified state of 
     // playerBets
-  }
+    let betAmounts = {};
+    this.bettingPlayers.map(player => {
+      const playerBet = this.bets.filter(bet => bet.player.name === player.name)
+      if (playerBet.length > 0) {
+        betAmounts[player.name] = playerBet[0].betAmount;
+      }
+    })
+    /*
+    this.bettingPlayers.map(player => {
+      betAmounts[player.name] = this.bets.filter(bet => bet.player.name === player.name)[0].betAmount;
+    });
+    */
+    this.io.emit('betAmounts', betAmounts);
+  },
 }
 
 /*

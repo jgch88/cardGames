@@ -31,8 +31,10 @@ const dealerHasBlackjackState = {
       } else {
         this.game.sendMessageLogMessages(`[${player.name}]: No Blackjack.`);
         player.resolve();
-        const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];
-        playerBet.resolve('playerLoses', 1, this.game.dealer);
+        const playerBet = this.game.bets.filter(bet => bet.player.name === player.name);
+        if (playerBet.length > 0) {
+          playerBet[0].resolve('playerLoses', 1, this.game.dealer);
+        }
       }
     })
   },

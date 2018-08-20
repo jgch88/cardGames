@@ -7,10 +7,6 @@ const checkDealerForNaturals = {
     this.game = game;
     this.game.sendMessageLogMessages(greeting);
     this.name = 'checkDealerForNaturals';
-    // this.game.bettingPlayers = this.game.bets.map(bet => bet.player);
-    const bettingPlayers = this.game.bets.map(bet => bet.player);
-    // to preserve the order in which players are "seated" rather than order in which players "bet"
-    this.game.bettingPlayers = this.game.players.filter(player => bettingPlayers.indexOf(player) !== -1);
     // major bug where i didn't consider that we deal cards
     // only to Bets not Players!
 
