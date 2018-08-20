@@ -188,7 +188,7 @@ const Game = {
     */
     this.io.emit('betAmounts', betAmounts);
   },
-}
+};
 
 module.exports = Game;
 
