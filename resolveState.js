@@ -80,16 +80,6 @@ const resolveState = {
     this.game.bets = [];
     this.game.sendMessageLogMessages(`[State]: Discarding cards, reshuffling.`);
     // how long to show last hand for?
-    // this behavior will leave the final outcome showing
-    // UNTIL another socket connects which triggers
-    // emit('lastEmittedState'), then EVERYONE's screens blank out cause 
-    // of this spread operator below
-    this.game.lastEmittedState = {
-      ...this.game.lastEmittedState,
-      dealerCards: [],
-      players: {},
-      betAmounts: {},
-    }
     this.game.getPlayerChipsInHand();
     this.game.getPlayerBetAmounts();
   }

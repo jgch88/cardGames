@@ -12,6 +12,10 @@ const gettingBetsState = {
   leaveGame() {
   },
   placeBet(playerName, amount, game) {
+
+    if (amount <= 0) {
+      throw `Please bet at least 1 chip.`;
+    }
     // what's a more elegant way to get the player object?
     const playerArray = game.players.filter(player => player.name === playerName);
     if (playerArray.length === 0) {

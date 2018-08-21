@@ -21,15 +21,6 @@ const Game = {
 
     this.bets = [];
 
-    this.lastEmittedState = {
-      dealerCards: [],
-      players: {},
-      messages: [],
-      gameState: 'gettingPlayersState',
-      chipsInHand: {},
-      betAmounts: {},
-    };
-
     // inject the server's socket
     // so the game has access to broadcast events
     this.io = socket;
@@ -50,7 +41,6 @@ const Game = {
     this.state = Object.create(newState);
     this.state.init(this);
     this.sendGameState(this.state.name);
-    this.lastEmittedState.gameState = this.state.name;
   },
   // gettingPlayers
   joinGame(playerName, chips) {
@@ -137,8 +127,6 @@ const Game = {
     });
 
     // rename dealerCards to dealer later
-    this.lastEmittedState.dealerCards = renderedState.dealerCards;
-    this.lastEmittedState.players = renderedState.players;
 
     console.log(renderedState);
 
@@ -152,14 +140,9 @@ const Game = {
     console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
-    this.lastEmittedState.messages = this.getMessageLogMessages().messages;
   },
   sendGameState(gameState) {
     this.io.emit('gameState',{ gameState });
-  },
-  sendLastEmittedState() {
-    this.io.emit('lastEmittedState', this.lastEmittedState);
-    console.log(this.lastEmittedState);
   },
   emitCurrentState() {
     // minified state
