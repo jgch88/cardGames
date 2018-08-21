@@ -60,7 +60,8 @@ class BlackjackTable extends Component {
         gameState
       });
     });
-    this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
+    // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
       console.log(players, messages, gameState, dealerCards);
       this.setState({
         gameState,

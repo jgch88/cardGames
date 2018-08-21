@@ -161,7 +161,22 @@ const Game = {
     this.io.emit('lastEmittedState', this.lastEmittedState);
     console.log(this.lastEmittedState);
   },
+  emitCurrentState() {
+    // minified state
+    // build the "lastEmittedState" here!
+    const currentState = {};
+    // call all the various state methods here.
+    currentState.chipsInHand = this.getPlayerChipsInHand();
+    currentState.betAmounts = this.getPlayerBetAmounts();
+    currentState.messages = this.getMessageLogMessages().messages;
+    currentState.players = this.renderState().players;
+    currentState.dealerCards = this.renderState().dealerCards;
+    currentState.gameState = this.state.name;
 
+    this.io.emit('currentState', currentState);
+    console.log(currentState);
+    return currentState;
+  },
   // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!
@@ -170,6 +185,7 @@ const Game = {
     let chipsInHand = {};
     this.players.map(player => {chipsInHand[player.name] = player.chips});
     this.io.emit('chipsInHand', chipsInHand);
+    return chipsInHand;
   },
   getPlayerBetAmounts() {
     // get current minified state of 
@@ -181,12 +197,8 @@ const Game = {
         betAmounts[player.name] = playerBet[0].betAmount;
       }
     })
-    /*
-    this.bettingPlayers.map(player => {
-      betAmounts[player.name] = this.bets.filter(bet => bet.player.name === player.name)[0].betAmount;
-    });
-    */
     this.io.emit('betAmounts', betAmounts);
+    return betAmounts;
   },
 };
 

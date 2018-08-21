@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
 
   socket.on('newSocketReady', () => {
     console.log('ready');
-    game.sendLastEmittedState();
+    game.emitCurrentState();
   })
   
   socket.on('disconnect', (reason) => {
