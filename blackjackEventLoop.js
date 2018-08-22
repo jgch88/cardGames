@@ -14,8 +14,8 @@ const Game = {
 
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);
-    this.dealer = dealer;
-    this.players = [];
+    this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
+    this.players = []; // array instead of object because order is preserved and access to map/filter/find
     this.bettingPlayers = [];
 
     this.bets = [];

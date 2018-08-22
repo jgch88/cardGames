@@ -9,6 +9,7 @@ const Player = {
     hand.init();
     this.hand = hand; // a deck and its api, use array for splits later on 
     this.resolved = false;
+    this.bet = null; // one bet per player for now. do splits later
   },
   disconnect() {
     // in event of player just leaving abruptly
@@ -28,6 +29,9 @@ const Player = {
   },
   displayStatus() {
     console.log(`[${this.name}]: Current Chips: ${this.chips}`);
+  },
+  placeBet(bet) {
+    this.bet = bet;
   }
 }
 

@@ -20,6 +20,19 @@ test('correct number of players join game', () => {
 
 })
 
+test('players with the same name cannot join the same game', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.players.length).toBe(0);
+
+  game.joinGame('player1', 100);
+  game.joinGame('player1', 101);
+  expect(game.players.length).toBe(1);
+
+})
+
 test('correct number of players place bets', () => {
 
   const game = Object.create(BlackjackGame);
