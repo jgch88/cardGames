@@ -35,6 +35,36 @@ test('players with the same name cannot join the same game', () => {
 
 });
 
+test('players cannot exchange 0 or less chips', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.players.length).toBe(0);
+
+  game.joinGame('player1', 0);
+  game.joinGame('player2', -100);
+  expect(game.players.length).toBe(0);
+
+});
+
+test('players cannot bet/hit/stand when waiting for players to join state is on', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.players.length).toBe(0);
+
+  game.joinGame('player1', 100);
+  game.placeBet('player1', 10);
+  game.play('player1', 'hit'); // how to expect error thrown when error is caught? how to unit test this?
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(100);
+  expect(player.hand.cards.length).toBe(0);
+
+});
+
 test('correct number of players place bets', () => {
 
   const game = Object.create(BlackjackGame);
@@ -49,6 +79,26 @@ test('correct number of players place bets', () => {
   game.placeBet('player1', 100);
 
   expect(game.getBettingPlayers().length).toBe(1);
+});
+
+test('players cannot exchange chips or stand/hit while bets are being collected', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+  game.joinGame('player2', 100);
+
+  game.placeBet('player1', 100);
+  game.placeBet('player2', 100);
+  game.play('player1', 'hit'); // how to expect error thrown when error is caught? how to unit test this?
+
+  expect(game.players.length).toBe(1);
+  expect(game.getBettingPlayers().length).toBe(1);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.hand.cards.length).toBe(0);
 });
 
 // lower boundary conditions for betting
