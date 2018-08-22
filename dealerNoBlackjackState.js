@@ -67,7 +67,6 @@ const dealerNoBlackjackState = {
 
         const playerBlackjackMessage = `[${player.name}]: Blackjack!`;
         this.game.sendMessageLogMessages(playerBlackjackMessage);
-        player.hasNatural();
         player.resolve();
         // resolve bet!
         const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];

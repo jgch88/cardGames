@@ -60,7 +60,6 @@ const checkDealerForNaturals = {
       this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
       if (dealer.score === 21) {
         dealer.hand.cards[1].turnFaceUp();
-        dealer.hasNatural();
         this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
         this.game.changeState(dealerHasBlackjackState);
       } else {

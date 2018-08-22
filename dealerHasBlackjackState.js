@@ -23,7 +23,6 @@ const dealerHasBlackjackState = {
     players.forEach(player => {
       if (player.score === 21) {
         this.game.sendMessageLogMessages(`[${player.name}]: Blackjack!`);
-        player.hasNatural();
         player.resolve();
         // resolve bet!
         const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];

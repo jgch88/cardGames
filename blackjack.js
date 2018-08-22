@@ -132,7 +132,6 @@ const Game = {
       await this.players.slice(1).forEach(async (player) => {
         if (player.score === 21) {
           console.log(`${player.name} has a Blackjack!`);
-          player.hasNatural();
           player.resolve();
         } else {
           await this.playerPlays(player);
@@ -144,7 +143,6 @@ const Game = {
       for (let index = 0; index < players.length; index++) {
         if (players[index].score === 21) {
           console.log(`${players[index].name} has a Blackjack! Dealer loses`);
-          players[index].hasNatural();
           players[index].resolve();
         } else {
           await this.playerPlays(players[index]);
@@ -199,7 +197,6 @@ const Game = {
       const dealerScore = dealer.score;
       if (dealerScore === 21) {
         dealer.hand.cards[1].turnFaceUp();
-        dealer.hasNatural();
         console.log(`Dealer has a Blackjack!`);
         // go straight to resolve
         return true;
