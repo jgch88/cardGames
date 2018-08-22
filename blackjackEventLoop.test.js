@@ -449,3 +449,102 @@ test('dealer no blackjack, player no blackjack, player can hit the correct numbe
   expect(game.dealer.chips).toBe(9990);
 
 });
+
+test('player cannnot play nonsense moves, player loses, player and dealer chips resolve correctly', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  const playerCard4 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(10), suit: "Hearts"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(1), suit: "Hearts"}, {isFaceDown: true});
+  playerCard4.prepareCard({value: Number(2), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(playerCard4);
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturals);
+  
+  game.play('player1', 'nonsense_move');
+  game.play('player1', 'stand');
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
+  expect(game.dealer.chips).toBe(10010);
+
+});
+
+test('3 players, players cannot play when it is not their turn, player and dealer chips resolve correctly', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const player1Card1 = Object.create(CardWithTwoSides);
+  const player1Card2 = Object.create(CardWithTwoSides);
+  const player2Card1 = Object.create(CardWithTwoSides);
+  const player2Card2 = Object.create(CardWithTwoSides);
+  const player2Card3 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  player1Card1.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  player1Card2.prepareCard({value: Number(10), suit: "Hearts"}, {isFaceDown: true});
+  player2Card1.prepareCard({value: Number(1), suit: "Diamonds"}, {isFaceDown: true});
+  player2Card2.prepareCard({value: Number(2), suit: "Diamonds"}, {isFaceDown: true});
+  player2Card3.prepareCard({value: Number(7), suit: "Diamonds"}, {isFaceDown: true});
+  
+  deck.addCardToTop(player2Card3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(player2Card2);
+  deck.addCardToTop(player1Card2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(player2Card1);
+  deck.addCardToTop(player1Card1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 200);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+  game.placeBet('player2', 20);
+
+  game.changeState(checkDealerForNaturals);
+  
+  game.play('player2', 'stand'); // not player2's turn
+  game.play('player1', 'stand');
+  
+  game.play('player2', 'hit'); 
+  game.play('player2', 'stand'); 
+
+  const player1 = game.players.find(player => player.name === 'player1');
+  const player2 = game.players.find(player => player.name === 'player2');
+  expect(player1.chips).toBe(90);
+  expect(player2.chips).toBe(220);
+  expect(game.dealer.chips).toBe(9990);
+
+});
