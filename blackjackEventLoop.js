@@ -136,7 +136,7 @@ const Game = {
   },
   sendMessageLogMessages(message) {
     // the front end "console.log" api, last x no of console messages
-    // console.log(message);
+    console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
   },

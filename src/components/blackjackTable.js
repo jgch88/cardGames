@@ -95,7 +95,7 @@ class BlackjackTable extends Component {
       })
     };
     this.goToCheckDealerForNaturalsState = () => {
-      this.socket.emit('changeState', 'checkDealerForNaturals');
+      this.socket.emit('changeState', 'checkDealerForNaturalsState');
     };
     this.playerHasJoined = () => {
       return this.socket.id in this.state.chipsInHand;

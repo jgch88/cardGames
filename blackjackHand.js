@@ -6,6 +6,10 @@ BlackjackHand.countAces = function() {
 	let aces = this.cards.filter(card => card.value === 1);
 	return aces.length;
 }
+BlackjackHand.countFaceUpAces = function() {
+	let aces = this.cards.filter(card => (card.value === 1 && !card.isFaceDown));
+	return aces.length;
+}
 BlackjackHand.calcHandValue = function() {
   // American rules: double ace ISN'T 21!!
 	let sum = 0;
@@ -30,7 +34,7 @@ BlackjackHand.calcHandValue = function() {
 }
 BlackjackHand.calcShownHandValue = function() {
 	let sum = 0;
-	let aceCount = this.countAces();
+	let aceCount = this.countFaceUpAces();
 	let cardValues = this.cards.filter(card => !card.isFaceDown).map(card => card.value);
 	cardValues = cardValues.map(value =>(value > 10) ? 10 : value);
   if (cardValues.length === 0) {

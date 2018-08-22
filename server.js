@@ -7,7 +7,7 @@ const BlackjackGame = require('./blackjackEventLoop.js');
 
 const gettingPlayersState = require('./gettingPlayersState.js');
 const gettingBetsState = require('./gettingBetsState.js');
-const checkDealerForNaturals = require('./checkDealerForNaturals.js');
+const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 const resolveState = require('./resolveState.js');
 
 server.listen(4000, () => console.log(`Listening on port 4000`));
@@ -33,13 +33,11 @@ io.on('connection', (socket) => {
   
   socket.on('disconnect', (reason) => {
     console.log(`[${socket.id}] Disconnected: ${reason}`);
-    const playerIndex = game.players.map(player => player.name).indexOf(socket.id);
-    const playerBet = game.bets.filter(bet => bet.player.name === socket.id);
-    console.log(playerBet);
-    if (playerBet.length > 0) {
-      playerBet[0].resolve('playerLoses', 1, game.dealer);
+    const player = game.players.find(player => player.name === socket.id);
+    if (player && player.bet) {
+      player.bet.resolve('playerLoses', 1, game.dealer);
     }
-    game.players.splice(playerIndex, 1);
+    game.players = game.players.filter(player => player.name !== socket.id);
     // also remove their bets if they disconnect?
     // otherwise there's going to be problems with bet and 
     // player resolution
@@ -75,9 +73,9 @@ io.on('connection', (socket) => {
       } else {
         console.log(`[State]: Can't change to ${newState}`);
       }
-    } else if (newState === 'checkDealerForNaturals') {
+    } else if (newState === 'checkDealerForNaturalsState') {
       if (game.state.name === 'gettingBetsState') {
-        game.changeState(checkDealerForNaturals);
+        game.changeState(checkDealerForNaturalsState);
       } else {
         console.log(`[State]: Can't change to ${newState}`);
       }

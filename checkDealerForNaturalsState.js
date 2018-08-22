@@ -1,12 +1,12 @@
 const dealerHasBlackjackState = require('./dealerHasBlackjackState.js');
 const dealerNoBlackjackState = require('./dealerNoBlackjackState.js');
 
-const checkDealerForNaturals = {
+const checkDealerForNaturalsState = {
   init(game) {
     const greeting = `[State]: Dealing cards. Checking if dealer has natural.`;
     this.game = game;
     this.game.sendMessageLogMessages(greeting);
-    this.name = 'checkDealerForNaturals';
+    this.name = 'checkDealerForNaturalsState';
     // major bug where i didn't consider that we deal cards
     // only to Bets not Players!
 
@@ -63,4 +63,4 @@ const checkDealerForNaturals = {
   }
 }
 
-module.exports = checkDealerForNaturals;
+module.exports = checkDealerForNaturalsState;

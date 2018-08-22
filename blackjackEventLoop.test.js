@@ -5,7 +5,7 @@ const CardWithTwoSides = require('./card.js');
 const server = require('http').createServer(require('express'));
 const io = require('socket.io')(server);
 const gettingBetsState = require('./gettingBetsState.js');
-const checkDealerForNaturals = require('./checkDealerForNaturals.js');
+const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 
 // Functional testing of game (rather than unit testing)
 
@@ -182,7 +182,7 @@ test('dealer gets blackjack, player and dealer chips resolve correctly', () => {
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
 
   const player = game.players.find(player => player.name === 'player1');
   expect(player.chips).toBe(90);
@@ -217,7 +217,7 @@ test(`dealer's first card is not a 10 point card, goes to the dealerNoBlackjack 
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
 
   expect(game.state.name).toBe('dealerNoBlackjackState');
 
@@ -250,7 +250,7 @@ test('dealer and player get blackjack, player and dealer chips resolve correctly
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
 
   const player = game.players.find(player => player.name === 'player1');
   expect(player.chips).toBe(100);
@@ -285,7 +285,7 @@ test('dealer no blackjack, player has blackjack, player and dealer chips resolve
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
 
   const player = game.players.find(player => player.name === 'player1');
   expect(player.chips).toBe(110);
@@ -320,7 +320,7 @@ test('dealer no blackjack, player no blackjack, dealer wins, player and dealer c
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'stand');
 
@@ -357,7 +357,7 @@ test('dealer no blackjack, player no blackjack, player wins, player and dealer c
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'stand');
 
@@ -397,7 +397,7 @@ test('dealer no blackjack, player no blackjack, player hits, player wins, player
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
   game.play('player1', 'stand');
@@ -438,7 +438,7 @@ test('dealer no blackjack, player no blackjack, player hits, player gets 21, pla
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
 
@@ -478,7 +478,7 @@ test('dealer no blackjack, player no blackjack, player hits, player bursts, play
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
 
@@ -521,7 +521,7 @@ test('dealer no blackjack, player no blackjack, player can hit the correct numbe
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
   game.play('player1', 'hit');
@@ -566,7 +566,7 @@ test('player cannnot play nonsense moves, player loses, player and dealer chips 
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'nonsense_move');
   game.play('player1', 'stand');
@@ -616,7 +616,7 @@ test('3 players, players cannot play when it is not their turn, player and deale
   game.placeBet('player1', 10);
   game.placeBet('player2', 20);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player2', 'stand'); // not player2's turn
   game.play('player1', 'stand');
@@ -665,7 +665,7 @@ test('player and dealer draw after both hit', () => {
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
   game.play('player1', 'stand');
@@ -709,7 +709,7 @@ test(`dealer bursts after hitting, player doesn't burst`, () => {
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
   game.play('player1', 'stand');
@@ -758,7 +758,7 @@ test('server emits state on connect', () => {
 
   game.placeBet('player1', 10);
 
-  game.changeState(checkDealerForNaturals);
+  game.changeState(checkDealerForNaturalsState);
   
   game.play('player1', 'hit');
   game.play('player1', 'hit');
@@ -770,3 +770,40 @@ test('server emits state on connect', () => {
   expect(game.emitCurrentState().gameState).toBe('dealerNoBlackjackState');
 });
 
+test('player can spectate a game', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(10), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard1);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard2);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 200);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturalsState);
+  
+  game.play('player1', 'stand');
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
+  expect(game.dealer.chips).toBe(10010);
+
+});
