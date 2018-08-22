@@ -5,8 +5,7 @@ const resolveState = {
     this.name = 'resolveState';
     this.game = game;
     this.game.sendMessageLogMessages(`[State]: Resolving remaining bets`);
-    const dealer = this.game.dealer;
-    dealer.hand.cards.forEach(card => {
+    this.game.dealer.hand.cards.forEach(card => {
       card.turnFaceUp();
     });
     this.game.sendMessageLogMessages(`[Dealer]: Revealing face down card!`);
@@ -68,7 +67,7 @@ const resolveState = {
     }
   },
   cleanUp() {
-    this.game.bettingPlayers.forEach((player) => {
+    this.game.getBettingPlayers().forEach((player) => {
       while (player.hand.cards.length > 0) {
         player.hand.transferTopCard(this.game.deck);
       }
@@ -81,7 +80,9 @@ const resolveState = {
     this.game.deck.cards.forEach(card => {
       card.turnFaceDown();
     })
-    this.game.bets = [];
+    this.game.players.forEach((player) => {
+      player.bet = null;
+    })
     this.game.sendMessageLogMessages(`[State]: Discarding cards, reshuffling.`);
     // how long to show last hand for?
     this.game.getPlayerChipsInHand();

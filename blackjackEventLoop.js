@@ -84,7 +84,7 @@ const Game = {
     this.dealer.hand.cards.forEach(card => {
       console.log(`   ${card.readFace()}`);
     });
-    this.bettingPlayers.forEach((player) => {
+    this.getBettingPlayers().forEach((player) => {
       console.log(`${player.name}`);
       player.hand.cards.forEach((card) => {
         console.log(`   ${card.readFace()}`);
@@ -119,7 +119,7 @@ const Game = {
     });
 
     renderedState.players = {};
-    this.bettingPlayers.forEach((player) => {
+    this.getBettingPlayers().forEach((player) => {
       // shouldn't expose player.name though, probably use positionIds or something
       renderedState.players[player.name] = [];
       player.hand.cards.forEach((card) => {
@@ -129,7 +129,7 @@ const Game = {
 
     // rename dealerCards to dealer later
 
-    console.log(renderedState);
+    // console.log(renderedState);
 
     return renderedState;
   },
@@ -138,7 +138,7 @@ const Game = {
   },
   sendMessageLogMessages(message) {
     // the front end "console.log" api, last x no of console messages
-    console.log(message);
+    // console.log(message);
     this.messageLog.addMessage(message);
     this.io.emit('message', this.getMessageLogMessages());
   },
@@ -158,7 +158,7 @@ const Game = {
     currentState.gameState = this.state.name;
 
     this.io.emit('currentState', currentState);
-    console.log(currentState);
+    // console.log(currentState);
     return currentState;
   },
   // almost like redux "reducers?" like reducing state?
@@ -175,10 +175,9 @@ const Game = {
     // get current minified state of 
     // playerBets
     let betAmounts = {};
-    this.bettingPlayers.map(player => {
-      const playerBet = this.bets.filter(bet => bet.player.name === player.name)
-      if (playerBet.length > 0) {
-        betAmounts[player.name] = playerBet[0].betAmount;
+    this.getBettingPlayers().map(player => {
+      if (player.bet) {
+        betAmounts[player.name] = player.bet.betAmount;
       }
     })
     this.io.emit('betAmounts', betAmounts);

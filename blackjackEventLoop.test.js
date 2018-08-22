@@ -408,3 +408,48 @@ test('dealer no blackjack, player no blackjack, player hits, player bursts, play
   expect(game.dealer.chips).toBe(10010);
 
 });
+
+test('dealer no blackjack, player no blackjack, player can hit the correct number of times, player wins, player and dealer chips resolve correctly', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  const playerCard4 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(10), suit: "Hearts"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(1), suit: "Hearts"}, {isFaceDown: true});
+  playerCard4.prepareCard({value: Number(2), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(playerCard4);
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturals);
+  
+  game.play('player1', 'hit');
+  game.play('player1', 'hit');
+  game.play('player1', 'stand');
+
+  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
+  expect(playerBet.player.chips).toBe(110);
+  expect(game.dealer.chips).toBe(9990);
+
+});

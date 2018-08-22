@@ -33,13 +33,15 @@ const dealerNoBlackjackState = {
           const playerBurstsMessage = `[${this.game.currentPlayer.name}]: bursts (${this.game.currentPlayer.score}).`;
           this.game.sendMessageLogMessages(playerBurstsMessage);
           this.game.sendMessageLogMessages(this.game.currentPlayer.bet.resolve('playerLoses', 1, this.game.dealer));
+          this.game.currentPlayer.resolve();
+          this.game.currentPlayer = this.getNextPlayer();
         } else if (this.game.currentPlayer.score === 21) {
           const playerBlackjackMessage = `[${this.game.currentPlayer.name}]: Blackjack!`;
           this.game.sendMessageLogMessages(playerBlackjackMessage);
           this.game.sendMessageLogMessages(this.game.currentPlayer.bet.resolve('playerWins', 1, this.game.dealer));
+          this.game.currentPlayer.resolve();
+          this.game.currentPlayer = this.getNextPlayer();
         }
-        this.game.currentPlayer.resolve();
-        this.game.currentPlayer = this.getNextPlayer();
       } else if (move === 'stand') {
         this.game.render();
         this.game.currentPlayer.resolve();
