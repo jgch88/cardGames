@@ -18,7 +18,7 @@ test('correct number of players join game', () => {
   game.joinGame('player2', 100);
   expect(game.players.length).toBe(2);
 
-})
+});
 
 test('players with the same name cannot join the same game', () => {
 
@@ -31,7 +31,7 @@ test('players with the same name cannot join the same game', () => {
   game.joinGame('player1', 101);
   expect(game.players.length).toBe(1);
 
-})
+});
 
 test('correct number of players place bets', () => {
 
@@ -46,6 +46,22 @@ test('correct number of players place bets', () => {
 
   game.placeBet('player1', 100);
 
-  game.changeState(checkDealerForNaturals);
-  expect(game.bettingPlayers.length).toBe(1);
-})
+  expect(game.getBettingPlayers().length).toBe(1);
+});
+
+test('players can only place one bet', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+  game.placeBet('player1', 20);
+
+  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
+
+  expect(playerBet.betAmount).toBe(10);
+});

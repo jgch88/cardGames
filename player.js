@@ -1,5 +1,6 @@
 const Deck = require('./deck.js');
 const BlackjackHand = require('./blackjackHand.js');
+const Bet = require('./bet.js');
 
 const Player = {
   init(name, chips) {
@@ -30,8 +31,18 @@ const Player = {
   displayStatus() {
     console.log(`[${this.name}]: Current Chips: ${this.chips}`);
   },
-  placeBet(bet) {
-    this.bet = bet;
+  placeBet(betAmount) {
+    if (this.bet) {
+      throw `You have already placed a bet!`;
+    }
+    if (betAmount > this.chips) {
+      throw `Not enough chips`;
+    } else {
+      this.chips -= betAmount;
+      const bet = Object.create(Bet);
+      bet.init(betAmount, this);
+      this.bet = bet;
+    }
   }
 }
 

@@ -182,6 +182,9 @@ const Game = {
     this.io.emit('betAmounts', betAmounts);
     return betAmounts;
   },
+  getBettingPlayers() {
+    return this.players.filter(player => player.bet);
+  }
 };
 
 module.exports = Game;

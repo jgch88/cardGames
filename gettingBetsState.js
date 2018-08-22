@@ -11,36 +11,30 @@ const gettingBetsState = {
   },
   leaveGame() {
   },
-  placeBet(playerName, amount, game) {
+  placeBet(playerName, betAmount, game) {
 
-    if (amount <= 0) {
+    if (betAmount <= 0) {
       throw `Please bet at least 1 chip.`;
     }
-    // what's a more elegant way to get the player object?
-    const playerArray = game.players.filter(player => player.name === playerName);
-    if (playerArray.length === 0) {
-      throw `${playerName} not found`;
+    const player = game.players.find(player => player.name === playerName);
+    if (!player) {
+      throw `${playerName} not found, exchange some chips and join the game first.`;
     }
-    const player = playerArray[0];
-    // bets filter later in "play" state
-    // some people might be spectating
-    
-    // MAJOR BUG: players can bet more than once...
-    
-    const bet = Object.create(Bet);
-    bet.init({
-      betAmount: amount,
-      player
-    })
-    game.bets.push(bet);
-    // update new chips after betting
+    try {
+      player.placeBet(betAmount);
+      this.game.sendMessageLogMessages(`[${player.name}]: Bet ${betAmount} chips`);
+    } catch (e) {
+      console.log(e);
+    }
+   
     this.game.getPlayerChipsInHand();
-    this.game.sendMessageLogMessages(`[${player.name}]: Bet ${amount} chips`);
-    // this.game.bettingPlayers = this.game.bets.map(bet => bet.player);
-    const bettingPlayers = this.game.bets.map(bet => bet.player);
-    // to preserve the order in which players are "seated" rather than order in which players "bet"
-    this.game.bettingPlayers = this.game.players.filter(player => bettingPlayers.indexOf(player) !== -1);
+    this.game.bettingPlayers = this.game.getBettingPlayers();
     this.game.getPlayerBetAmounts();
+    
+    // this method is doing too much?
+    // 1. checking if player can bet
+    // 2. creating bet object
+    // 3. emitting bet state to front end: playerchips/messages/betamounts
   },
   play() {
     throw `Betting is in progress. Please be patient`;
