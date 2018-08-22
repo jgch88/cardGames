@@ -11,7 +11,11 @@ const resolveState = {
     });
     this.game.sendMessageLogMessages(`[Dealer]: Revealing face down card!`);
     this.game.render();
-    const remainingBets = this.game.bets.filter(bet => !bet.resolved);
+    // players with unresolved bets
+    // this thing is duplicated in dealerNoBlackjackState on 'hit'
+    // -> can we extract method and put it in Player?
+    const remainingPlayers = this.game.getBettingPlayers().filter(player => !player.bet.resolved);
+    const remainingBets = remainingPlayers.map(player => player.bet);
     if (remainingBets.length > 0) {
       this.dealerPlays();
     }
