@@ -5,13 +5,16 @@ const resolveState = {
     this.name = 'resolveState';
     this.game = game;
     this.game.sendMessageLogMessages(`[State]: Resolving remaining bets`);
-    const dealer = this.game.dealer;
-    dealer.hand.cards.forEach(card => {
+    this.game.dealer.hand.cards.forEach(card => {
       card.turnFaceUp();
     });
     this.game.sendMessageLogMessages(`[Dealer]: Revealing face down card!`);
     this.game.render();
-    const remainingBets = this.game.bets.filter(bet => !bet.resolved);
+    // players with unresolved bets
+    // this thing is duplicated in dealerNoBlackjackState on 'hit'
+    // -> can we extract method and put it in Player?
+    const remainingPlayers = this.game.getBettingPlayers().filter(player => !player.bet.resolved);
+    const remainingBets = remainingPlayers.map(player => player.bet);
     if (remainingBets.length > 0) {
       this.dealerPlays();
     }
@@ -44,17 +47,13 @@ const resolveState = {
     const dealer = this.game.dealer;
     const player = bet.player;
     if (dealer.score > 21) {
-      if (player.score > 21) {
-        this.game.sendMessageLogMessages(bet.resolve('playerDraws', 1, dealer));
-      } else {
-        this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));
-      }
+      // player burst or player blackjack should
+      // already have been resolved
+      this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));
       return;
     }
-    if (player.score > 21) {
-      this.game.sendMessageLogMessages(bet.resolve('playerLoses', 1, dealer));
-      return;
-    }
+    // don't need case where player > 21, since it
+    // should already have been resolved!
     if (dealer.score > player.score) {
       this.game.sendMessageLogMessages(bet.resolve('playerLoses', 1, dealer));
     } else if (dealer.score === player.score) {
@@ -64,7 +63,7 @@ const resolveState = {
     }
   },
   cleanUp() {
-    this.game.bettingPlayers.forEach((player) => {
+    this.game.getBettingPlayers().forEach((player) => {
       while (player.hand.cards.length > 0) {
         player.hand.transferTopCard(this.game.deck);
       }
@@ -77,19 +76,11 @@ const resolveState = {
     this.game.deck.cards.forEach(card => {
       card.turnFaceDown();
     })
-    this.game.bets = [];
+    this.game.players.forEach((player) => {
+      player.bet = null;
+    })
     this.game.sendMessageLogMessages(`[State]: Discarding cards, reshuffling.`);
     // how long to show last hand for?
-    // this behavior will leave the final outcome showing
-    // UNTIL another socket connects which triggers
-    // emit('lastEmittedState'), then EVERYONE's screens blank out cause 
-    // of this spread operator below
-    this.game.lastEmittedState = {
-      ...this.game.lastEmittedState,
-      dealerCards: [],
-      players: {},
-      betAmounts: {},
-    }
     this.game.getPlayerChipsInHand();
     this.game.getPlayerBetAmounts();
   }

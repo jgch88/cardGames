@@ -1,14 +1,12 @@
+// bet knows too much about player
+// it's the player's responsibility
+// to check if chips are enough
 const Bet = {
-  init({betAmount, player}) {
-    if (betAmount > player.chips) {
-      throw 'Not enough chips';
-    } else {
-      player.chips -= betAmount;
-      this.betAmount = betAmount;
-      this.insurance = false;
-      this.player = player;
-      this.resolved = false;
-    }
+  init(betAmount, player) {
+    this.betAmount = betAmount;
+    this.insurance = false;
+    this.player = player;
+    this.resolved = false;
   },
   resolve(playerOutcome, multiplier,  dealer) {
     // POV of player

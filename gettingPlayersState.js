@@ -10,7 +10,7 @@ const gettingPlayersState = {
   joinGame(playerName, chips, game) {
     // maybe playerName will be playerId because of socket.io
     
-    if (game.players.filter(player => player.name === playerName).length > 0) {
+    if (game.players.find(player => player.name === playerName)) {
       throw `Another player is using the name ${playerName}. Please use a different name.`;
     }
 

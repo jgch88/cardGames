@@ -1,5 +1,6 @@
 const Deck = require('./deck.js');
 const BlackjackHand = require('./blackjackHand.js');
+const Bet = require('./bet.js');
 
 const Player = {
   init(name, chips) {
@@ -8,18 +9,8 @@ const Player = {
     const hand = Object.create(BlackjackHand);
     hand.init();
     this.hand = hand; // a deck and its api, use array for splits later on 
-    this.hasBlackJack = false;
     this.resolved = false;
-  },
-  play(option) {
-    // an api to "tell" the game whether player stands/hits
-    // or some modular method to have different AIs
-    // aggressive better, safe better, always burst
-		//
-		// dealer AI:  if hand < 17, draw card.
-		//
-		// player options:
-		// hit, stand, (doubledown,split,surrender,insurance)
+    this.bet = null; // one bet per player for now. do splits later
   },
   disconnect() {
     // in event of player just leaving abruptly
@@ -29,18 +20,29 @@ const Player = {
     return this.hand.calcHandValue();
   },
   get shownScore() {
+    // score of face up cards only
     // so that dealer's other card isn't exposed when player bursts
     return this.hand.calcShownHandValue();
   },
-  hasNatural() {
-    this.hasBlackJack = true;
-  },
   resolve() {
-    // compare against dealer
+    // has compared against dealer
     this.resolved = true;
   },
   displayStatus() {
     console.log(`[${this.name}]: Current Chips: ${this.chips}`);
+  },
+  placeBet(betAmount) {
+    if (this.bet) {
+      throw `You have already placed a bet!`;
+    }
+    if (betAmount > this.chips) {
+      throw `Not enough chips`;
+    } else {
+      this.chips -= betAmount;
+      const bet = Object.create(Bet);
+      bet.init(betAmount, this);
+      this.bet = bet;
+    }
   }
 }
 

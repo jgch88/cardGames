@@ -1,12 +1,12 @@
 const dealerHasBlackjackState = require('./dealerHasBlackjackState.js');
 const dealerNoBlackjackState = require('./dealerNoBlackjackState.js');
 
-const checkDealerForNaturals = {
+const checkDealerForNaturalsState = {
   init(game) {
     const greeting = `[State]: Dealing cards. Checking if dealer has natural.`;
     this.game = game;
     this.game.sendMessageLogMessages(greeting);
-    this.name = 'checkDealerForNaturals';
+    this.name = 'checkDealerForNaturalsState';
     // major bug where i didn't consider that we deal cards
     // only to Bets not Players!
 
@@ -28,22 +28,14 @@ const checkDealerForNaturals = {
     // maybe should put the bet inside the player object later
 
   },
+  // all the following actions shouldn't do anything, since this state immediately moves to next state
   joinGame() {
-    throw `Game has already started. Please join the next round`;
   },
   leaveGame() {
   },
   placeBet() {
-    throw `Game has already started. Please join the next round`;
   },
-  play(playerName, move, game) {
-    // there should be a currentPlayer property on the game, only the current player gets to play a move
-    if (game.currentPlayer === playerName) {
-      this.game.sendMessageLogMessages(`[${playerName}]: '${move}'`);
-
-    } else {
-      throw `It is not ${playerName}'s turn!`;
-    }
+  play() {
   },
   // helper functions
   dealOneToEveryone(players) {
@@ -60,7 +52,6 @@ const checkDealerForNaturals = {
       this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
       if (dealer.score === 21) {
         dealer.hand.cards[1].turnFaceUp();
-        dealer.hasNatural();
         this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
         this.game.changeState(dealerHasBlackjackState);
       } else {
@@ -72,4 +63,4 @@ const checkDealerForNaturals = {
   }
 }
 
-module.exports = checkDealerForNaturals;
+module.exports = checkDealerForNaturalsState;
