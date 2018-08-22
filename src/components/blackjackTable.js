@@ -6,6 +6,7 @@ const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
 const PlayerStatus = require('./playerStatus.js');
 const Button = require('./button.js');
+const BetStatus = require('./betStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -100,9 +101,14 @@ class BlackjackTable extends Component {
     };
     this.playerHasBet = () => {
       return this.socket.id in this.state.betAmounts;
+    };
+  }
+  
+  betAmount() {
+    if (this.socket.id in this.state.betAmounts) {
+      return this.state.betAmounts[this.socket.id];
     }
   }
-
 
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
@@ -110,6 +116,7 @@ class BlackjackTable extends Component {
       <div class="deckTable">
         <PlayerStatus playerName={this.socket.id} gameState={this.state}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
+        <BetStatus chips={this.betAmount()} />
         <div class="horizontalScroll playerHands">
         {Object.keys(this.state.players).map((player, index) => {
           return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />

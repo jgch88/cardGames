@@ -15,6 +15,9 @@ BlackjackHand.calcHandValue = function() {
 	// let cardValues = this.cards.filter(card => !card.isFaceDown).map(card => card.value);
 	let cardValues = this.cards.map(card => card.value);
 	cardValues = cardValues.map(value =>(value > 10) ? 10 : value);
+  if (cardValues.length === 0) {
+    return sum;
+  }
 
   sum = cardValues.reduce((acc, curr) => acc + curr);
 	sum += aceCount * 10;
@@ -30,6 +33,9 @@ BlackjackHand.calcShownHandValue = function() {
 	let aceCount = this.countAces();
 	let cardValues = this.cards.filter(card => !card.isFaceDown).map(card => card.value);
 	cardValues = cardValues.map(value =>(value > 10) ? 10 : value);
+  if (cardValues.length === 0) {
+    return sum;
+  }
   sum = cardValues.reduce((acc, curr) => acc + curr);
 	sum += aceCount * 10;
 	while (sum > 21 && aceCount > 0) {

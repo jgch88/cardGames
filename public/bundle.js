@@ -1,12 +1,32 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
+
+const BetStatus = function BetStatus(props) {
+  if (!props.chips) {
+    return h("span", null);
+  }
+
+  return h(
+    "span",
+    null,
+    "Your Bet: ",
+    props.chips
+  );
+};
+
+module.exports = BetStatus;
+
+},{}],2:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
 const Deck = require('./deck.js');
 const Card = require('./card.js');
 const MessageLog = require('./messageLog.js');
 const GameStateStatus = require('./gameStateStatus.js');
 const PlayerStatus = require('./playerStatus.js');
 const Button = require('./button.js');
+const BetStatus = require('./betStatus.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -104,6 +124,12 @@ class BlackjackTable extends Component {
     };
   }
 
+  betAmount() {
+    if (this.socket.id in this.state.betAmounts) {
+      return this.state.betAmounts[this.socket.id];
+    }
+  }
+
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return h(
@@ -111,6 +137,7 @@ class BlackjackTable extends Component {
       { 'class': 'deckTable' },
       h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
+      h(BetStatus, { chips: this.betAmount() }),
       h(
         'div',
         { 'class': 'horizontalScroll playerHands' },
@@ -145,7 +172,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./button.js":2,"./card.js":3,"./deck.js":5,"./gameStateStatus.js":6,"./messageLog.js":7,"./playerStatus.js":8}],2:[function(require,module,exports){
+},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":6,"./gameStateStatus.js":7,"./messageLog.js":8,"./playerStatus.js":9}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -162,7 +189,7 @@ const Button = function Button(props) {
 
 module.exports = Button;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -262,7 +289,7 @@ class Card extends Component {
 
 module.exports = Card;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -294,7 +321,7 @@ class Clock extends Component {
 
 module.exports = Clock;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 const Card = require('./card.js');
@@ -331,7 +358,7 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{"./card.js":3}],6:[function(require,module,exports){
+},{"./card.js":4}],7:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -356,7 +383,7 @@ const GameStateStatus = function GameStateStatus(props) {
 
 module.exports = GameStateStatus;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -377,7 +404,7 @@ const MessageLog = function MessageLog(props) {
 
 module.exports = MessageLog;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -403,7 +430,7 @@ const PlayerStatus = function PlayerStatus(props) {
 
 module.exports = PlayerStatus;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -434,4 +461,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":1,"./components/button.js":2,"./components/card":3,"./components/clock":4,"./components/deck":5}]},{},[9]);
+},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":5,"./components/deck":6}]},{},[10]);
