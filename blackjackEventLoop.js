@@ -16,7 +16,6 @@ const Game = {
 		dealer.init("Dealer", 10000);
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
-    this.bettingPlayers = [];
 
     this.bets = [];
 
@@ -27,7 +26,8 @@ const Game = {
     this.currentPlayer = null;
 
     const messageLog = Object.create(MessageLog);
-    messageLog.init(12) // 4 messages
+    const maxMessages = 12;
+    messageLog.init(maxMessages);
     this.messageLog = messageLog;
     this.sendMessageLogMessages(`Game initialised`);
 
