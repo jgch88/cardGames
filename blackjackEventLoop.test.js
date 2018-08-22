@@ -134,8 +134,8 @@ test('dealer gets blackjack, player and dealer chips resolve correctly', () => {
 
   game.changeState(checkDealerForNaturals);
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(90);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
   expect(game.dealer.chips).toBe(10010);
 
 });
@@ -169,8 +169,8 @@ test('dealer and player get blackjack, player and dealer chips resolve correctly
 
   game.changeState(checkDealerForNaturals);
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(100);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(100);
   expect(game.dealer.chips).toBe(10000);
 
 });
@@ -204,8 +204,8 @@ test('dealer no blackjack, player has blackjack, player and dealer chips resolve
 
   game.changeState(checkDealerForNaturals);
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(110);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(110);
   expect(game.dealer.chips).toBe(9990);
 
 });
@@ -241,10 +241,8 @@ test('dealer no blackjack, player no blackjack, dealer wins, player and dealer c
   
   game.play('player1', 'stand');
 
-
-
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(90);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
   expect(game.dealer.chips).toBe(10010);
 
 });
@@ -280,10 +278,8 @@ test('dealer no blackjack, player no blackjack, player wins, player and dealer c
   
   game.play('player1', 'stand');
 
-
-
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(110);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(110);
   expect(game.dealer.chips).toBe(9990);
 
 });
@@ -323,8 +319,8 @@ test('dealer no blackjack, player no blackjack, player hits, player wins, player
   game.play('player1', 'hit');
   game.play('player1', 'stand');
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(110);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(110);
   expect(game.dealer.chips).toBe(9990);
 
 });
@@ -363,8 +359,8 @@ test('dealer no blackjack, player no blackjack, player hits, player gets 21, pla
   
   game.play('player1', 'hit');
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(110);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(110);
   expect(game.dealer.chips).toBe(9990);
 
 });
@@ -403,8 +399,8 @@ test('dealer no blackjack, player no blackjack, player hits, player bursts, play
   
   game.play('player1', 'hit');
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(90);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
   expect(game.dealer.chips).toBe(10010);
 
 });
@@ -448,8 +444,8 @@ test('dealer no blackjack, player no blackjack, player can hit the correct numbe
   game.play('player1', 'hit');
   game.play('player1', 'stand');
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-  expect(playerBet.player.chips).toBe(110);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(110);
   expect(game.dealer.chips).toBe(9990);
 
 });
