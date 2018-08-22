@@ -2,7 +2,6 @@ const Deck = require('./deck.js');
 const Player = require('./player.js');
 const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = require('./gettingPlayersState.js');
-const checkDealerForNaturals = require('./checkDealerForNaturals.js');
 const MessageLog = require('./messageLog.js');
 
 const Game = {
