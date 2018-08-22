@@ -61,16 +61,13 @@ const dealerNoBlackjackState = {
     }
   },
   checkIfPlayersHaveBlackjack() {
-    const players = this.game.bettingPlayers;
-    players.forEach(player => {
+    this.game.getBettingPlayers().forEach(player => {
       if (player.score === 21) {
 
         const playerBlackjackMessage = `[${player.name}]: Blackjack!`;
         this.game.sendMessageLogMessages(playerBlackjackMessage);
         player.resolve();
-        // resolve bet!
-        const playerBet = this.game.bets.filter(bet => bet.player.name === player.name)[0];
-        this.game.sendMessageLogMessages(playerBet.resolve('playerWins', 1, this.game.dealer));
+        this.game.sendMessageLogMessages(player.bet.resolve('playerWins', 1, this.game.dealer));
       } else {
         this.game.sendMessageLogMessages(`[${player.name}]: No Blackjack.`);
       }
@@ -78,7 +75,7 @@ const dealerNoBlackjackState = {
   },
   getNextPlayer() {
     // don't let those players who have already got a Blackjack play
-    const remainingPlayers = this.game.bettingPlayers.filter(player => !player.resolved);
+    const remainingPlayers = this.game.getBettingPlayers().filter(player => !player.resolved);
     // console.log(`Remaining players: ${remainingPlayers}`); // this helped me figure out players.resolve needed to be reset in cleanUp()
     // what if there's no first player??
     // change state to resolve!

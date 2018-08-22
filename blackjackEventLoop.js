@@ -50,6 +50,7 @@ const Game = {
       console.log(`[Error]: ${e}`);
     }
   },
+  /*
   leaveGame(playerName) {
     try {
       this.state.leaveGame(playerName, this);
@@ -57,6 +58,7 @@ const Game = {
       console.log(`[Error]: ${e}`);
     }
   },
+  */
   // gettingBets
   placeBet(playerName, amount) {
     try {
