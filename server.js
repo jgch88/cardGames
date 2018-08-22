@@ -32,10 +32,20 @@ io.on('connection', (socket) => {
   })
   
   socket.on('disconnect', (reason) => {
-    console.log(`[${socket.id}] Disconnected: ${reason}`);
-    const player = game.players.find(player => player.name === socket.id);
-    if (player && player.bet) {
-      player.bet.resolve('playerLoses', 1, game.dealer);
+    game.sendMessageLogMessages(`[${socket.id}] Disconnected: ${reason}`);
+    if (game.state.name === 'dealerNoBlackjackState' && game.currentPlayer.name === socket.id) {
+      game.currentPlayer.resolve();
+      game.currentPlayer.bet.resolve('playerLoses', 1, game.dealer);
+      game.currentPlayer = game.state.getNextPlayer();
+    } else {
+    // socketid player resolve not currentplayer!!!
+      const disconnectedPlayer = game.players.find(player => player.name === socket.id);
+      if (disconnectedPlayer) {
+        disconnectedPlayer.resolve();
+        if (disconnectedPlayer.bet) {
+          disconnectedPlayer.bet.resolve('playerLoses', 1, game.dealer);
+        }
+      }
     }
     game.players = game.players.filter(player => player.name !== socket.id);
     // also remove their bets if they disconnect?
@@ -48,6 +58,7 @@ io.on('connection', (socket) => {
       console.log(`All players disconnected`);
       game.changeState(resolveState);
     }
+    game.emitCurrentState();
   })
 
   socket.on('joinGame', (chips) => {

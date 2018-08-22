@@ -60,12 +60,13 @@ const dealerNoBlackjackState = {
 
         const playerBlackjackMessage = `[${player.name}]: Blackjack!`;
         this.game.sendMessageLogMessages(playerBlackjackMessage);
-        player.resolve();
         this.game.sendMessageLogMessages(player.bet.resolve('playerWins', 1, this.game.dealer));
+        player.resolve();
       } else {
         this.game.sendMessageLogMessages(`[${player.name}]: No Blackjack.`);
       }
     })
+    this.game.emitCurrentState(); // update chips
   },
   getNextPlayer() {
     // don't let those players who have already got a Blackjack play
