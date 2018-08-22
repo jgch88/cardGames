@@ -47,17 +47,13 @@ const resolveState = {
     const dealer = this.game.dealer;
     const player = bet.player;
     if (dealer.score > 21) {
-      if (player.score > 21) {
-        this.game.sendMessageLogMessages(bet.resolve('playerDraws', 1, dealer));
-      } else {
-        this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));
-      }
+      // player burst or player blackjack should
+      // already have been resolved
+      this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));
       return;
     }
-    if (player.score > 21) {
-      this.game.sendMessageLogMessages(bet.resolve('playerLoses', 1, dealer));
-      return;
-    }
+    // don't need case where player > 21, since it
+    // should already have been resolved!
     if (dealer.score > player.score) {
       this.game.sendMessageLogMessages(bet.resolve('playerLoses', 1, dealer));
     } else if (dealer.score === player.score) {

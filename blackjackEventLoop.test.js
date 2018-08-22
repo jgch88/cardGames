@@ -190,6 +190,39 @@ test('dealer gets blackjack, player and dealer chips resolve correctly', () => {
 
 });
 
+test(`dealer's first card is not a 10 point card, goes to the dealerNoBlackjack state`, () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(2), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(13), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(5), suit: "Spades"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(3), suit: "Spades"}, {isFaceDown: true});
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard1);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard2);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturals);
+
+  expect(game.state.name).toBe('dealerNoBlackjackState');
+
+});
+
 test('dealer and player get blackjack, player and dealer chips resolve correctly', () => {
 
   const game = Object.create(BlackjackGame);
@@ -595,6 +628,94 @@ test('3 players, players cannot play when it is not their turn, player and deale
   const player2 = game.players.find(player => player.name === 'player2');
   expect(player1.chips).toBe(90);
   expect(player2.chips).toBe(220);
+  expect(game.dealer.chips).toBe(9990);
+
+});
+
+test('player and dealer draw after both hit', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const dealerCard3 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(6), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(7), suit: "Spades"}, {isFaceDown: true});
+  dealerCard3.prepareCard({value: Number(5), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(5), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(dealerCard3);
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturals);
+  
+  game.play('player1', 'hit');
+  game.play('player1', 'stand');
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(100);
+  expect(game.dealer.chips).toBe(10000);
+
+});
+
+test(`dealer bursts after hitting, player doesn't burst`, () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const dealerCard3 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(6), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(7), suit: "Spades"}, {isFaceDown: true});
+  dealerCard3.prepareCard({value: Number(11), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(5), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(dealerCard3);
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturals);
+  
+  game.play('player1', 'hit');
+  game.play('player1', 'stand');
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(110);
   expect(game.dealer.chips).toBe(9990);
 
 });

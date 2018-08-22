@@ -28,22 +28,14 @@ const checkDealerForNaturals = {
     // maybe should put the bet inside the player object later
 
   },
+  // all the following actions shouldn't do anything, since this state immediately moves to next state
   joinGame() {
-    throw `Game has already started. Please join the next round`;
   },
   leaveGame() {
   },
   placeBet() {
-    throw `Game has already started. Please join the next round`;
   },
-  play(playerName, move, game) {
-    // there should be a currentPlayer property on the game, only the current player gets to play a move
-    if (game.currentPlayer === playerName) {
-      this.game.sendMessageLogMessages(`[${playerName}]: '${move}'`);
-
-    } else {
-      throw `It is not ${playerName}'s turn!`;
-    }
+  play() {
   },
   // helper functions
   dealOneToEveryone(players) {
