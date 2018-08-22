@@ -719,3 +719,54 @@ test(`dealer bursts after hitting, player doesn't burst`, () => {
   expect(game.dealer.chips).toBe(9990);
 
 });
+
+test('server emits state on connect', () => {
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.emitCurrentState().players).toEqual({});
+  expect(game.emitCurrentState().betAmounts).toEqual({});
+  expect(game.emitCurrentState().chipsInHand).toEqual({});
+  expect(game.emitCurrentState().dealerCards).toEqual([]);
+  expect(game.emitCurrentState().gameState).toBe('gettingPlayersState');
+
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  const playerCard4 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(10), suit: "Hearts"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(1), suit: "Hearts"}, {isFaceDown: true});
+  playerCard4.prepareCard({value: Number(2), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(playerCard4);
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturals);
+  
+  game.play('player1', 'hit');
+  game.play('player1', 'hit');
+
+  expect('player1' in game.emitCurrentState().players).toBe(true);
+  expect(game.emitCurrentState().players['player1'].length).toBe(4);
+  expect(game.emitCurrentState().betAmounts['player1']).toBe(10);
+  expect(game.emitCurrentState().chipsInHand['player1']).toBe(90);
+  expect(game.emitCurrentState().gameState).toBe('dealerNoBlackjackState');
+});
+

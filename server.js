@@ -95,3 +95,4 @@ io.on('connection', (socket) => {
 // i.e. refactor out the playerTurns
 // need to transform a "sequential" based thing 
 // back to coexist with the "event loop/listener" model
+module.exports = server;

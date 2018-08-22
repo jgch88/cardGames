@@ -17,8 +17,6 @@ const Game = {
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
 
-    this.bets = [];
-
     // inject the server's socket
     // so the game has access to broadcast events
     this.io = socket;
@@ -175,11 +173,9 @@ const Game = {
     // get current minified state of 
     // playerBets
     let betAmounts = {};
-    this.getBettingPlayers().map(player => {
-      if (player.bet) {
-        betAmounts[player.name] = player.bet.betAmount;
-      }
-    })
+    this.getBettingPlayers().map(player => { 
+      betAmounts[player.name] = player.bet.betAmount;
+    });
     this.io.emit('betAmounts', betAmounts);
     return betAmounts;
   },
