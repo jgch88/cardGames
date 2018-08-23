@@ -126,7 +126,7 @@ class BlackjackTable extends Component {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
       <div class="deckTable">
-        <PlayerStatus playerName={this.socket.id} gameState={this.state}/>
+        <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         <BetStatus chips={this.betAmount()} />
         <div class="horizontalScroll playerHands">

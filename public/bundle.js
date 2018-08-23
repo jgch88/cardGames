@@ -147,7 +147,7 @@ class BlackjackTable extends Component {
     return h(
       'div',
       { 'class': 'deckTable' },
-      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
+      h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       h(BetStatus, { chips: this.betAmount() }),
       h(
@@ -437,11 +437,11 @@ const PlayerStatus = function PlayerStatus(props) {
       null,
       props.playerName
     ),
-    props.playerName in props.gameState.chipsInHand && h(
+    props.socketId in props.gameState.chipsInHand && h(
       "span",
       null,
       "Chips: ",
-      props.gameState.chipsInHand[props.playerName]
+      props.gameState.chipsInHand[props.socketId]
     )
   );
 };
