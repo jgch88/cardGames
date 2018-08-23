@@ -82,8 +82,15 @@ class BlackjackTable extends Component {
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
     this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-      console.log(players, messages, gameState, dealerCards);
       this.setState({
+        gameState,
+        messages,
+        players,
+        dealerCards,
+        betAmounts,
+        chipsInHand
+      });
+      console.log('currentState', {
         gameState,
         messages,
         players,
@@ -123,6 +130,10 @@ class BlackjackTable extends Component {
     this.playerHasBet = () => {
       return this.socket.id in this.state.betAmounts;
     };
+    this.changeNickname = () => {
+      const nickname = window.prompt("What nickname would you like to display?");
+      this.socket.emit('changeNickname', nickname);
+    };
   }
 
   betAmount() {
@@ -136,14 +147,14 @@ class BlackjackTable extends Component {
     return h(
       'div',
       { 'class': 'deckTable' },
-      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
+      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state, changeNicknameHandler: this.changeNickname }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       h(BetStatus, { chips: this.betAmount() }),
       h(
         'div',
         { 'class': 'horizontalScroll playerHands' },
         Object.keys(this.state.players).map((player, index) => {
-          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player].cards });
+          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: this.state.players[player].nickname, key: index, cards: this.state.players[player].cards });
         })
       ),
       h(
@@ -408,6 +419,7 @@ module.exports = MessageLog;
 },{}],9:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
+const Button = require('./button.js');
 
 const PlayerStatus = function PlayerStatus(props) {
   return h(
@@ -420,6 +432,7 @@ const PlayerStatus = function PlayerStatus(props) {
       null,
       props.playerName
     ),
+    h(Button, { text: "Change nickname", clickHandler: props.changeNicknameHandler }),
     props.playerName in props.gameState.chipsInHand && h(
       "span",
       null,
@@ -431,7 +444,7 @@ const PlayerStatus = function PlayerStatus(props) {
 
 module.exports = PlayerStatus;
 
-},{}],10:[function(require,module,exports){
+},{"./button.js":3}],10:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 

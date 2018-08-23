@@ -79,6 +79,12 @@ io.on('connection', (socket) => {
     // this part controls where the end state of the game changes to a blank
   });
 
+  socket.on('changeNickname', (nickname) => {
+    console.log(`changing nickname to ${nickname}`);
+    game.changeNickname(socket.id, nickname);
+    game.emitCurrentState();
+  })
+
   socket.on('changeState', (newState) => {
     if (newState === 'gettingBetsState') {
       if (game.state.name === 'gettingPlayersState') {

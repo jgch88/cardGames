@@ -62,7 +62,6 @@ class BlackjackTable extends Component {
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
     this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-      console.log(players, messages, gameState, dealerCards);
       this.setState({
         gameState,
         messages,
@@ -70,7 +69,15 @@ class BlackjackTable extends Component {
         dealerCards,
         betAmounts,
         chipsInHand
-      })
+      });
+      console.log('currentState', {
+        gameState,
+        messages,
+        players,
+        dealerCards,
+        betAmounts,
+        chipsInHand
+      });
     });
     this.joinGame = () => {
       const chips = window.prompt("How many chips would you like to exchange?", 500);
@@ -103,6 +110,11 @@ class BlackjackTable extends Component {
     this.playerHasBet = () => {
       return this.socket.id in this.state.betAmounts;
     };
+    this.changeNickname = () => {
+      const nickname = window.prompt("What nickname would you like to display?");
+      this.socket.emit('changeNickname', nickname);
+
+    }
   }
   
   betAmount() {
@@ -115,12 +127,12 @@ class BlackjackTable extends Component {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
       <div class="deckTable">
-        <PlayerStatus playerName={this.socket.id} gameState={this.state}/>
+        <PlayerStatus playerName={this.socket.id} gameState={this.state} changeNicknameHandler={this.changeNickname}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         <BetStatus chips={this.betAmount()} />
         <div class="horizontalScroll playerHands">
         {Object.keys(this.state.players).map((player, index) => {
-          return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player].cards} />
+          return <Deck isPlayersDeck={this.socket.id === player} playerName={this.state.players[player].nickname} key={index} cards={this.state.players[player].cards} />
         })}
         </div>
         <div class="actions">
