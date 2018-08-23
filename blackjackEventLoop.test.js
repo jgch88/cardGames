@@ -57,6 +57,30 @@ test('players can change their own nicknames', () => {
   expect(player2.nickname).toBe('jane');
 });
 
+test('cannot change nickname of players that are not in game', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.players.length).toBe(0);
+
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 101);
+
+  const player1 = game.players.find(player => player.name === 'player1');
+  const player2 = game.players.find(player => player.name === 'player2');
+  expect(player1.nickname).toBe('player1');
+  expect(player2.nickname).toBe('player2');
+
+  game.changeNickname('player1', 'john');
+  game.changeNickname('player2', 'jane');
+  game.changeNickname('player3', 'jane');
+
+  expect(player1.nickname).toBe('john');
+  expect(player2.nickname).toBe('jane');
+
+});
+
 test('players cannot exchange 0 or less chips', () => {
 
   const game = Object.create(BlackjackGame);
