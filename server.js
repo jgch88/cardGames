@@ -59,23 +59,31 @@ io.on('connection', (socket) => {
       game.changeState(resolveState);
     }
     game.emitCurrentState();
-  })
+  });
 
   socket.on('joinGame', (chips) => {
     // console.log(chips);
     game.joinGame(`${socket.id}`, chips.chips);
     console.log(`[Game players]: ${game.players.map(player => player.name)}`);
+    game.emitCurrentState();
     // error handle to emit something back
-  })
+  });
 
   socket.on('placeBet', (chips) => {
     game.placeBet(`${socket.id}`, chips.chips);
-
-  })
+    game.emitCurrentState();
+  });
 
   socket.on('play', (move) => {
     game.play(socket.id, move);
+    // this part controls where the end state of the game changes to a blank
   });
+
+  socket.on('changeNickname', (nickname) => {
+    console.log(`changing nickname to ${nickname}`);
+    game.changeNickname(socket.id, nickname);
+    game.emitCurrentState();
+  })
 
   socket.on('changeState', (newState) => {
     if (newState === 'gettingBetsState') {

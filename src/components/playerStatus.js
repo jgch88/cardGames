@@ -1,5 +1,6 @@
 /** @jsx h */
 const { h, render, Component } = preact;
+const Button = require('./button.js');
 
 const PlayerStatus = function PlayerStatus(props) {
   return (
@@ -7,8 +8,8 @@ const PlayerStatus = function PlayerStatus(props) {
       class="playerStatus"
     >
       <span>{props.playerName}</span>
-    {(props.playerName in props.gameState.chipsInHand) &&
-      <span>Chips: {props.gameState.chipsInHand[props.playerName]}</span>
+    {(props.socketId in props.gameState.chipsInHand) &&
+      <span>Chips: {props.gameState.chipsInHand[props.socketId]}</span>
     }
     </div>
   )

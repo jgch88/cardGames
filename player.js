@@ -5,6 +5,7 @@ const Bet = require('./bet.js');
 const Player = {
   init(name, chips) {
     this.name = name;
+    this.nickname = name; // default
     this.chips = chips;
     const hand = Object.create(BlackjackHand);
     hand.init();
@@ -15,6 +16,9 @@ const Player = {
   disconnect() {
     // in event of player just leaving abruptly
     // he loses his bet
+  },
+  setNickname(nickname) {
+    this.nickname = nickname;
   },
   get score() {
     return this.hand.calcHandValue();
@@ -29,7 +33,7 @@ const Player = {
     this.resolved = true;
   },
   displayStatus() {
-    console.log(`[${this.name}]: Current Chips: ${this.chips}`);
+    console.log(`[${this.nickname}]: Current Chips: ${this.chips}`);
   },
   placeBet(betAmount) {
     if (this.bet) {

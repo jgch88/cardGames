@@ -82,8 +82,15 @@ class BlackjackTable extends Component {
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
     this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-      console.log(players, messages, gameState, dealerCards);
       this.setState({
+        gameState,
+        messages,
+        players,
+        dealerCards,
+        betAmounts,
+        chipsInHand
+      });
+      console.log('currentState', {
         gameState,
         messages,
         players,
@@ -123,6 +130,10 @@ class BlackjackTable extends Component {
     this.playerHasBet = () => {
       return this.socket.id in this.state.betAmounts;
     };
+    this.changeNickname = () => {
+      const nickname = window.prompt("What nickname would you like to display?");
+      this.socket.emit('changeNickname', nickname);
+    };
   }
 
   betAmount() {
@@ -136,21 +147,26 @@ class BlackjackTable extends Component {
     return h(
       'div',
       { 'class': 'deckTable' },
-      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
+      h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       h(BetStatus, { chips: this.betAmount() }),
       h(
         'div',
         { 'class': 'horizontalScroll playerHands' },
         Object.keys(this.state.players).map((player, index) => {
-          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
+          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: this.state.players[player].nickname, key: index, cards: this.state.players[player].cards });
         })
       ),
       h(
         'div',
         { 'class': 'actions' },
         this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
-        this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(Button, { text: "Go to Betting State", clickHandler: this.goToBettingState }) : '',
+        this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
+          'span',
+          null,
+          h(Button, { text: "Change name", clickHandler: this.changeNickname }),
+          h(Button, { text: "Next", clickHandler: this.goToBettingState })
+        ) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? h(Button, { text: "Place Bet", clickHandler: this.placeBet }) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
         this.state.gameState === 'dealerNoBlackjackState' ? h(
@@ -408,6 +424,7 @@ module.exports = MessageLog;
 },{}],9:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
+const Button = require('./button.js');
 
 const PlayerStatus = function PlayerStatus(props) {
   return h(
@@ -420,18 +437,18 @@ const PlayerStatus = function PlayerStatus(props) {
       null,
       props.playerName
     ),
-    props.playerName in props.gameState.chipsInHand && h(
+    props.socketId in props.gameState.chipsInHand && h(
       "span",
       null,
       "Chips: ",
-      props.gameState.chipsInHand[props.playerName]
+      props.gameState.chipsInHand[props.socketId]
     )
   );
 };
 
 module.exports = PlayerStatus;
 
-},{}],10:[function(require,module,exports){
+},{"./button.js":3}],10:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 

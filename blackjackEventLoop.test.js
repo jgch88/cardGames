@@ -35,6 +35,52 @@ test('players with the same name cannot join the same game', () => {
 
 });
 
+test('players can change their own nicknames', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.players.length).toBe(0);
+
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 101);
+
+  const player1 = game.players.find(player => player.name === 'player1');
+  const player2 = game.players.find(player => player.name === 'player2');
+  expect(player1.nickname).toBe('player1');
+  expect(player2.nickname).toBe('player2');
+
+  game.changeNickname('player1', 'john');
+  game.changeNickname('player2', 'jane');
+
+  expect(player1.nickname).toBe('john');
+  expect(player2.nickname).toBe('jane');
+});
+
+test('cannot change nickname of players that are not in game', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.players.length).toBe(0);
+
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 101);
+
+  const player1 = game.players.find(player => player.name === 'player1');
+  const player2 = game.players.find(player => player.name === 'player2');
+  expect(player1.nickname).toBe('player1');
+  expect(player2.nickname).toBe('player2');
+
+  game.changeNickname('player1', 'john');
+  game.changeNickname('player2', 'jane');
+  game.changeNickname('player3', 'jane');
+
+  expect(player1.nickname).toBe('john');
+  expect(player2.nickname).toBe('jane');
+
+});
+
 test('players cannot exchange 0 or less chips', () => {
 
   const game = Object.create(BlackjackGame);
@@ -764,7 +810,7 @@ test('server emits state on connect', () => {
   game.play('player1', 'hit');
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
-  expect(game.emitCurrentState().players['player1'].length).toBe(4);
+  expect(game.emitCurrentState().players['player1'].cards.length).toBe(4);
   expect(game.emitCurrentState().betAmounts['player1']).toBe(10);
   expect(game.emitCurrentState().chipsInHand['player1']).toBe(90);
   expect(game.emitCurrentState().gameState).toBe('dealerNoBlackjackState');
@@ -806,4 +852,55 @@ test('player can spectate a game', () => {
   expect(player.chips).toBe(90);
   expect(game.dealer.chips).toBe(10010);
 
+});
+
+test('server can emit player nickname', () => {
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  expect(game.emitCurrentState().players).toEqual({});
+  expect(game.emitCurrentState().betAmounts).toEqual({});
+  expect(game.emitCurrentState().chipsInHand).toEqual({});
+  expect(game.emitCurrentState().dealerCards).toEqual([]);
+  expect(game.emitCurrentState().gameState).toBe('gettingPlayersState');
+
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  const playerCard4 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(10), suit: "Hearts"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(1), suit: "Hearts"}, {isFaceDown: true});
+  playerCard4.prepareCard({value: Number(2), suit: "Hearts"}, {isFaceDown: true});
+  deck.addCardToTop(playerCard4);
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+
+  game.changeState(checkDealerForNaturalsState);
+  
+  game.play('player1', 'hit');
+  game.play('player1', 'hit');
+
+  expect('player1' in game.emitCurrentState().players).toBe(true);
+  expect(game.emitCurrentState().players['player1'].cards.length).toBe(4);
+  expect(game.emitCurrentState().players['player1'].nickname).toBe('player1');
+
+  game.changeNickname('player1', 'john');
+  expect(game.emitCurrentState().players['player1'].nickname).toBe('john');
 });
