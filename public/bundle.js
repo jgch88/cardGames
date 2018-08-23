@@ -147,7 +147,7 @@ class BlackjackTable extends Component {
     return h(
       'div',
       { 'class': 'deckTable' },
-      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state, changeNicknameHandler: this.changeNickname }),
+      h(PlayerStatus, { playerName: this.socket.id, gameState: this.state }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       h(BetStatus, { chips: this.betAmount() }),
       h(
@@ -161,7 +161,12 @@ class BlackjackTable extends Component {
         'div',
         { 'class': 'actions' },
         this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
-        this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(Button, { text: "Go to Betting State", clickHandler: this.goToBettingState }) : '',
+        this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
+          'span',
+          null,
+          h(Button, { text: "Change name", clickHandler: this.changeNickname }),
+          h(Button, { text: "Next", clickHandler: this.goToBettingState })
+        ) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? h(Button, { text: "Place Bet", clickHandler: this.placeBet }) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
         this.state.gameState === 'dealerNoBlackjackState' ? h(
@@ -432,7 +437,6 @@ const PlayerStatus = function PlayerStatus(props) {
       null,
       props.playerName
     ),
-    h(Button, { text: "Change nickname", clickHandler: props.changeNicknameHandler }),
     props.playerName in props.gameState.chipsInHand && h(
       "span",
       null,

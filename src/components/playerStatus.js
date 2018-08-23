@@ -7,7 +7,7 @@ const PlayerStatus = function PlayerStatus(props) {
     <div
       class="playerStatus"
     >
-      <span>{props.playerName}</span><Button text={"Change nickname"} clickHandler={props.changeNicknameHandler} />
+      <span>{props.playerName}</span>
     {(props.playerName in props.gameState.chipsInHand) &&
       <span>Chips: {props.gameState.chipsInHand[props.playerName]}</span>
     }

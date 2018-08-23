@@ -129,7 +129,7 @@ const Game = {
     });
 
     renderedState.players = {};
-    this.getBettingPlayers().forEach((player) => {
+    this.players.forEach((player) => {
       // shouldn't expose player.name though, probably use positionIds or something
       renderedState.players[player.name] = {
         cards: [],

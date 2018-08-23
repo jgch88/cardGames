@@ -113,8 +113,7 @@ class BlackjackTable extends Component {
     this.changeNickname = () => {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
-
-    }
+    };
   }
   
   betAmount() {
@@ -127,7 +126,7 @@ class BlackjackTable extends Component {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
       <div class="deckTable">
-        <PlayerStatus playerName={this.socket.id} gameState={this.state} changeNicknameHandler={this.changeNickname}/>
+        <PlayerStatus playerName={this.socket.id} gameState={this.state}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         <BetStatus chips={this.betAmount()} />
         <div class="horizontalScroll playerHands">
@@ -139,7 +138,7 @@ class BlackjackTable extends Component {
           {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
           <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
           {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
-          <Button text={"Go to Betting State"} clickHandler={this.goToBettingState}/> : ''}
+          <span><Button text={"Change name"} clickHandler={this.changeNickname}/><Button text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? 
           <Button text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
