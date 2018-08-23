@@ -48,6 +48,9 @@ const Game = {
       console.log(`[Error]: ${e}`);
     }
   },
+  changeNickname(playerName, nickname) {
+
+  },
   /*
   leaveGame(playerName) {
     try {
