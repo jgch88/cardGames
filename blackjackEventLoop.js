@@ -43,7 +43,6 @@ const Game = {
   joinGame(playerName, chips) {
     try {
       this.state.joinGame(playerName, chips, this);
-      this.io.emit('playerJoined', {playerName});
     } catch(e) {
       console.log(`[Error]: ${e}`);
     }
@@ -102,14 +101,15 @@ const Game = {
     });
     console.log(`******`);
 
-    this.io.emit('render', this.renderState());
+    // this.io.emit('render', this.renderCards());
+    this.emitCurrentState();
   },
   /*
   addSocket(socket) {
     this.io = socket;
   },
   */
-  renderState() {
+  renderCards() {
     // generate front facing "state"
     const blankCard = {
       value: 0,
@@ -166,8 +166,8 @@ const Game = {
     currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.getPlayerBetAmounts();
     currentState.messages = this.getMessageLogMessages().messages;
-    currentState.players = this.renderState().players;
-    currentState.dealerCards = this.renderState().dealerCards;
+    currentState.players = this.renderCards().players;
+    currentState.dealerCards = this.renderCards().dealerCards;
     currentState.gameState = this.state.name;
 
     this.io.emit('currentState', currentState);
@@ -181,7 +181,7 @@ const Game = {
     // from players{}
     let chipsInHand = {};
     this.players.map(player => {chipsInHand[player.name] = player.chips});
-    this.io.emit('chipsInHand', chipsInHand);
+    // this.io.emit('chipsInHand', chipsInHand);
     return chipsInHand;
   },
   getPlayerBetAmounts() {
@@ -191,7 +191,7 @@ const Game = {
     this.getBettingPlayers().map(player => { 
       betAmounts[player.name] = player.bet.betAmount;
     });
-    this.io.emit('betAmounts', betAmounts);
+    // this.io.emit('betAmounts', betAmounts);
     return betAmounts;
   },
   getBettingPlayers() {
