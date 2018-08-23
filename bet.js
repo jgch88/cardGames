@@ -22,19 +22,19 @@ const Bet = {
       dealer.chips -= winnings;
       this.player.chips += winnings;
       this.player.displayStatus();
-      return `[BetResult]: [${this.player.name}] (${this.player.score}) wins [Dealer] (${dealer.shownScore})`;
+      return `[BetResult]: [${this.player.nickname}] (${this.player.score}) wins [Dealer] (${dealer.shownScore})`;
 
     } else if (playerOutcome === 'playerDraws') {
       this.player.chips += betAmount;
       this.betAmount -= betAmount;
       this.player.displayStatus();
-      return `[BetResult]: [${this.player.name}] (${this.player.score}) draws with [Dealer] (${dealer.shownScore})`;
+      return `[BetResult]: [${this.player.nickname}] (${this.player.score}) draws with [Dealer] (${dealer.shownScore})`;
 
     } else if (playerOutcome === 'playerLoses') {
       dealer.chips += betAmount;
       this.betAmount -= betAmount;
       this.player.displayStatus();
-      return `[BetResult]: [${this.player.name}] (${this.player.score}) loses to [Dealer] (${dealer.shownScore})`;
+      return `[BetResult]: [${this.player.nickname}] (${this.player.score}) loses to [Dealer] (${dealer.shownScore})`;
     } else {
       throw `Couldn't resolve bet`;
     }

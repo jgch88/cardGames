@@ -24,7 +24,7 @@ const gettingPlayersState = {
     this.game.getPlayerChipsInHand();
 
 
-    this.game.sendMessageLogMessages(`[${player.name}]: Joined with ${chips} chips`);
+    this.game.sendMessageLogMessages(`[${player.nickname}]: Joined with ${chips} chips`);
   },
   leaveGame() {
   },

@@ -33,7 +33,7 @@ const Player = {
     this.resolved = true;
   },
   displayStatus() {
-    console.log(`[${this.name}]: Current Chips: ${this.chips}`);
+    console.log(`[${this.nickname}]: Current Chips: ${this.chips}`);
   },
   placeBet(betAmount) {
     if (this.bet) {

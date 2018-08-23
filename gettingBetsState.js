@@ -22,7 +22,7 @@ const gettingBetsState = {
     }
     try {
       player.placeBet(betAmount);
-      this.game.sendMessageLogMessages(`[${player.name}]: Bet ${betAmount} chips`);
+      this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
     } catch (e) {
       console.log(e);
     }

@@ -23,20 +23,20 @@ const dealerNoBlackjackState = {
   play(playerName, move) {
     // there should be a currentPlayer property on the game, only the current player gets to play a move
     if (this.game.currentPlayer.name === playerName) {
-      const moveMessage = `[${playerName}]: '${move}'`;
+      const moveMessage = `[${this.game.currentPlayer.nickname}]: '${move}'`;
       this.game.sendMessageLogMessages(moveMessage);
       if (move === 'hit') {
         this.game.deck.transferTopCard(this.game.currentPlayer.hand);
         this.game.currentPlayer.hand.cards[this.game.currentPlayer.hand.cards.length - 1].turnFaceUp();
         this.game.render();
         if (this.game.currentPlayer.score > 21) {
-          const playerBurstsMessage = `[${this.game.currentPlayer.name}]: bursts (${this.game.currentPlayer.score}).`;
+          const playerBurstsMessage = `[${this.game.currentPlayer.nickname}]: bursts (${this.game.currentPlayer.score}).`;
           this.game.sendMessageLogMessages(playerBurstsMessage);
           this.game.sendMessageLogMessages(this.game.currentPlayer.bet.resolve('playerLoses', 1, this.game.dealer));
           this.game.currentPlayer.resolve();
           this.game.currentPlayer = this.getNextPlayer();
         } else if (this.game.currentPlayer.score === 21) {
-          const playerBlackjackMessage = `[${this.game.currentPlayer.name}]: Blackjack!`;
+          const playerBlackjackMessage = `[${this.game.currentPlayer.nickname}]: Blackjack!`;
           this.game.sendMessageLogMessages(playerBlackjackMessage);
           this.game.sendMessageLogMessages(this.game.currentPlayer.bet.resolve('playerWins', 1, this.game.dealer));
           this.game.currentPlayer.resolve();
@@ -58,12 +58,12 @@ const dealerNoBlackjackState = {
     this.game.getBettingPlayers().forEach(player => {
       if (player.score === 21) {
 
-        const playerBlackjackMessage = `[${player.name}]: Blackjack!`;
+        const playerBlackjackMessage = `[${player.nickname}]: Blackjack!`;
         this.game.sendMessageLogMessages(playerBlackjackMessage);
         this.game.sendMessageLogMessages(player.bet.resolve('playerWins', 1, this.game.dealer));
         player.resolve();
       } else {
-        this.game.sendMessageLogMessages(`[${player.name}]: No Blackjack.`);
+        this.game.sendMessageLogMessages(`[${player.nickname}]: No Blackjack.`);
       }
     })
     this.game.emitCurrentState(); // update chips
@@ -79,7 +79,7 @@ const dealerNoBlackjackState = {
       this.game.changeState(resolveState);
       return null;
     } else {
-      this.game.sendMessageLogMessages(`[${remainingPlayers[0].name}]: stand/hit?`);
+      this.game.sendMessageLogMessages(`[${remainingPlayers[0].nickname}]: stand/hit?`);
       return remainingPlayers[0];
     }
   }
