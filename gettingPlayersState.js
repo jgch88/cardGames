@@ -28,6 +28,14 @@ const gettingPlayersState = {
   },
   leaveGame() {
   },
+  changeNickname(playerName, nickname, game) {
+    const player = game.players.find(player => player.name === playerName);
+    if (player) {
+      player.setNickname(nickname);
+    } else {
+      throw `Player not found`;
+    }
+  },
   placeBet() {
     throw `Waiting for other players to join. Please be patient`;
   },

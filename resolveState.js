@@ -30,6 +30,8 @@ const resolveState = {
   },
   leaveGame() {
   },
+  changeNickname() {
+  },
   placeBet() {
   },
   play() {

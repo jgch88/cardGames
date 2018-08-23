@@ -14,6 +14,8 @@ const dealerHasBlackjackState = {
   },
   leaveGame() {
   },
+  changeNickname() {
+  },
   placeBet() {
   },
   play() {

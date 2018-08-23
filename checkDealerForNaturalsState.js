@@ -33,6 +33,8 @@ const checkDealerForNaturalsState = {
   },
   leaveGame() {
   },
+  changeNickname() {
+  },
   placeBet() {
   },
   play() {

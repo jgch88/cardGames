@@ -18,6 +18,8 @@ const dealerNoBlackjackState = {
   },
   leaveGame() {
   },
+  changeNickname() {
+  },
   placeBet() {
   },
   play(playerName, move) {

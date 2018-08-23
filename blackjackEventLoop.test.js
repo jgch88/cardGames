@@ -72,6 +72,7 @@ test('cannot change nickname of players that are not in game', () => {
   expect(player1.nickname).toBe('player1');
   expect(player2.nickname).toBe('player2');
 
+
   game.changeNickname('player1', 'john');
   game.changeNickname('player2', 'jane');
   game.changeNickname('player3', 'jane');
@@ -887,6 +888,8 @@ test('server can emit player nickname', () => {
   game.deck = deck;
 
   game.joinGame('player1', 100);
+  expect(game.emitCurrentState().players['player1'].nickname).toBe('player1');
+  game.changeNickname('player1', 'john');
   
   game.changeState(gettingBetsState);
 
@@ -899,8 +902,6 @@ test('server can emit player nickname', () => {
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
   expect(game.emitCurrentState().players['player1'].cards.length).toBe(4);
-  expect(game.emitCurrentState().players['player1'].nickname).toBe('player1');
 
-  game.changeNickname('player1', 'john');
   expect(game.emitCurrentState().players['player1'].nickname).toBe('john');
 });

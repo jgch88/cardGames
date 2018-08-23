@@ -11,6 +11,8 @@ const gettingBetsState = {
   },
   leaveGame() {
   },
+  changeNickname() {
+  },
   placeBet(playerName, betAmount, game) {
 
     if (betAmount <= 0) {

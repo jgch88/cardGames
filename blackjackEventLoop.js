@@ -49,12 +49,7 @@ const Game = {
   },
   changeNickname(playerName, nickname) {
     try {
-      const player = this.players.find(player => player.name === playerName);
-      if (player) {
-        player.setNickname(nickname);
-      } else {
-        throw `Player not found`;
-      }
+      this.state.changeNickname(playerName, nickname, this);
     } catch (e) {
       console.log(`[Error]: ${e}`);
     }
