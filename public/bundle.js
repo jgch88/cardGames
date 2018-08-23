@@ -143,7 +143,7 @@ class BlackjackTable extends Component {
         'div',
         { 'class': 'horizontalScroll playerHands' },
         Object.keys(this.state.players).map((player, index) => {
-          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player] });
+          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: player, key: index, cards: this.state.players[player].cards });
         })
       ),
       h(

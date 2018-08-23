@@ -120,7 +120,7 @@ class BlackjackTable extends Component {
         <BetStatus chips={this.betAmount()} />
         <div class="horizontalScroll playerHands">
         {Object.keys(this.state.players).map((player, index) => {
-          return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player]} />
+          return <Deck isPlayersDeck={this.socket.id === player} playerName={player} key={index} cards={this.state.players[player].cards} />
         })}
         </div>
         <div class="actions">

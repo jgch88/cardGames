@@ -810,7 +810,7 @@ test('server emits state on connect', () => {
   game.play('player1', 'hit');
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
-  expect(game.emitCurrentState().players['player1'].length).toBe(4);
+  expect(game.emitCurrentState().players['player1'].cards.length).toBe(4);
   expect(game.emitCurrentState().betAmounts['player1']).toBe(10);
   expect(game.emitCurrentState().chipsInHand['player1']).toBe(90);
   expect(game.emitCurrentState().gameState).toBe('dealerNoBlackjackState');
@@ -854,7 +854,7 @@ test('player can spectate a game', () => {
 
 });
 
-test.only('server can emit player nickname', () => {
+test('server can emit player nickname', () => {
   const game = Object.create(BlackjackGame);
   game.init(io);
 
