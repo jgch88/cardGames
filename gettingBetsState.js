@@ -18,9 +18,16 @@ const gettingBetsState = {
     if (betAmount <= 0) {
       throw `Please bet at least 1 chip.`;
     }
+    if (betAmount % 2 !== 0) {
+      // so that blackjack 1.5x payouts are whole numbers
+      throw `Please bet an even number of chips.`;
+    }
     const player = game.players.find(player => player.name === playerName);
     if (!player) {
       throw `${playerName} not found, exchange some chips and join the game first.`;
+    }
+    if (betAmount > player.chips) {
+      throw `Not enough chips`;
     }
     try {
       player.placeBet(betAmount);

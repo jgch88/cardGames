@@ -39,14 +39,10 @@ const Player = {
     if (this.bet) {
       throw `You have already placed a bet!`;
     }
-    if (betAmount > this.chips) {
-      throw `Not enough chips`;
-    } else {
-      this.chips -= betAmount;
-      const bet = Object.create(Bet);
-      bet.init(betAmount, this);
-      this.bet = bet;
-    }
+    this.chips -= betAmount;
+    const bet = Object.create(Bet);
+    bet.init(betAmount, this);
+    this.bet = bet;
   }
 }
 

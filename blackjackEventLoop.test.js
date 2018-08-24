@@ -128,6 +128,23 @@ test('correct number of players place bets', () => {
   expect(game.getBettingPlayers().length).toBe(1);
 });
 
+test('players cannot bet an odd number of chips', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 200);
+
+  game.changeState(gettingBetsState);
+  expect(game.getBettingPlayers().length).toBe(0);
+
+  game.placeBet('player1', 10);
+  game.placeBet('player2', 7);
+  expect(game.getBettingPlayers().length).toBe(1);
+
+});
+
 test('players cannot exchange chips or stand/hit while bets are being collected', () => {
 
   const game = Object.create(BlackjackGame);
@@ -178,7 +195,7 @@ test('players cannot bet more than the chips they have', () => {
   game.changeState(gettingBetsState);
   expect(game.getBettingPlayers().length).toBe(0);
 
-  game.placeBet('player1', 101);
+  game.placeBet('player1', 110);
   game.placeBet('player2', 100);
 
   expect(game.getBettingPlayers().length).toBe(1);
@@ -335,8 +352,8 @@ test('dealer no blackjack, player has blackjack, player and dealer chips resolve
   game.changeState(checkDealerForNaturalsState);
 
   const player = game.players.find(player => player.name === 'player1');
-  expect(player.chips).toBe(110);
-  expect(game.dealer.chips).toBe(9990);
+  expect(player.chips).toBe(115); // blackjack pays 1.5x bet
+  expect(game.dealer.chips).toBe(9985);
 
 });
 
