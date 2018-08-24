@@ -62,27 +62,49 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinGame', (chips) => {
-    // console.log(chips);
-    game.joinGame(`${socket.id}`, chips.chips);
-    console.log(`[Game players]: ${game.players.map(player => player.name)}`);
-    game.emitCurrentState();
-    // error handle to emit something back
+    try {
+      game.joinGame(`${socket.id}`, chips.chips);
+      console.log(`[Game players]: ${game.players.map(player => player.name)}`);
+      game.emitCurrentState();
+    } catch (e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
   });
 
   socket.on('placeBet', (chips) => {
-    game.placeBet(`${socket.id}`, chips.chips);
-    game.emitCurrentState();
+    try {
+      game.placeBet(`${socket.id}`, chips.chips);
+      game.emitCurrentState();
+    } catch(e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
   });
 
   socket.on('play', (move) => {
-    game.play(socket.id, move);
+    try {
+      game.play(socket.id, move);
+    } catch (e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
     // this part controls where the end state of the game changes to a blank
   });
 
   socket.on('changeNickname', (nickname) => {
-    console.log(`changing nickname to ${nickname}`);
-    game.changeNickname(socket.id, nickname);
-    game.emitCurrentState();
+    try {
+      console.log(`changing nickname to ${nickname}`);
+      game.changeNickname(socket.id, nickname);
+      game.emitCurrentState();
+    } catch (e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
   })
 
   socket.on('changeState', (newState) => {
