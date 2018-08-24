@@ -62,7 +62,7 @@ const dealerNoBlackjackState = {
 
         const playerBlackjackMessage = `[${player.nickname}]: Blackjack!`;
         this.game.sendMessageLogMessages(playerBlackjackMessage);
-        this.game.sendMessageLogMessages(player.bet.resolve('playerWins', 1, this.game.dealer));
+        this.game.sendMessageLogMessages(player.bet.resolve('playerWins', 1.5, this.game.dealer));
         player.resolve();
       } else {
         this.game.sendMessageLogMessages(`[${player.nickname}]: No Blackjack.`);
