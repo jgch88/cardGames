@@ -30,9 +30,9 @@ test('players with the same name cannot join the same game', () => {
   expect(game.players.length).toBe(0);
 
   game.joinGame('player1', 100);
-  game.joinGame('player1', 101);
-  expect(game.players.length).toBe(1);
 
+  expect(() => {game.joinGame('player1', 101)}).toThrow(`using the name`);
+  // expect(game.players.length).toBe(1);
 });
 
 test('players can change their own nicknames', () => {
@@ -75,7 +75,7 @@ test('cannot change nickname of players that are not in game', () => {
 
   game.changeNickname('player1', 'john');
   game.changeNickname('player2', 'jane');
-  game.changeNickname('player3', 'jane');
+  expect(() => {game.changeNickname('player3', 'jane')}).toThrow(`not found`);
 
   expect(player1.nickname).toBe('john');
   expect(player2.nickname).toBe('jane');
@@ -87,10 +87,9 @@ test('players cannot exchange 0 or less chips', () => {
   const game = Object.create(BlackjackGame);
   game.init(io);
 
-  expect(game.players.length).toBe(0);
+  expect(() => {game.joinGame('player1', 0)}).toThrow(`exchange at least 1 chip`);
+  expect(() => {game.joinGame('player2', -100)}).toThrow(`exchange at least 1 chip`);
 
-  game.joinGame('player1', 0);
-  game.joinGame('player2', -100);
   expect(game.players.length).toBe(0);
 
 });
@@ -103,8 +102,8 @@ test('players cannot bet/hit/stand when waiting for players to join state is on'
   expect(game.players.length).toBe(0);
 
   game.joinGame('player1', 100);
-  game.placeBet('player1', 10);
-  game.play('player1', 'hit'); // how to expect error thrown when error is caught? how to unit test this?
+  expect(() => {game.placeBet('player1', 10)}).toThrow(`Waiting for other players to join`)
+  expect(() => {game.play('player1', 'hit')}).toThrow(`Waiting for other players to join`);
 
   const player = game.players.find(player => player.name === 'player1');
   expect(player.chips).toBe(100);
@@ -140,7 +139,7 @@ test('players cannot bet an odd number of chips', () => {
   expect(game.getBettingPlayers().length).toBe(0);
 
   game.placeBet('player1', 10);
-  game.placeBet('player2', 7);
+  expect(() => {game.placeBet('player2', 7)}).toThrow(`bet an even number`);
   expect(game.getBettingPlayers().length).toBe(1);
 
 });
@@ -153,11 +152,10 @@ test('players cannot exchange chips or stand/hit while bets are being collected'
   game.joinGame('player1', 100);
   
   game.changeState(gettingBetsState);
-  game.joinGame('player2', 100);
+  expect(() => {game.joinGame('player2', 100)}).toThrow(`Betting has started`);
 
   game.placeBet('player1', 100);
-  game.placeBet('player2', 100);
-  game.play('player1', 'hit'); // how to expect error thrown when error is caught? how to unit test this?
+  expect(() => {game.play('player1', 'hit')}).toThrow(`Betting is in progress`);
 
   expect(game.players.length).toBe(1);
   expect(game.getBettingPlayers().length).toBe(1);
@@ -177,8 +175,8 @@ test('players cannot bet 0 or less chips', () => {
   game.changeState(gettingBetsState);
   expect(game.getBettingPlayers().length).toBe(0);
 
-  game.placeBet('player1', 0);
-  game.placeBet('player2', -100);
+  expect(() => {game.placeBet('player1', 0)}).toThrow(`bet at least 1 chip`);
+  expect(() => {game.placeBet('player2', -100)}).toThrow(`bet at least 1 chip`);
 
   expect(game.getBettingPlayers().length).toBe(0);
 });
@@ -195,10 +193,26 @@ test('players cannot bet more than the chips they have', () => {
   game.changeState(gettingBetsState);
   expect(game.getBettingPlayers().length).toBe(0);
 
-  game.placeBet('player1', 110);
+  expect(() => {game.placeBet('player1', 110)}).toThrow(`Not enough chips`);
   game.placeBet('player2', 100);
 
   expect(game.getBettingPlayers().length).toBe(1);
+});
+
+test(`players cannot place bets if they didn't join/exchange chips`, () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+
+  game.joinGame('player1', 100);
+  
+  game.changeState(gettingBetsState);
+
+  game.placeBet('player1', 10);
+  expect(() => {game.placeBet('player2', 20)}).toThrow(`join the game first`);
+
+  expect(game.getBettingPlayers().length).toBe(1);
+
 });
 
 test('players can only place one bet', () => {
@@ -211,7 +225,7 @@ test('players can only place one bet', () => {
   game.changeState(gettingBetsState);
 
   game.placeBet('player1', 10);
-  game.placeBet('player1', 20);
+  expect(() => {game.placeBet('player1', 20)}).toThrow(`already placed a bet`);
 
   const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
 
@@ -632,7 +646,7 @@ test('player cannnot play nonsense moves, player loses, player and dealer chips 
 
   game.changeState(checkDealerForNaturalsState);
   
-  game.play('player1', 'nonsense_move');
+  expect(() => {game.play('player1', 'nonsense_move')}).toThrow(`Invalid move`);
   game.play('player1', 'stand');
 
   const player = game.players.find(player => player.name === 'player1');
@@ -682,7 +696,7 @@ test('3 players, players cannot play when it is not their turn, player and deale
 
   game.changeState(checkDealerForNaturalsState);
   
-  game.play('player2', 'stand'); // not player2's turn
+  expect(() => {game.play('player2', 'stand');}).toThrow(`not player2's turn`);
   game.play('player1', 'stand');
   
   game.play('player2', 'hit'); 
