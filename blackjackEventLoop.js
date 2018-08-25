@@ -5,7 +5,7 @@ const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
 const Game = {
-  init(socket) {
+  init(io) {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
@@ -17,9 +17,10 @@ const Game = {
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
 
-    // inject the server's socket
+    // inject the server's io object
+    // (different from individual sockets!)
     // so the game has access to broadcast events
-    this.io = socket;
+    this.io = io;
 
     this.currentPlayer = null;
 
@@ -41,18 +42,10 @@ const Game = {
   },
   // gettingPlayers
   joinGame(playerName, chips) {
-    try {
-      this.state.joinGame(playerName, chips, this);
-    } catch(e) {
-      console.log(`[Error]: ${e}`);
-    }
+    this.state.joinGame(playerName, chips, this);
   },
   changeNickname(playerName, nickname) {
-    try {
-      this.state.changeNickname(playerName, nickname, this);
-    } catch (e) {
-      console.log(`[Error]: ${e}`);
-    }
+    this.state.changeNickname(playerName, nickname, this);
   },
   /*
   leaveGame(playerName) {
@@ -65,20 +58,11 @@ const Game = {
   */
   // gettingBets
   placeBet(playerName, amount) {
-    try {
-      this.state.placeBet(playerName, amount, this);
-    } catch(e) {
-      console.log(`[Error]: ${e}`);
-    }
+    this.state.placeBet(playerName, amount, this);
   },
   // gettingPlays
   play(playerName, move) {
-    // moves: "hit" or "stand"
-    try {
-      this.state.play(playerName, move, this);
-    } catch(e) {
-      console.log(`[Error]: ${e}`);
-    }
+    this.state.play(playerName, move, this);
   },
   // helper methods
   render() {
@@ -99,11 +83,6 @@ const Game = {
     // this.io.emit('render', this.renderCards());
     this.emitCurrentState();
   },
-  /*
-  addSocket(socket) {
-    this.io = socket;
-  },
-  */
   renderCards() {
     // generate front facing "state"
     const blankCard = {

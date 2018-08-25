@@ -29,12 +29,8 @@ const gettingBetsState = {
     if (betAmount > player.chips) {
       throw `Not enough chips`;
     }
-    try {
-      player.placeBet(betAmount);
-      this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
-    } catch (e) {
-      console.log(e);
-    }
+    player.placeBet(betAmount);
+    this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
    
     this.game.getPlayerChipsInHand();
     this.game.bettingPlayers = this.game.getBettingPlayers();

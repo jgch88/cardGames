@@ -27,6 +27,7 @@ const GameStateStatus = require('./gameStateStatus.js');
 const PlayerStatus = require('./playerStatus.js');
 const Button = require('./button.js');
 const BetStatus = require('./betStatus.js');
+const Snack = require('./snack.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -99,10 +100,24 @@ class BlackjackTable extends Component {
         chipsInHand
       });
     });
+    this.socket.on('emitError', message => {
+      console.log(message);
+      this.showError(message);
+    });
     this.joinGame = () => {
       const chips = window.prompt("How many chips would you like to exchange?", 500);
       console.log(chips);
       this.socket.emit('joinGame', { chips: Number(chips) });
+    };
+    this.showError = message => {
+      const snack = document.getElementById("snackbar");
+      this.setState({
+        errorMessage: message
+      });
+      snack.className = "show";
+      setTimeout(() => {
+        snack.className = snack.className.replace("show", "");
+      }, 2000);
     };
     this.placeBet = () => {
       const chips = window.prompt("How many chips would you like to bet?", 10);
@@ -134,6 +149,7 @@ class BlackjackTable extends Component {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
     };
+    this.errorMessage = ``;
   }
 
   betAmount() {
@@ -182,14 +198,15 @@ class BlackjackTable extends Component {
         { 'class': 'messageLog' },
         h(MessageLog, { messages: this.state.messages })
       ),
-      h(GameStateStatus, { gameState: this.state.gameState })
+      h(GameStateStatus, { gameState: this.state.gameState }),
+      h(Snack, { message: this.state.errorMessage })
     );
   }
 }
 
 module.exports = BlackjackTable;
 
-},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":6,"./gameStateStatus.js":7,"./messageLog.js":8,"./playerStatus.js":9}],3:[function(require,module,exports){
+},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":6,"./gameStateStatus.js":7,"./messageLog.js":8,"./playerStatus.js":9,"./snack.js":10}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -452,6 +469,22 @@ module.exports = PlayerStatus;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const Snack = function Snack(props) {
+  return h(
+    "div",
+    {
+      id: "snackbar"
+    },
+    props.message
+  );
+};
+
+module.exports = Snack;
+
+},{}],11:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const Card = require('./components/card');
 const Deck = require('./components/deck');
 const Clock = require('./components/clock');
@@ -479,4 +512,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":5,"./components/deck":6}]},{},[10]);
+},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":5,"./components/deck":6}]},{},[11]);

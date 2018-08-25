@@ -7,6 +7,7 @@ const GameStateStatus = require('./gameStateStatus.js');
 const PlayerStatus = require('./playerStatus.js');
 const Button = require('./button.js');
 const BetStatus = require('./betStatus.js');
+const Snack = require('./snack.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -79,10 +80,22 @@ class BlackjackTable extends Component {
         chipsInHand
       });
     });
+    this.socket.on('emitError', (message) => {
+      console.log(message);
+      this.showError(message);
+    });
     this.joinGame = () => {
       const chips = window.prompt("How many chips would you like to exchange?", 500);
       console.log(chips);
       this.socket.emit('joinGame', {chips: Number(chips)});
+    };
+    this.showError = (message) => {
+      const snack = document.getElementById("snackbar");
+      this.setState({
+        errorMessage: message
+      });
+      snack.className = "show";
+      setTimeout(() => {snack.className = snack.className.replace("show", "")}, 2000);
     };
     this.placeBet = () => {
       const chips = window.prompt("How many chips would you like to bet?", 10);
@@ -152,6 +165,7 @@ class BlackjackTable extends Component {
           <MessageLog messages={this.state.messages} />
         </div>
       <GameStateStatus gameState={this.state.gameState}/>
+      <Snack message={this.state.errorMessage} />
       </div>
     );
   }
