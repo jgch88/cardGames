@@ -149,7 +149,6 @@ class BlackjackTable extends Component {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
     };
-    this.errorMessage = ``;
   }
 
   betAmount() {
@@ -451,12 +450,12 @@ const PlayerStatus = function PlayerStatus(props) {
     },
     h(
       "span",
-      null,
+      { id: "nickname" },
       props.playerName
     ),
     props.socketId in props.gameState.chipsInHand && h(
       "span",
-      null,
+      { id: "chipsInHand" },
       "Chips: ",
       props.gameState.chipsInHand[props.socketId]
     )

@@ -7,9 +7,9 @@ const PlayerStatus = function PlayerStatus(props) {
     <div
       class="playerStatus"
     >
-      <span>{props.playerName}</span>
+      <span id="nickname">{props.playerName}</span>
     {(props.socketId in props.gameState.chipsInHand) &&
-      <span>Chips: {props.gameState.chipsInHand[props.socketId]}</span>
+      <span id="chipsInHand">Chips: {props.gameState.chipsInHand[props.socketId]}</span>
     }
     </div>
   )
