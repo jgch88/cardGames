@@ -151,13 +151,13 @@ class BlackjackTable extends Component {
           {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
           <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
           {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
-          <span><Button text={"Change name"} clickHandler={this.changeNickname}/><Button text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
+          <span><Button id="changeName" text={"Change name"} clickHandler={this.changeNickname}/><Button id="goToBettingState" text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? 
-          <Button text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
+          <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
-          <Button text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
+          <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
           {this.state.gameState === 'dealerNoBlackjackState' ? 
-          <div><Button text={"Hit"} clickHandler={this.hit}/><Button text={"Stand"} clickHandler={this.stand}/></div> : ''}
+          <div><Button id="playHit" text={"Hit"} clickHandler={this.hit}/><Button id="playStand" text={"Stand"} clickHandler={this.stand}/></div> : ''}
           
         </div>
         MessageLog
