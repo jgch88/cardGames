@@ -4,6 +4,10 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const BlackjackGame = require('./blackjackEventLoop.js');
+const argv = require('minimist')(process.argv.slice(2));
+const decks = require('./deckConfig.js');
+
+console.log(decks[argv.deck]);
 
 const gettingPlayersState = require('./gettingPlayersState.js');
 const gettingBetsState = require('./gettingBetsState.js');
@@ -14,6 +18,10 @@ server.listen(4000, () => console.log(`Listening on port 4000`));
 
 const game = Object.create(BlackjackGame);
 game.init(io);
+if (decks[argv.deck]) {
+  game.deck = decks[argv.deck];
+}
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
