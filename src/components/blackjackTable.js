@@ -41,8 +41,7 @@ class BlackjackTable extends Component {
         messages,
       })
     });
-    this.socket.on('chipsInHand', (chipsInHand) => {
-      console.log(chipsInHand);
+    this.socket.on('currentChipsInHand', ({chipsInHand}) => {
       // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
       // console.log(newChipsInHand);
       // build new state in blackjackEventLoop.

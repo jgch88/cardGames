@@ -10,9 +10,9 @@ let dialogValue;
 const USER_DATA_DIR = 'C:\\Users\\Me\\Downloads\\temp';
 const USER_DATA_DIR_WSL = '/mnt/c/Users/Me/Downloads/temp';
 
-const initServer = async () => {
+const initServer = async (deckType) => {
   return new Promise((resolve, reject) => {
-    childProcess = spawn('node', ['server.js', '--deck=dealerHasBlackjackDeck']);
+    childProcess = spawn('node', ['server.js', `--deck=${deckType}`]);
 
     childProcess.stdout.on('data', data => {
       console.log(JSON.stringify(data.toString('utf8')));
@@ -31,7 +31,7 @@ beforeAll(async () => {
     executablePath: `chrome.exe`,
     userDataDir: USER_DATA_DIR,
     headless: false,
-    slowMo: 80,
+    slowMo: 50,
   });
   await browser.newPage(); // open tab for 2nd player
   await browser.newPage(); // open tab for 3rd player
@@ -64,6 +64,25 @@ test('player can join the game with 1000 chips', async () => {
   await pages[0].$eval('#joinGame', el => el.click());
   const chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
   expect(chipsInHand).toBe('Chips: 1000');
+  killServer();
+});
+
+test('dealer has blackjack, player no blackjack', async () => {
+  await initServer(`dealerHasBlackjackDeck`);
+  await pages[0].goto(APP);
+  dialogValue = "100"
+  await pages[0].$eval('#joinGame', el => el.click());
+  let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+  expect(chipsInHand).toBe('Chips: 100');
+  await pages[0].$eval('#goToBettingState', el => el.click());
+  dialogValue = "10"
+  await pages[0].$eval('#placeBet', el => el.click());
+  
+  chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+  expect(chipsInHand).toBe('Chips: 90');
+  await pages[0].$eval('#startRound', el => el.click());
+  const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+  expect(messageLog).toContain('[Dealer]: Has a Blackjack');
   killServer();
 });
 
@@ -132,5 +151,44 @@ test('two players join, both players stand, game resolves', async () => {
     });
   const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
   expect(messageLog).toContain('All bets resolved!');
+  killServer();
+}, 7000);
+
+
+test(`dealer bursts after hitting, player doesn't burst`, async () => {
+  await initServer(`bothNoBlackjack`);
+  await pages[0].goto(APP);
+
+  dialogValue = "100"
+  await pages[0].waitForSelector('#joinGame');
+  await pages[0].$eval('#joinGame', el => el.click());
+  let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+  expect(chipsInHand).toBe('Chips: 100');
+
+  await pages[0].$eval('#goToBettingState', el => el.click());
+  dialogValue = "10"
+  await pages[0].$eval('#placeBet', el => el.click());
+
+  await pages[0].$eval('#startRound', el => el.click());
+  await pages[0]
+    .waitForSelector('#playHit', {timeout:200})
+    .then(async () =>  {
+      await pages[0].$eval('#playHit', el => el.click());
+    })
+    .catch((e) => {
+      console.log(e)
+    });
+  await pages[0]
+    .waitForSelector('#playStand', {timeout:200})
+    .then(async () =>  {
+      await pages[0].$eval('#playStand', el => el.click());
+    })
+    .catch((e) => {
+      console.log(e)
+    });
+  const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+  expect(messageLog).toContain('wins [Dealer]');
+  chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+  expect(chipsInHand).toBe('Chips: 110');
   killServer();
 }, 7000);

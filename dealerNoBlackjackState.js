@@ -36,17 +36,20 @@ const dealerNoBlackjackState = {
           this.game.sendMessageLogMessages(playerBurstsMessage);
           this.game.sendMessageLogMessages(this.game.currentPlayer.bet.resolve('playerLoses', 1, this.game.dealer));
           this.game.currentPlayer.resolve();
+          this.game.emitCurrentChipsInHand();
           this.game.currentPlayer = this.getNextPlayer();
         } else if (this.game.currentPlayer.score === 21) {
           const playerBlackjackMessage = `[${this.game.currentPlayer.nickname}]: Blackjack!`;
           this.game.sendMessageLogMessages(playerBlackjackMessage);
           this.game.sendMessageLogMessages(this.game.currentPlayer.bet.resolve('playerWins', 1, this.game.dealer));
           this.game.currentPlayer.resolve();
+          this.game.emitCurrentChipsInHand();
           this.game.currentPlayer = this.getNextPlayer();
         }
       } else if (move === 'stand') {
         this.game.render();
         this.game.currentPlayer.resolve();
+        this.game.emitCurrentChipsInHand();
         this.game.currentPlayer = this.getNextPlayer();
       } else {
         throw `[Error]: Invalid move ${playerName}. Please enter 'stand' or 'hit'`;
