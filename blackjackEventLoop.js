@@ -148,6 +148,13 @@ const Game = {
     // console.log(currentState);
     return currentState;
   },
+  emitCurrentChipsInHand() {
+    let chipsInHand = {};
+    chipsInHand.chipsInHand = this.getPlayerChipsInHand();
+
+    this.io.emit('currentChipsInHand', chipsInHand);
+
+  },
   // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!

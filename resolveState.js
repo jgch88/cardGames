@@ -21,6 +21,7 @@ const resolveState = {
     remainingBets.forEach(bet => {
       this.resolveBet(bet);
     });
+    this.game.emitCurrentChipsInHand();
     this.game.sendMessageLogMessages(`[State]: All bets resolved! Round over.`);
 
     this.cleanUp();

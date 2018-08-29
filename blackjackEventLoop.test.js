@@ -237,22 +237,7 @@ test('dealer gets blackjack, player and dealer chips resolve correctly', () => {
 
   const game = Object.create(BlackjackGame);
   game.init(io);
-  // inject rigged deck such that dealer will get blackjack
-  const deck = Object.create(Deck);
-  deck.createStandardDeck();
-  const dealerCard1 = Object.create(CardWithTwoSides);
-  const dealerCard2 = Object.create(CardWithTwoSides);
-  const playerCard1 = Object.create(CardWithTwoSides);
-  const playerCard2 = Object.create(CardWithTwoSides);
-  dealerCard1.prepareCard({value: Number(1), suit: "Spades"}, {isFaceDown: true});
-  dealerCard2.prepareCard({value: Number(13), suit: "Spades"}, {isFaceDown: true});
-  playerCard1.prepareCard({value: Number(5), suit: "Spades"}, {isFaceDown: true});
-  playerCard2.prepareCard({value: Number(3), suit: "Spades"}, {isFaceDown: true});
-  deck.addCardToTop(dealerCard2);
-  deck.addCardToTop(playerCard1);
-  deck.addCardToTop(dealerCard1);
-  deck.addCardToTop(playerCard2);
-  game.deck = deck;
+  game.deck = require('./testDeckConfigs/dealerHasBlackjackDeck.js');
 
   game.joinGame('player1', 100);
   
@@ -272,7 +257,6 @@ test(`dealer's first card is not a 10 point card, goes to the dealerNoBlackjack 
 
   const game = Object.create(BlackjackGame);
   game.init(io);
-  // inject rigged deck such that dealer will get blackjack
   const deck = Object.create(Deck);
   deck.createStandardDeck();
   const dealerCard1 = Object.create(CardWithTwoSides);
@@ -340,22 +324,7 @@ test('dealer no blackjack, player has blackjack, player and dealer chips resolve
 
   const game = Object.create(BlackjackGame);
   game.init(io);
-  // inject rigged deck such that dealer will get blackjack
-  const deck = Object.create(Deck);
-  deck.createStandardDeck();
-  const dealerCard1 = Object.create(CardWithTwoSides);
-  const dealerCard2 = Object.create(CardWithTwoSides);
-  const playerCard1 = Object.create(CardWithTwoSides);
-  const playerCard2 = Object.create(CardWithTwoSides);
-  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
-  dealerCard2.prepareCard({value: Number(7), suit: "Spades"}, {isFaceDown: true});
-  playerCard1.prepareCard({value: Number(1), suit: "Hearts"}, {isFaceDown: true});
-  playerCard2.prepareCard({value: Number(13), suit: "Hearts"}, {isFaceDown: true});
-  deck.addCardToTop(dealerCard2);
-  deck.addCardToTop(playerCard1);
-  deck.addCardToTop(dealerCard1);
-  deck.addCardToTop(playerCard2);
-  game.deck = deck;
+  game.deck = require('./testDeckConfigs/dealerNoBlackjackPlayerHasBlackjack.js');
 
   game.joinGame('player1', 100);
   
@@ -760,26 +729,7 @@ test(`dealer bursts after hitting, player doesn't burst`, () => {
   game.init(io);
   // inject rigged deck such that dealer will get blackjack
   const deck = Object.create(Deck);
-  deck.createStandardDeck();
-  const dealerCard1 = Object.create(CardWithTwoSides);
-  const dealerCard2 = Object.create(CardWithTwoSides);
-  const dealerCard3 = Object.create(CardWithTwoSides);
-  const playerCard1 = Object.create(CardWithTwoSides);
-  const playerCard2 = Object.create(CardWithTwoSides);
-  const playerCard3 = Object.create(CardWithTwoSides);
-  dealerCard1.prepareCard({value: Number(6), suit: "Spades"}, {isFaceDown: true});
-  dealerCard2.prepareCard({value: Number(7), suit: "Spades"}, {isFaceDown: true});
-  dealerCard3.prepareCard({value: Number(11), suit: "Spades"}, {isFaceDown: true});
-  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
-  playerCard2.prepareCard({value: Number(7), suit: "Hearts"}, {isFaceDown: true});
-  playerCard3.prepareCard({value: Number(5), suit: "Hearts"}, {isFaceDown: true});
-  deck.addCardToTop(dealerCard3);
-  deck.addCardToTop(playerCard3);
-  deck.addCardToTop(dealerCard2);
-  deck.addCardToTop(playerCard2);
-  deck.addCardToTop(dealerCard1);
-  deck.addCardToTop(playerCard1);
-  game.deck = deck;
+  game.deck = require('./testDeckConfigs/bothNoBlackjack.js');
 
   game.joinGame('player1', 100);
   

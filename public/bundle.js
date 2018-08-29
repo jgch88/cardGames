@@ -61,8 +61,7 @@ class BlackjackTable extends Component {
         messages
       });
     });
-    this.socket.on('chipsInHand', chipsInHand => {
-      console.log(chipsInHand);
+    this.socket.on('currentChipsInHand', ({ chipsInHand }) => {
       // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
       // console.log(newChipsInHand);
       // build new state in blackjackEventLoop.
@@ -149,7 +148,6 @@ class BlackjackTable extends Component {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
     };
-    this.errorMessage = ``;
   }
 
   betAmount() {
@@ -180,16 +178,16 @@ class BlackjackTable extends Component {
         this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
           'span',
           null,
-          h(Button, { text: "Change name", clickHandler: this.changeNickname }),
-          h(Button, { text: "Next", clickHandler: this.goToBettingState })
+          h(Button, { id: 'changeName', text: "Change name", clickHandler: this.changeNickname }),
+          h(Button, { id: 'goToBettingState', text: "Next", clickHandler: this.goToBettingState })
         ) : '',
-        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? h(Button, { text: "Place Bet", clickHandler: this.placeBet }) : '',
-        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
+        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
+        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
         this.state.gameState === 'dealerNoBlackjackState' ? h(
           'div',
           null,
-          h(Button, { text: "Hit", clickHandler: this.hit }),
-          h(Button, { text: "Stand", clickHandler: this.stand })
+          h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
+          h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
         ) : ''
       ),
       'MessageLog',
@@ -451,12 +449,12 @@ const PlayerStatus = function PlayerStatus(props) {
     },
     h(
       "span",
-      null,
+      { id: "nickname" },
       props.playerName
     ),
     props.socketId in props.gameState.chipsInHand && h(
       "span",
-      null,
+      { id: "chipsInHand" },
       "Chips: ",
       props.gameState.chipsInHand[props.socketId]
     )
