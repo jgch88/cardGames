@@ -16,8 +16,9 @@ const resolveState = require('./resolveState.js');
 
 server.listen(4000, () => console.log(`Listening on port 4000`));
 
-const game = Object.create(BlackjackGame);
-game.init(io);
+let defaultRoomName = 'game0';
+let game = Object.create(BlackjackGame);
+game.init(io, defaultRoomName);
 if (decks[argv.deck]) {
   game.deck = decks[argv.deck];
 }
@@ -30,71 +31,88 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log(`New socket connected.`);
-  // how to get socket ID?
-  // console.log(socket.id);
-  console.log(`[Game players]: ${games[0].players.map(player => player.name)}`);
+  let currentGame = games.find(game => game.roomName === defaultRoomName);
+  let currentRoom = currentGame.roomName;
+  socket.join(currentRoom);
 
+  const changeCurrentGame = (roomName) => {
+    socket.leave(currentRoom);
+    currentGame = games.find(game => game.roomName === roomName);
+    currentRoom = currentGame.roomName;
+    socket.join(currentRoom);
+  }
+  // each socket can only be playing one game at a time
+  // but this is fine since each browser tab has its own socket anyway
+
+  // how to get socket ID of client?
+  // console.log(socket.id);
+
+  // called when react client invokes componentDidMount
   socket.on('newSocketReady', () => {
-    console.log('ready');
-    games[0].emitCurrentState();
+    currentGame.emitCurrentState();
   })
 
   socket.on('createRoom', (roomName) => {
     console.log('creating room', roomName);
     // init game with roomName property
     // server also needs to keep track of rooms
-    game = Object.create(BlackjackGame);
-    game.init(io, roomName);
-    socket.join(roomName);
-    game.emitCurrentState();
-    games.push[game];
+    let newGame = Object.create(BlackjackGame);
+    newGame.init(io, roomName);
+    games.push(newGame);
+    changeCurrentGame(roomName);
+    currentGame.emitCurrentState();
   })
   
   socket.on('joinRoom', (roomName) => {
-    console.log('joining room', roomName);
+    try {
+      changeCurrentGame(roomName);
+      currentGame.emitCurrentState();
+      console.log('joining room', roomName);
+    } catch(e) {
+      console.log(`No such room`);
+    }
     // throw error if trying to join a game 
     // that server hasn't created
     // since socket can join the 'room' but
     // game has actually not been initialised
-    socket.join(roomName);
     // need to emit roomName's gamestate
   })
   
   socket.on('disconnect', (reason) => {
-    games[0].sendMessageLogMessages(`[${socket.id}] Disconnected: ${reason}`);
-    if (games[0].state.name === 'dealerNoBlackjackState' && games[0].currentPlayer.name === socket.id) {
-      games[0].currentPlayer.resolve();
-      games[0].currentPlayer.bet.resolve('playerLoses', 1, games[0].dealer);
-      games[0].currentPlayer = games[0].state.getNextPlayer();
+    currentGame.sendMessageLogMessages(`[${socket.id}] Disconnected: ${reason}`);
+    if (currentGame.state.name === 'dealerNoBlackjackState' && currentGame.currentPlayer.name === socket.id) {
+      currentGame.currentPlayer.resolve();
+      currentGame.currentPlayer.bet.resolve('playerLoses', 1, currentGame.dealer);
+      currentGame.currentPlayer = currentGame.state.getNextPlayer();
     } else {
     // socketid player resolve not currentplayer!!!
-      const disconnectedPlayer = games[0].players.find(player => player.name === socket.id);
+      const disconnectedPlayer = currentGame.players.find(player => player.name === socket.id);
       if (disconnectedPlayer) {
         disconnectedPlayer.resolve();
         if (disconnectedPlayer.bet) {
-          disconnectedPlayer.bet.resolve('playerLoses', 1, games[0].dealer);
+          disconnectedPlayer.bet.resolve('playerLoses', 1, currentGame.dealer);
         }
       }
     }
-    games[0].players = games[0].players.filter(player => player.name !== socket.id);
+    currentGame.players = currentGame.players.filter(player => player.name !== socket.id);
     // also remove their bets if they disconnect?
     // otherwise there's going to be problems with bet and 
     // player resolution
     // dealer pockets the money?
-    console.log(`[Game players]: ${games[0].players.map(player => player.name)}`);
+    console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
     // when all players disconnect, resolve game and go back to gettingPlayersState
-    if (games[0].players.length === 0) {
+    if (currentGame.players.length === 0) {
       console.log(`All players disconnected`);
-      games[0].changeState(resolveState);
+      currentGame.changeState(resolveState);
     }
-    games[0].emitCurrentState();
+    currentGame.emitCurrentState();
   });
 
   socket.on('joinGame', (chips) => {
     try {
-      games[0].joinGame(`${socket.id}`, chips.chips);
-      console.log(`[Game players]: ${games[0].players.map(player => player.name)}`);
-      games[0].emitCurrentState();
+      currentGame.joinGame(`${socket.id}`, chips.chips);
+      console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
+      currentGame.emitCurrentState();
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -104,8 +122,8 @@ io.on('connection', (socket) => {
 
   socket.on('placeBet', (chips) => {
     try {
-      games[0].placeBet(`${socket.id}`, chips.chips);
-      games[0].emitCurrentState();
+      currentGame.placeBet(`${socket.id}`, chips.chips);
+      currentGame.emitCurrentState();
     } catch(e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -115,7 +133,7 @@ io.on('connection', (socket) => {
 
   socket.on('play', (move) => {
     try {
-      games[0].play(socket.id, move);
+      currentGame.play(socket.id, move);
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -127,8 +145,8 @@ io.on('connection', (socket) => {
   socket.on('changeNickname', (nickname) => {
     try {
       console.log(`changing nickname to ${nickname}`);
-      games[0].changeNickname(socket.id, nickname);
-      games[0].emitCurrentState();
+      currentGame.changeNickname(socket.id, nickname);
+      currentGame.emitCurrentState();
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -138,14 +156,14 @@ io.on('connection', (socket) => {
 
   socket.on('changeState', (newState) => {
     if (newState === 'gettingBetsState') {
-      if (games[0].state.name === 'gettingPlayersState') {
-        games[0].changeState(gettingBetsState)
+      if (currentGame.state.name === 'gettingPlayersState') {
+        currentGame.changeState(gettingBetsState)
       } else {
         console.log(`[State]: Can't change to ${newState}`);
       }
     } else if (newState === 'checkDealerForNaturalsState') {
-      if (games[0].state.name === 'gettingBetsState') {
-        games[0].changeState(checkDealerForNaturalsState);
+      if (currentGame.state.name === 'gettingBetsState') {
+        currentGame.changeState(checkDealerForNaturalsState);
       } else {
         console.log(`[State]: Can't change to ${newState}`);
       }
