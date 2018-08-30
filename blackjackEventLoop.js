@@ -5,12 +5,14 @@ const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
 const Game = {
-  init(io) {
+  init(io, roomName) {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
     deck.shuffle();
     this.deck = deck;
+
+    this.roomName = roomName;
 
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);
