@@ -148,6 +148,14 @@ class BlackjackTable extends Component {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
     };
+    this.createRoom = () => {
+      const roomName = window.prompt("Which room would you like to create?", 123);
+      this.socket.emit('createRoom', roomName);
+    };
+    this.joinRoom = () => {
+      const roomName = window.prompt("Which room would you like to join?", 123);
+      this.socket.emit('joinRoom', roomName);
+    };
   }
 
   betAmount() {
@@ -161,6 +169,8 @@ class BlackjackTable extends Component {
     return h(
       'div',
       { 'class': 'deckTable' },
+      h(Button, { text: "Create room", id: "createRoom", clickHandler: this.createRoom }),
+      h(Button, { text: "Join room", id: "joinRoom", clickHandler: this.joinRoom }),
       h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
       h(BetStatus, { chips: this.betAmount() }),

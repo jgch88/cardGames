@@ -5,12 +5,14 @@ const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
 const Game = {
-  init(io) {
+  init(io, roomName) {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
     deck.shuffle();
     this.deck = deck;
+
+    this.roomName = roomName;
 
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);
@@ -80,7 +82,7 @@ const Game = {
     });
     console.log(`******`);
 
-    // this.io.emit('render', this.renderCards());
+    // this.io.to(this.roomName).emit('render', this.renderCards());
     this.emitCurrentState();
   },
   renderCards() {
@@ -127,10 +129,10 @@ const Game = {
     // the front end "console.log" api, last x no of console messages
     console.log(message);
     this.messageLog.addMessage(message);
-    this.io.emit('message', this.getMessageLogMessages());
+    this.io.to(this.roomName).emit('message', this.getMessageLogMessages());
   },
   sendGameState(gameState) {
-    this.io.emit('gameState',{ gameState });
+    this.io.to(this.roomName).emit('gameState',{ gameState });
   },
   emitCurrentState() {
     // minified state
@@ -144,7 +146,7 @@ const Game = {
     currentState.dealerCards = this.renderCards().dealerCards;
     currentState.gameState = this.state.name;
 
-    this.io.emit('currentState', currentState);
+    this.io.to(this.roomName).emit('currentState', currentState);
     // console.log(currentState);
     return currentState;
   },
@@ -152,7 +154,7 @@ const Game = {
     let chipsInHand = {};
     chipsInHand.chipsInHand = this.getPlayerChipsInHand();
 
-    this.io.emit('currentChipsInHand', chipsInHand);
+    this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
 
   },
   // almost like redux "reducers?" like reducing state?
@@ -162,7 +164,7 @@ const Game = {
     // from players{}
     let chipsInHand = {};
     this.players.map(player => {chipsInHand[player.name] = player.chips});
-    // this.io.emit('chipsInHand', chipsInHand);
+    // this.io.to(this.roomName).emit('chipsInHand', chipsInHand);
     return chipsInHand;
   },
   getPlayerBetAmounts() {
@@ -172,7 +174,7 @@ const Game = {
     this.getBettingPlayers().map(player => { 
       betAmounts[player.name] = player.bet.betAmount;
     });
-    // this.io.emit('betAmounts', betAmounts);
+    // this.io.to(this.roomName).emit('betAmounts', betAmounts);
     return betAmounts;
   },
   getBettingPlayers() {
