@@ -19,6 +19,8 @@ class BlackjackTable extends Component {
       gameState: '',
       chipsInHand: {},
       betAmounts: {},
+      bets: {},
+      currentBet: '',
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -61,14 +63,16 @@ class BlackjackTable extends Component {
       })
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet }) => {
       this.setState({
         gameState,
         messages,
         players,
         dealerCards,
         betAmounts,
-        chipsInHand
+        chipsInHand,
+        bets,
+        currentBet,
       });
       console.log('currentState', {
         gameState,
@@ -76,7 +80,9 @@ class BlackjackTable extends Component {
         players,
         dealerCards,
         betAmounts,
-        chipsInHand
+        chipsInHand,
+        bets,
+        currentBet,
       });
     });
     this.socket.on('emitError', (message) => {
@@ -150,10 +156,9 @@ class BlackjackTable extends Component {
         <Button text={"Join room"} id={"joinRoom"} clickHandler={this.joinRoom}/>
         <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
-        <BetStatus chips={this.betAmount()} />
         <div class="horizontalScroll playerHands">
-        {Object.keys(this.state.players).map((player, index) => {
-          return <Deck isPlayersDeck={this.socket.id === player} playerName={this.state.players[player].nickname} key={index} cards={this.state.players[player].cards} />
+        {Object.keys(this.state.bets).map((bet, index) => {
+          return <Deck betAmount={this.state.bets[bet].betAmount} isPlayersDeck={this.socket.id === bet} playerName={this.state.bets[bet].nickname} key={index} cards={this.state.bets[bet].cards} />
         })}
         </div>
         <div class="actions">
@@ -161,7 +166,7 @@ class BlackjackTable extends Component {
           <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
           {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
           <span><Button id="changeName" text={"Change name"} clickHandler={this.changeNickname}/><Button id="goToBettingState" text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
-          {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? 
+          {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? 
           <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
           <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}

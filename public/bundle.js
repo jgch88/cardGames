@@ -3,7 +3,7 @@
 const { h, render, Component } = preact;
 
 const BetStatus = function BetStatus(props) {
-  if (!props.chips) {
+  if (!props.betAmount) {
     return h("span", null);
   }
 
@@ -11,7 +11,7 @@ const BetStatus = function BetStatus(props) {
     "span",
     null,
     "Your Bet: ",
-    props.chips
+    props.betAmount
   );
 };
 
@@ -38,7 +38,9 @@ class BlackjackTable extends Component {
       messages: [],
       gameState: '',
       chipsInHand: {},
-      betAmounts: {}
+      betAmounts: {},
+      bets: {},
+      currentBet: ''
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -81,14 +83,16 @@ class BlackjackTable extends Component {
       });
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet }) => {
       this.setState({
         gameState,
         messages,
         players,
         dealerCards,
         betAmounts,
-        chipsInHand
+        chipsInHand,
+        bets,
+        currentBet
       });
       console.log('currentState', {
         gameState,
@@ -96,7 +100,9 @@ class BlackjackTable extends Component {
         players,
         dealerCards,
         betAmounts,
-        chipsInHand
+        chipsInHand,
+        bets,
+        currentBet
       });
     });
     this.socket.on('emitError', message => {
@@ -173,12 +179,11 @@ class BlackjackTable extends Component {
       h(Button, { text: "Join room", id: "joinRoom", clickHandler: this.joinRoom }),
       h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id }),
       h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
-      h(BetStatus, { chips: this.betAmount() }),
       h(
         'div',
         { 'class': 'horizontalScroll playerHands' },
-        Object.keys(this.state.players).map((player, index) => {
-          return h(Deck, { isPlayersDeck: this.socket.id === player, playerName: this.state.players[player].nickname, key: index, cards: this.state.players[player].cards });
+        Object.keys(this.state.bets).map((bet, index) => {
+          return h(Deck, { betAmount: this.state.bets[bet].betAmount, isPlayersDeck: this.socket.id === bet, playerName: this.state.bets[bet].nickname, key: index, cards: this.state.bets[bet].cards });
         })
       ),
       h(
@@ -191,7 +196,7 @@ class BlackjackTable extends Component {
           h(Button, { id: 'changeName', text: "Change name", clickHandler: this.changeNickname }),
           h(Button, { id: 'goToBettingState', text: "Next", clickHandler: this.goToBettingState })
         ) : '',
-        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && !this.playerHasBet() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
+        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
         this.state.gameState === 'dealerNoBlackjackState' ? h(
           'div',
@@ -367,6 +372,7 @@ module.exports = Clock;
 /** @jsx h */
 const { h, render, Component } = preact;
 const Card = require('./card.js');
+const BetStatus = require('./betStatus.js');
 
 // Deck is a collection of cards
 
@@ -377,20 +383,21 @@ const Deck = function Deck(props) {
   const cardWidthStyle = {};
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
-    "div",
+    'div',
     null,
+    h(BetStatus, { betAmount: props.betAmount }),
     props.isPlayersDeck ? h(
-      "div",
+      'div',
       { style: playerNameStyle },
       playerNameText
     ) : h(
-      "div",
+      'div',
       null,
       playerNameText
     ),
     props.cards.map(card => {
       return h(
-        "td",
+        'td',
         null,
         h(Card, { suit: card.suit, value: card.value, isFaceDown: card.isFaceDown })
       );
@@ -400,7 +407,7 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{"./card.js":4}],7:[function(require,module,exports){
+},{"./betStatus.js":1,"./card.js":4}],7:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 

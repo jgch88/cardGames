@@ -2,12 +2,12 @@
 const { h, render, Component } = preact;
 
 const BetStatus = function BetStatus(props) {
-  if (!props.chips) {
+  if (!props.betAmount) {
     return <span></span>
   }
 
   return (
-    <span>Your Bet: {props.chips}</span>
+    <span>Your Bet: {props.betAmount}</span>
   )
 }
 

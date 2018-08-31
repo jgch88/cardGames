@@ -86,6 +86,23 @@ const Game = {
     // this.io.to(this.roomName).emit('render', this.renderCards());
     this.emitCurrentState();
   },
+  renderBets() {
+    // state => bets: { idno: cards, player.nickname }
+    const bets = {};
+
+    this.bets.forEach((bet) => {
+      bets[bet.id] = {
+        betAmount: bet.betAmount,
+        cards: [],
+        nickname: bet.player.nickname
+      };
+      bet.cards.cards.forEach((card) => {
+        bets[bet.id].cards.push(card);
+      });
+    });
+
+    return bets;
+  },
   renderCards() {
     // generate front facing "state"
     const blankCard = {
@@ -106,14 +123,14 @@ const Game = {
     });
 
     renderedState.players = {};
-    this.players.forEach((player) => {
+    this.bets.forEach((bet) => {
       // shouldn't expose player.name though, probably use positionIds or something
-      renderedState.players[player.name] = {
+      renderedState.players[bet.player.name] = {
         cards: [],
-        nickname: player.nickname
+        nickname: bet.player.nickname
       };
-      player.hand.cards.forEach((card) => {
-        renderedState.players[player.name].cards.push(card);
+      bet.cards.cards.forEach((card) => {
+        renderedState.players[bet.player.name].cards.push(card);
       });
     });
 
@@ -146,10 +163,17 @@ const Game = {
     currentState.players = this.renderCards().players;
     currentState.dealerCards = this.renderCards().dealerCards;
     currentState.gameState = this.state.name;
+    currentState.bets = this.renderBets(); 
+    // use logic to change background colour of current bets
+    currentState.currentBet = this.getCurrentBetId();
 
     this.io.to(this.roomName).emit('currentState', currentState);
     // console.log(currentState);
     return currentState;
+  },
+  getCurrentBetId() {
+    return this.currentBet ? this.currentBet.id : '';
+
   },
   emitCurrentChipsInHand() {
     let chipsInHand = {};
