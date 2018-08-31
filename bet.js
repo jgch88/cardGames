@@ -1,4 +1,5 @@
 // bet knows too much about player
+const BlackjackHand = require('./blackjackHand.js');
 // it's the player's responsibility
 // to check if chips are enough
 const Bet = {
@@ -7,6 +8,12 @@ const Bet = {
     this.insurance = false;
     this.player = player;
     this.resolved = false;
+    const cards = Object.create(BlackjackHand);
+    cards.init();
+    this.cards = cards;
+  },
+  get score() {
+    return this.cards.calcHandValue();
   },
   resolve(playerOutcome, multiplier,  dealer) {
     // POV of player

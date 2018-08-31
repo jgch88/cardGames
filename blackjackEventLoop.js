@@ -75,9 +75,9 @@ const Game = {
     this.dealer.hand.cards.forEach(card => {
       console.log(`   ${card.readFace()}`);
     });
-    this.getBettingPlayers().forEach((player) => {
-      console.log(`${player.name}`);
-      player.hand.cards.forEach((card) => {
+    this.bets.forEach((bet) => {
+      console.log(`${bet.player.name}`);
+      bet.cards.cards.forEach((card) => {
         console.log(`   ${card.readFace()}`);
       })
     });
