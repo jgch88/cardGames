@@ -77,7 +77,7 @@ const Game = {
     });
     this.bets.forEach((bet) => {
       console.log(`${bet.player.name}`);
-      bet.cards.cards.forEach((card) => {
+      bet.hand.cards.forEach((card) => {
         console.log(`   ${card.readFace()}`);
       })
     });
@@ -96,7 +96,7 @@ const Game = {
         cards: [],
         nickname: bet.player.nickname
       };
-      bet.cards.cards.forEach((card) => {
+      bet.hand.cards.forEach((card) => {
         bets[bet.id].cards.push(card);
       });
     });

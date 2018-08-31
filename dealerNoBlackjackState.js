@@ -28,8 +28,8 @@ const dealerNoBlackjackState = {
       const moveMessage = `[${this.game.currentBet.player.nickname}]: '${move}'`;
       this.game.sendMessageLogMessages(moveMessage);
       if (move === 'hit') {
-        this.game.deck.transferTopCard(this.game.currentBet.cards);
-        this.game.currentBet.cards.cards[this.game.currentBet.cards.cards.length - 1].turnFaceUp();
+        this.game.deck.transferTopCard(this.game.currentBet.hand);
+        this.game.currentBet.hand.cards[this.game.currentBet.hand.cards.length - 1].turnFaceUp();
         this.game.render();
         if (this.game.currentBet.score > 21) {
           const playerBurstsMessage = `[${this.game.currentBet.player.nickname}]: bursts (${this.game.currentBet.score}).`;

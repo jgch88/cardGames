@@ -9,13 +9,13 @@ const Bet = {
     this.insurance = false;
     this.player = player;
     this.resolved = false;
-    const cards = Object.create(BlackjackHand);
-    cards.init();
-    this.cards = cards;
+    const hand = Object.create(BlackjackHand);
+    hand.init();
+    this.hand = hand;
     this.stand = false;
   },
   get score() {
-    return this.cards.calcHandValue();
+    return this.hand.calcHandValue();
   },
   resolve(playerOutcome, multiplier,  dealer) {
     // POV of player

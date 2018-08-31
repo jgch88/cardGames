@@ -14,12 +14,12 @@ const checkDealerForNaturalsState = {
     // starting from the first player
     this.dealOneToEveryone(game.bets);
     game.bets.forEach((bet) => {
-      bet.cards.cards[0].turnFaceUp();
+      bet.hand.cards[0].turnFaceUp();
     });
     this.game.dealer.hand.cards[0].turnFaceUp();
     this.dealOneToEveryone(game.bets);
     game.bets.forEach((bet) => {
-      bet.cards.cards[1].turnFaceUp();
+      bet.hand.cards[1].turnFaceUp();
     });
     game.render();
 
@@ -44,7 +44,7 @@ const checkDealerForNaturalsState = {
     // rename to dealOneToEveryBet
     // deal to players before dealer
     bets.forEach(bet => {
-      this.game.deck.transferTopCard(bet.cards);
+      this.game.deck.transferTopCard(bet.hand);
     })
     this.game.deck.transferTopCard(this.game.dealer.hand);
 

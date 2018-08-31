@@ -66,8 +66,8 @@ const resolveState = {
   },
   cleanUp() {
     this.game.bets.forEach((bet) => {
-      while (bet.cards.cards.length > 0) {
-        bet.cards.transferTopCard(this.game.deck);
+      while (bet.hand.cards.length > 0) {
+        bet.hand.transferTopCard(this.game.deck);
       }
       // player.resolved = false;
     })

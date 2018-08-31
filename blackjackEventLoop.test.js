@@ -107,8 +107,8 @@ test('players cannot bet/hit/stand when waiting for players to join state is on'
 
   const player = game.players.find(player => player.name === 'player1');
   expect(player.chips).toBe(100);
-  expect(player.hand.cards.length).toBe(0);
-
+  const playerBet = game.bets.find(bet => bet.player.name === 'player1');
+  expect(playerBet).toBe(undefined);
 });
 
 test('correct number of players place bets', () => {
@@ -159,8 +159,8 @@ test('players cannot exchange chips or stand/hit while bets are being collected'
 
   expect(game.players.length).toBe(1);
   expect(game.bets.length).toBe(1);
-  const player = game.players.find(player => player.name === 'player1');
-  expect(player.hand.cards.length).toBe(0);
+  const playerBet = game.bets.find(bet => bet.player.name === 'player1');
+  expect(playerBet.hand.cards.length).toBe(0);
 });
 
 // lower boundary conditions for betting
@@ -794,7 +794,7 @@ test('server emits state on connect', () => {
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
   const player1Bet = game.bets.find((bet) => bet.player.name === 'player1');
-  expect(player1Bet.cards.cards.length).toBe(4);
+  expect(player1Bet.hand.cards.length).toBe(4);
   expect(game.emitCurrentState().betAmounts['player1']).toBe(10);
   expect(game.emitCurrentState().chipsInHand['player1']).toBe(90);
   expect(game.emitCurrentState().gameState).toBe('dealerNoBlackjackState');
@@ -885,7 +885,7 @@ test('server can emit player nickname', () => {
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
   const player1Bet = game.bets.find((bet) => bet.player.name === 'player1');
-  expect(player1Bet.cards.cards.length).toBe(4);
+  expect(player1Bet.hand.cards.length).toBe(4);
 
   expect(game.emitCurrentState().players['player1'].nickname).toBe('john');
 });
