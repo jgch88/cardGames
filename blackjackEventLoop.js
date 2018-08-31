@@ -172,14 +172,11 @@ const Game = {
     // get current minified state of 
     // playerBets
     let betAmounts = {};
-    this.getBettingPlayers().map(player => { 
-      betAmounts[player.name] = player.bet.betAmount;
+    this.bets.map(bet => {
+      betAmounts[bet.player.name] = bet.betAmount;
     });
     // this.io.to(this.roomName).emit('betAmounts', betAmounts);
     return betAmounts;
-  },
-  getBettingPlayers() {
-    return this.players.filter(player => player.bet);
   },
 };
 

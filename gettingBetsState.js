@@ -37,7 +37,6 @@ const gettingBetsState = {
     this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
    
     this.game.getPlayerChipsInHand();
-    this.game.bettingPlayers = this.game.getBettingPlayers();
     this.game.getPlayerBetAmounts();
     
     // this method is doing too much?

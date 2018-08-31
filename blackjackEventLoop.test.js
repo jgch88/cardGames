@@ -120,7 +120,7 @@ test('correct number of players place bets', () => {
   game.joinGame('player2', 100);
   
   game.changeState(gettingBetsState);
-  expect(game.getBettingPlayers().length).toBe(0);
+  expect(game.bets.length).toBe(0);
 
   game.placeBet('player1', 100);
 
@@ -136,11 +136,11 @@ test('players cannot bet an odd number of chips', () => {
   game.joinGame('player2', 200);
 
   game.changeState(gettingBetsState);
-  expect(game.getBettingPlayers().length).toBe(0);
+  expect(game.bets.length).toBe(0);
 
   game.placeBet('player1', 10);
   expect(() => {game.placeBet('player2', 7)}).toThrow(`bet an even number`);
-  expect(game.getBettingPlayers().length).toBe(1);
+  expect(game.bets.length).toBe(1);
 
 });
 
@@ -158,7 +158,7 @@ test('players cannot exchange chips or stand/hit while bets are being collected'
   expect(() => {game.play('player1', 'hit')}).toThrow(`Betting is in progress`);
 
   expect(game.players.length).toBe(1);
-  expect(game.getBettingPlayers().length).toBe(1);
+  expect(game.bets.length).toBe(1);
   const player = game.players.find(player => player.name === 'player1');
   expect(player.hand.cards.length).toBe(0);
 });
@@ -173,12 +173,12 @@ test('players cannot bet 0 or less chips', () => {
   game.joinGame('player2', 100);
   
   game.changeState(gettingBetsState);
-  expect(game.getBettingPlayers().length).toBe(0);
+  expect(game.bets.length).toBe(0);
 
   expect(() => {game.placeBet('player1', 0)}).toThrow(`bet at least 1 chip`);
   expect(() => {game.placeBet('player2', -100)}).toThrow(`bet at least 1 chip`);
 
-  expect(game.getBettingPlayers().length).toBe(0);
+  expect(game.bets.length).toBe(0);
 });
 
 // upper boundary conditions for betting
@@ -191,12 +191,12 @@ test('players cannot bet more than the chips they have', () => {
   game.joinGame('player2', 100);
   
   game.changeState(gettingBetsState);
-  expect(game.getBettingPlayers().length).toBe(0);
+  expect(game.bets.length).toBe(0);
 
   expect(() => {game.placeBet('player1', 110)}).toThrow(`Not enough chips`);
   game.placeBet('player2', 100);
 
-  expect(game.getBettingPlayers().length).toBe(1);
+  expect(game.bets.length).toBe(1);
 });
 
 test(`players cannot place bets if they didn't join/exchange chips`, () => {
@@ -211,11 +211,11 @@ test(`players cannot place bets if they didn't join/exchange chips`, () => {
   game.placeBet('player1', 10);
   expect(() => {game.placeBet('player2', 20)}).toThrow(`join the game first`);
 
-  expect(game.getBettingPlayers().length).toBe(1);
+  expect(game.bets.length).toBe(1);
 
 });
 
-test('players can only place one bet', () => {
+test('players can place more one than bet', () => {
 
   const game = Object.create(BlackjackGame);
   game.init(io);
@@ -225,12 +225,13 @@ test('players can only place one bet', () => {
   game.changeState(gettingBetsState);
 
   game.placeBet('player1', 10);
-  expect(() => {game.placeBet('player1', 20)}).toThrow(`already placed a bet`);
+  game.placeBet('player1', 20);
+  expect(game.bets.length).toBe(2);
 
-  const playerBet = game.getBettingPlayers().find(player => player.name === 'player1').bet;
-
-  expect(playerBet.betAmount).toBe(10);
-  expect(playerBet.player.chips).toBe(90);
+  expect(game.bets[0].betAmount).toBe(10);
+  expect(game.bets[1].betAmount).toBe(20);
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(70);
 });
 
 test('dealer gets blackjack, player and dealer chips resolve correctly', () => {
