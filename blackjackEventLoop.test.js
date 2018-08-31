@@ -124,7 +124,7 @@ test('correct number of players place bets', () => {
 
   game.placeBet('player1', 100);
 
-  expect(game.getBettingPlayers().length).toBe(1);
+  expect(game.bets.length).toBe(1);
 });
 
 test('players cannot bet an odd number of chips', () => {

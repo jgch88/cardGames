@@ -18,6 +18,7 @@ const Game = {
 		dealer.init("Dealer", 10000);
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
+    this.bets = []; // restructure the game to decouple bets from players -> just directly resolve bets.
 
     // inject the server's io object
     // (different from individual sockets!)
@@ -179,7 +180,7 @@ const Game = {
   },
   getBettingPlayers() {
     return this.players.filter(player => player.bet);
-  }
+  },
 };
 
 module.exports = Game;
