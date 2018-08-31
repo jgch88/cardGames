@@ -183,7 +183,7 @@ class BlackjackTable extends Component {
         'div',
         { 'class': 'horizontalScroll playerHands' },
         Object.keys(this.state.bets).map((bet, index) => {
-          return h(Deck, { betAmount: this.state.bets[bet].betAmount, isPlayersDeck: this.socket.id === bet, playerName: this.state.bets[bet].nickname, key: index, cards: this.state.bets[bet].cards });
+          return h(Deck, { betAmount: this.state.bets[bet].betAmount, isCurrentPlayer: this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname, isCurrentBet: this.state.currentBet === bet, playerName: this.state.bets[bet].nickname, key: index, cards: this.state.bets[bet].cards });
         })
       ),
       h(
@@ -380,13 +380,12 @@ const Deck = function Deck(props) {
   const playerNameStyle = {
     fontWeight: `bold`
   };
-  const cardWidthStyle = {};
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     'div',
-    null,
+    { style: { backgroundColor: props.isCurrentBet ? `azure` : `` } },
     h(BetStatus, { betAmount: props.betAmount }),
-    props.isPlayersDeck ? h(
+    props.isCurrentPlayer ? h(
       'div',
       { style: playerNameStyle },
       playerNameText

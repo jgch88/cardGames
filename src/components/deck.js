@@ -9,13 +9,11 @@ const Deck = function Deck(props) {
   const playerNameStyle = {
     fontWeight: `bold`,
   }
-  const cardWidthStyle = {
-  }
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return (
-    <div>
+    <div style={{ backgroundColor: props.isCurrentBet ? `azure` : `` }}>
       <BetStatus betAmount={props.betAmount}/>
-      {props.isPlayersDeck ? <div style={playerNameStyle}>{playerNameText}</div> : <div>{playerNameText}</div>}
+      {props.isCurrentPlayer ? <div style={playerNameStyle}>{playerNameText}</div> : <div>{playerNameText}</div>}
             { props.cards.map((card) => {
               return <td><Card suit={card.suit} value={card.value} isFaceDown={card.isFaceDown} /></td>;
             }) }

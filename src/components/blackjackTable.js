@@ -158,7 +158,7 @@ class BlackjackTable extends Component {
         <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
         <div class="horizontalScroll playerHands">
         {Object.keys(this.state.bets).map((bet, index) => {
-          return <Deck betAmount={this.state.bets[bet].betAmount} isPlayersDeck={this.socket.id === bet} playerName={this.state.bets[bet].nickname} key={index} cards={this.state.bets[bet].cards} />
+          return <Deck betAmount={this.state.bets[bet].betAmount} isCurrentPlayer={this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname} isCurrentBet={this.state.currentBet === bet} playerName={this.state.bets[bet].nickname} key={index} cards={this.state.bets[bet].cards} />
         })}
         </div>
         <div class="actions">
