@@ -793,7 +793,8 @@ test('server emits state on connect', () => {
   game.play('player1', 'hit');
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
-  expect(game.emitCurrentState().players['player1'].cards.length).toBe(4);
+  const player1Bet = game.bets.find((bet) => bet.player.name === 'player1');
+  expect(player1Bet.cards.cards.length).toBe(4);
   expect(game.emitCurrentState().betAmounts['player1']).toBe(10);
   expect(game.emitCurrentState().chipsInHand['player1']).toBe(90);
   expect(game.emitCurrentState().gameState).toBe('dealerNoBlackjackState');
@@ -883,7 +884,8 @@ test('server can emit player nickname', () => {
   game.play('player1', 'hit');
 
   expect('player1' in game.emitCurrentState().players).toBe(true);
-  expect(game.emitCurrentState().players['player1'].cards.length).toBe(4);
+  const player1Bet = game.bets.find((bet) => bet.player.name === 'player1');
+  expect(player1Bet.cards.cards.length).toBe(4);
 
   expect(game.emitCurrentState().players['player1'].nickname).toBe('john');
 });

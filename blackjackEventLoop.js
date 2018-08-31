@@ -103,42 +103,30 @@ const Game = {
 
     return bets;
   },
-  renderCards() {
-    // generate front facing "state"
+  renderPlayers() {
+    const players = {};
+    this.players.forEach((player) => {
+      players[player.name] = {
+        nickname: player.nickname
+      }
+    });
+    return players;
+  },
+  renderDealerCards() {
     const blankCard = {
       value: 0,
       suit: "-",
       isFaceDown: true,
     };
-
-    const renderedState = {};
-
-    renderedState.dealerCards = [];
+    const dealerCards = [];
     this.dealer.hand.cards.forEach(card => {
       if (card.isFaceDown) {
-        renderedState.dealerCards.push(blankCard);
+        dealerCards.push(blankCard);
       } else {
-        renderedState.dealerCards.push(card);
+        dealerCards.push(card);
       }
     });
-
-    renderedState.players = {};
-    this.bets.forEach((bet) => {
-      // shouldn't expose player.name though, probably use positionIds or something
-      renderedState.players[bet.player.name] = {
-        cards: [],
-        nickname: bet.player.nickname
-      };
-      bet.cards.cards.forEach((card) => {
-        renderedState.players[bet.player.name].cards.push(card);
-      });
-    });
-
-    // rename dealerCards to dealer later
-
-    // console.log(renderedState);
-
-    return renderedState;
+    return dealerCards;
   },
   getMessageLogMessages() {
     return {messages: this.messageLog.messages}
@@ -160,8 +148,8 @@ const Game = {
     currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.getPlayerBetAmounts();
     currentState.messages = this.getMessageLogMessages().messages;
-    currentState.players = this.renderCards().players;
-    currentState.dealerCards = this.renderCards().dealerCards;
+    currentState.players = this.renderPlayers();
+    currentState.dealerCards = this.renderDealerCards();
     currentState.gameState = this.state.name;
     currentState.bets = this.renderBets(); 
     // use logic to change background colour of current bets
