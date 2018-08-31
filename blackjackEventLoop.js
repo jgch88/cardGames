@@ -18,13 +18,14 @@ const Game = {
 		dealer.init("Dealer", 10000);
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
+    this.bets = []; // restructure the game to decouple bets from players -> just directly resolve bets.
 
     // inject the server's io object
     // (different from individual sockets!)
     // so the game has access to broadcast events
     this.io = io;
 
-    this.currentPlayer = null;
+    this.currentBet = null;
 
     const messageLog = Object.create(MessageLog);
     const maxMessages = 12;
@@ -74,9 +75,9 @@ const Game = {
     this.dealer.hand.cards.forEach(card => {
       console.log(`   ${card.readFace()}`);
     });
-    this.getBettingPlayers().forEach((player) => {
-      console.log(`${player.name}`);
-      player.hand.cards.forEach((card) => {
+    this.bets.forEach((bet) => {
+      console.log(`${bet.player.name}`);
+      bet.hand.cards.forEach((card) => {
         console.log(`   ${card.readFace()}`);
       })
     });
@@ -85,42 +86,47 @@ const Game = {
     // this.io.to(this.roomName).emit('render', this.renderCards());
     this.emitCurrentState();
   },
-  renderCards() {
-    // generate front facing "state"
+  renderBets() {
+    // state => bets: { idno: cards, player.nickname }
+    const bets = {};
+
+    this.bets.forEach((bet) => {
+      bets[bet.id] = {
+        betAmount: bet.betAmount,
+        cards: [],
+        nickname: bet.player.nickname
+      };
+      bet.hand.cards.forEach((card) => {
+        bets[bet.id].cards.push(card);
+      });
+    });
+
+    return bets;
+  },
+  renderPlayers() {
+    const players = {};
+    this.players.forEach((player) => {
+      players[player.name] = {
+        nickname: player.nickname
+      }
+    });
+    return players;
+  },
+  renderDealerCards() {
     const blankCard = {
       value: 0,
       suit: "-",
       isFaceDown: true,
     };
-
-    const renderedState = {};
-
-    renderedState.dealerCards = [];
+    const dealerCards = [];
     this.dealer.hand.cards.forEach(card => {
       if (card.isFaceDown) {
-        renderedState.dealerCards.push(blankCard);
+        dealerCards.push(blankCard);
       } else {
-        renderedState.dealerCards.push(card);
+        dealerCards.push(card);
       }
     });
-
-    renderedState.players = {};
-    this.players.forEach((player) => {
-      // shouldn't expose player.name though, probably use positionIds or something
-      renderedState.players[player.name] = {
-        cards: [],
-        nickname: player.nickname
-      };
-      player.hand.cards.forEach((card) => {
-        renderedState.players[player.name].cards.push(card);
-      });
-    });
-
-    // rename dealerCards to dealer later
-
-    // console.log(renderedState);
-
-    return renderedState;
+    return dealerCards;
   },
   getMessageLogMessages() {
     return {messages: this.messageLog.messages}
@@ -142,13 +148,20 @@ const Game = {
     currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.getPlayerBetAmounts();
     currentState.messages = this.getMessageLogMessages().messages;
-    currentState.players = this.renderCards().players;
-    currentState.dealerCards = this.renderCards().dealerCards;
+    currentState.players = this.renderPlayers();
+    currentState.dealerCards = this.renderDealerCards();
     currentState.gameState = this.state.name;
+    currentState.bets = this.renderBets(); 
+    // use logic to change background colour of current bets
+    currentState.currentBet = this.getCurrentBetId();
 
     this.io.to(this.roomName).emit('currentState', currentState);
     // console.log(currentState);
     return currentState;
+  },
+  getCurrentBetId() {
+    return this.currentBet ? this.currentBet.id : '';
+
   },
   emitCurrentChipsInHand() {
     let chipsInHand = {};
@@ -156,6 +169,9 @@ const Game = {
 
     this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
 
+  },
+  emitCurrentBet() {
+    this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
   },
   // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
@@ -171,15 +187,12 @@ const Game = {
     // get current minified state of 
     // playerBets
     let betAmounts = {};
-    this.getBettingPlayers().map(player => { 
-      betAmounts[player.name] = player.bet.betAmount;
+    this.bets.map(bet => {
+      betAmounts[bet.player.name] = bet.betAmount;
     });
     // this.io.to(this.roomName).emit('betAmounts', betAmounts);
     return betAmounts;
   },
-  getBettingPlayers() {
-    return this.players.filter(player => player.bet);
-  }
 };
 
 module.exports = Game;

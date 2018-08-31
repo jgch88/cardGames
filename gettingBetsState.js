@@ -29,11 +29,12 @@ const gettingBetsState = {
     if (betAmount > player.chips) {
       throw `Not enough chips`;
     }
-    player.placeBet(betAmount);
+    const bet = player.placeBet(betAmount);
+    this.game.bets.push(bet);
+
     this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
    
     this.game.getPlayerChipsInHand();
-    this.game.bettingPlayers = this.game.getBettingPlayers();
     this.game.getPlayerBetAmounts();
     
     // this method is doing too much?

@@ -11,7 +11,13 @@ const Player = {
     hand.init();
     this.hand = hand; // a deck and its api, use array for splits later on 
     this.resolved = false;
-    this.bet = null; // one bet per player for now. do splits later
+    // this.bet = null; // one bet per player for now. do splits later
+  },
+  placeBet(betAmount) {
+    this.chips -= betAmount;
+    const bet = Object.create(Bet);
+    bet.init(betAmount, this);
+    return bet;
   },
   disconnect() {
     // in event of player just leaving abruptly
@@ -28,22 +34,9 @@ const Player = {
     // so that dealer's other card isn't exposed when player bursts
     return this.hand.calcShownHandValue();
   },
-  resolve() {
-    // has compared against dealer
-    this.resolved = true;
-  },
   displayStatus() {
     console.log(`[${this.nickname}]: Current Chips: ${this.chips}`);
   },
-  placeBet(betAmount) {
-    if (this.bet) {
-      throw `You have already placed a bet!`;
-    }
-    this.chips -= betAmount;
-    const bet = Object.create(Bet);
-    bet.init(betAmount, this);
-    this.bet = bet;
-  }
 }
 
 module.exports = Player;
