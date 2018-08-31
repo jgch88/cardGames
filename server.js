@@ -56,10 +56,15 @@ io.on('connection', (socket) => {
     console.log('creating room', roomName);
     // init game with roomName property
     // server also needs to keep track of rooms
-    let newGame = Object.create(BlackjackGame);
-    newGame.init(io, roomName);
-    games.push(newGame);
-    changeCurrentGame(roomName);
+    
+    if (games.find(game => game.roomName === roomName)) {
+      changeCurrentGame(roomName);
+    } else {
+      let newGame = Object.create(BlackjackGame);
+      newGame.init(io, roomName);
+      games.push(newGame);
+      changeCurrentGame(roomName);
+    }
     currentGame.emitCurrentState();
   })
   
