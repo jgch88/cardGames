@@ -4,7 +4,7 @@ const dealerNoBlackjackState = {
   // need some async method to check for
   // all players resolved => move on
   // to resolving unresolved Bets
-  // no need! check in getNextPlayer;
+  // no need! check in getNextBet;
   init(game) {
     const greeting = `[State]: Dealer has no blackjack. Checking if players have blackjack.`;
     this.name = 'dealerNoBlackjackState';
@@ -12,7 +12,7 @@ const dealerNoBlackjackState = {
     this.game.sendMessageLogMessages(greeting);
     this.checkIfPlayersHaveBlackjack();
     // set CurrentPlayer
-    this.game.currentBet = this.getNextPlayer();
+    this.game.currentBet = this.getNextBet();
     this.game.emitCurrentState();
   },
   joinGame() {
@@ -36,19 +36,19 @@ const dealerNoBlackjackState = {
           this.game.sendMessageLogMessages(playerBurstsMessage);
           this.game.sendMessageLogMessages(this.game.currentBet.resolve('playerLoses', 1, this.game.dealer));
           this.game.emitCurrentChipsInHand();
-          this.game.currentBet = this.getNextPlayer();
+          this.game.currentBet = this.getNextBet();
         } else if (this.game.currentBet.score === 21) {
           const playerBlackjackMessage = `[${this.game.currentBet.player.nickname}]: Blackjack!`;
           this.game.sendMessageLogMessages(playerBlackjackMessage);
           this.game.sendMessageLogMessages(this.game.currentBet.resolve('playerWins', 1, this.game.dealer));
           this.game.emitCurrentChipsInHand();
-          this.game.currentBet = this.getNextPlayer();
+          this.game.currentBet = this.getNextBet();
         }
       } else if (move === 'stand') {
         this.game.currentBet.stand = true;
         this.game.render();
         this.game.emitCurrentChipsInHand();
-        this.game.currentBet = this.getNextPlayer();
+        this.game.currentBet = this.getNextBet();
       } else {
         throw `[Error]: Invalid move ${playerName}. Please enter 'stand' or 'hit'`;
       }
@@ -72,7 +72,7 @@ const dealerNoBlackjackState = {
     })
     this.game.emitCurrentState(); // update chips
   },
-  getNextPlayer() {
+  getNextBet() {
     // getNextBet
     // don't let those players who have already got a Blackjack play
     const remainingBets = this.game.bets.filter(bet => !(bet.resolved || bet.stand));

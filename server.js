@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
     currentGame.sendMessageLogMessages(`[${socket.id}] Disconnected: ${reason}`);
     if (currentGame.state.name === 'dealerNoBlackjackState' && currentGame.currentBet.player.name === socket.id) {
       currentGame.currentBet.resolve('playerLoses', 1, currentGame.dealer);
-      currentGame.currentBet = currentGame.state.getNextPlayer();
+      currentGame.currentBet = currentGame.state.getNextBet();
     } else {
     // socketid player resolve not currentplayer!!!
       const disconnectedBet = currentGame.bets.find(bet => bet.player.name === socket.id);
