@@ -13,6 +13,7 @@ const dealerNoBlackjackState = {
     this.checkIfPlayersHaveBlackjack();
     // set CurrentPlayer
     this.game.currentBet = this.getNextPlayer();
+    this.game.emitCurrentState();
   },
   joinGame() {
   },
@@ -55,6 +56,7 @@ const dealerNoBlackjackState = {
     } else {
       throw `It is not ${playerName}'s turn!`;
     }
+    this.game.emitCurrentBet();
   },
   checkIfPlayersHaveBlackjack() {
     // checkIfBetsHaveBlackjack

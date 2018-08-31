@@ -170,6 +170,9 @@ const Game = {
     this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
 
   },
+  emitCurrentBet() {
+    this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
+  },
   // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!
