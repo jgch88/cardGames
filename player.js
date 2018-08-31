@@ -34,10 +34,6 @@ const Player = {
     // so that dealer's other card isn't exposed when player bursts
     return this.hand.calcShownHandValue();
   },
-  resolve() {
-    // has compared against dealer
-    this.resolved = true;
-  },
   displayStatus() {
     console.log(`[${this.nickname}]: Current Chips: ${this.chips}`);
   },
