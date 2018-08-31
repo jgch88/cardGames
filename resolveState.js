@@ -56,9 +56,9 @@ const resolveState = {
     }
     // don't need case where player > 21, since it
     // should already have been resolved!
-    if (dealer.score > player.score) {
+    if (dealer.score > bet.score) {
       this.game.sendMessageLogMessages(bet.resolve('playerLoses', 1, dealer));
-    } else if (dealer.score === player.score) {
+    } else if (dealer.score === bet.score) {
       this.game.sendMessageLogMessages(bet.resolve('playerDraws', 1, dealer));
     } else {
       this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));

@@ -25,7 +25,7 @@ const Game = {
     // so the game has access to broadcast events
     this.io = io;
 
-    this.currentPlayer = null;
+    this.currentBet = null;
 
     const messageLog = Object.create(MessageLog);
     const maxMessages = 12;
