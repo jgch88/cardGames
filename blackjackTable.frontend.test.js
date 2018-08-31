@@ -193,7 +193,7 @@ test(`dealer bursts after hitting, player doesn't burst`, async () => {
   killServer();
 }, 7000);
 
-test.only(`players can create separate game rooms and play different games`, async () => {
+test(`players can create separate game rooms and play different games`, async () => {
   await initServer();
 
   for (let i = 0; i < 3; i++) {
