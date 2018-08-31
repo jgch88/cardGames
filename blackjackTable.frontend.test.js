@@ -192,3 +192,48 @@ test(`dealer bursts after hitting, player doesn't burst`, async () => {
   expect(chipsInHand).toBe('Chips: 110');
   killServer();
 }, 7000);
+
+test.only(`players can create separate game rooms and play different games`, async () => {
+  await initServer();
+
+  for (let i = 0; i < 3; i++) {
+    await pages[i].goto(APP);
+
+    dialogValue = "room1";
+    await pages[i]
+      .waitForSelector('#createRoom')
+      .then(async () => {
+        await pages[i].$eval('#createRoom', el => el.click());
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+  }
+  
+  for (let i = 0; i < 3; i++) {
+    dialogValue = "100"
+    await pages[i].waitForSelector('#joinGame');
+    await pages[i].$eval('#joinGame', el => el.click());
+    await pages[i].$eval('#goToBettingState', el => el.click());
+
+    dialogValue = "10"
+    await pages[i].$eval('#placeBet', el => el.click());
+
+    await pages[i].$eval('#startRound', el => el.click());
+    await pages[i]
+      .waitForSelector('#playStand', {timeout:200})
+      .then(async () =>  {
+        await pages[i].$eval('#playStand', el => el.click());
+      })
+      .catch((e) => {
+        console.log(e)
+      });
+
+    const messageLog = await pages[i].$eval('div.messageLog', el => el.innerHTML);
+    expect(messageLog).toContain('resolved');
+
+  }
+  killServer();
+
+}, 13000);
