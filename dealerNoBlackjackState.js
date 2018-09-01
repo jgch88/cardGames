@@ -61,13 +61,26 @@ const dealerNoBlackjackState = {
       this.game.currentBet = this.getNextBet();
     }
     if (move === 'split') {
+      /*
+      if (this.game.currentBet.hand.cards.length < 2) {
+        // when players have just split and
+        // not yet 'hit'
+        throw `Can't split a single card!`;
+      }
+      */
       if (this.game.currentBet.hand.cards[0].value !== this.game.currentBet.hand.cards[1].value) {
         throw `Can't split. Cards are not the same value!`;
       }
       if (this.game.currentBet.hand.cards.length > 2) {
         throw `Can't split after hitting`;
       }
-      console.log(`splitting`);
+      const player = this.game.players.find(player => player.name === playerName);
+      console.log(`splitting`, player);
+      // involves 1. creating a new bet
+      const splitBet = player.placeBet(this.game.currentBet.betAmount);
+      // splice splitBet into game.bets array
+
+      // 2. passing card[1] to new bet's hand
 
     }
 
