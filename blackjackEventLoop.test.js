@@ -889,3 +889,147 @@ test('server can emit player nickname', () => {
 
   expect(game.emitCurrentState().players['player1'].nickname).toBe('john');
 });
+
+test.only('player can split when both cards have the same value', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(6), suit: "Diamonds"}, {isFaceDown: true});
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard1);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard2);
+  game.deck = deck;
+  game.joinGame('player1', 100);
+  game.changeState(gettingBetsState);
+  game.placeBet('player1', 10);
+  game.changeState(checkDealerForNaturalsState);
+  game.play('player1', 'split');
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(80);
+
+});
+test.only('player cannot split when both cards have different values', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(7), suit: "Diamonds"}, {isFaceDown: true});
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard1);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard2);
+  game.deck = deck;
+  game.joinGame('player1', 100);
+  game.changeState(gettingBetsState);
+  game.placeBet('player1', 10);
+  game.changeState(checkDealerForNaturalsState);
+  expect(() => {
+    game.play('player1', 'split');
+  }).toThrow(`Can't split`);
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
+
+});
+
+test.only('player cannot split after hitting', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(6), suit: "Diamonds"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(2), suit: "Diamonds"}, {isFaceDown: true});
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+  game.joinGame('player1', 100);
+  game.changeState(gettingBetsState);
+  game.placeBet('player1', 10);
+  game.changeState(checkDealerForNaturalsState);
+  game.play('player1', 'hit');
+  expect(() => {
+    game.play('player1', 'split');
+  }).toThrow(`Can't split after hitting`);
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
+
+});
+test.only('player cannot split after standing', () => {
+
+  const game = Object.create(BlackjackGame);
+  game.init(io);
+  // inject rigged deck such that dealer will get blackjack
+  const deck = Object.create(Deck);
+  deck.createStandardDeck();
+  const dealerCard1 = Object.create(CardWithTwoSides);
+  const dealerCard2 = Object.create(CardWithTwoSides);
+  const playerCard1 = Object.create(CardWithTwoSides);
+  const playerCard2 = Object.create(CardWithTwoSides);
+  const player2Card1 = Object.create(CardWithTwoSides);
+  const player2Card2 = Object.create(CardWithTwoSides);
+  const playerCard3 = Object.create(CardWithTwoSides);
+  dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+  dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+  playerCard1.prepareCard({value: Number(11), suit: "Hearts"}, {isFaceDown: true});
+  playerCard2.prepareCard({value: Number(12), suit: "Diamonds"}, {isFaceDown: true});
+  playerCard3.prepareCard({value: Number(2), suit: "Diamonds"}, {isFaceDown: true});
+  player2Card1.prepareCard({value: Number(3), suit: "Hearts"}, {isFaceDown: true});
+  player2Card2.prepareCard({value: Number(4), suit: "Diamonds"}, {isFaceDown: true});
+  deck.addCardToTop(playerCard3);
+  deck.addCardToTop(dealerCard2);
+  deck.addCardToTop(player2Card2);
+  deck.addCardToTop(playerCard2);
+  deck.addCardToTop(dealerCard1);
+  deck.addCardToTop(player2Card1);
+  deck.addCardToTop(playerCard1);
+  game.deck = deck;
+  game.joinGame('player1', 100);
+  game.joinGame('player2', 100);
+  game.changeState(gettingBetsState);
+  game.placeBet('player1', 10);
+  game.placeBet('player2', 10);
+  game.changeState(checkDealerForNaturalsState);
+  game.play('player1', 'stand');
+  expect(() => {
+    game.play('player1', 'split');
+  }).toThrow(`not player1's turn`);
+
+  const player = game.players.find(player => player.name === 'player1');
+  expect(player.chips).toBe(90);
+
+});

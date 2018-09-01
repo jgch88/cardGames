@@ -28,7 +28,7 @@ const dealerNoBlackjackState = {
       throw `It is not ${playerName}'s turn!`;
     }
 
-    const validMoves = ['hit', 'stand'];
+    const validMoves = ['hit', 'stand', 'split'];
     if (!validMoves.includes(move)) {
       throw `[Error]: Invalid move ${playerName}. Please enter 'stand' or 'hit'`;
     }
@@ -60,6 +60,16 @@ const dealerNoBlackjackState = {
       this.game.emitCurrentChipsInHand();
       this.game.currentBet = this.getNextBet();
     }
+    if (move === 'split') {
+      if (this.game.currentBet.hand.cards[0].value !== this.game.currentBet.hand.cards[1].value) {
+        throw `Can't split. Cards are not the same value!`;
+      }
+      if (this.game.currentBet.hand.cards.length > 2) {
+        throw `Can't split after hitting`;
+      }
+      console.log(`splitting`);
+
+    }
 
     this.game.emitCurrentBet();
   },
@@ -78,7 +88,6 @@ const dealerNoBlackjackState = {
     this.game.emitCurrentState(); // update chips
   },
   getNextBet() {
-    // getNextBet
     // don't let those players who have already got a Blackjack play
     const remainingBets = this.game.bets.filter(bet => !(bet.resolved || bet.stand));
     console.log(remainingBets);
