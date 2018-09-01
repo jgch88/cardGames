@@ -153,6 +153,15 @@ class BlackjackTable extends Component {
       return this.state.betAmounts[this.socket.id];
     }
   }
+  
+  isPlayersTurn() {
+    if (this.state.players[this.socket.id] && this.state.currentBet) {
+      if (this.state.bets[this.state.currentBet].nickname === this.state.players[this.socket.id].nickname) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
@@ -182,7 +191,7 @@ class BlackjackTable extends Component {
           <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
           <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
-          {this.state.gameState === 'dealerNoBlackjackState' ? 
+          {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
           <div><Button id="playHit" text={"Hit"} clickHandler={this.hit}/><Button id="playStand" text={"Stand"} clickHandler={this.stand}/></div> : ''}
           
         </div>
