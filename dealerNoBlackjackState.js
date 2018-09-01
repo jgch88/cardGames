@@ -75,9 +75,10 @@ const dealerNoBlackjackState = {
         throw `Can't split after hitting`;
       }
       const player = this.game.players.find(player => player.name === playerName);
-      console.log(`splitting`, player);
       // involves 1. creating a new bet
       const splitBet = player.placeBet(this.game.currentBet.betAmount);
+      this.game.bets.splice(this.game.bets.indexOf(this.game.currentBet) + 1, 0, splitBet);
+      
       // splice splitBet into game.bets array
 
       // 2. passing card[1] to new bet's hand
