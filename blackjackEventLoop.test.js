@@ -908,9 +908,9 @@ describe('feature: players splitting hands', () => {
     playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
     playerCard2.prepareCard({value: Number(6), suit: "Diamonds"}, {isFaceDown: true});
     deck.addCardToTop(dealerCard2);
-    deck.addCardToTop(playerCard1);
-    deck.addCardToTop(dealerCard1);
     deck.addCardToTop(playerCard2);
+    deck.addCardToTop(dealerCard1);
+    deck.addCardToTop(playerCard1);
     game.deck = deck;
     game.joinGame('player1', 100);
     game.changeState(gettingBetsState);
@@ -922,7 +922,9 @@ describe('feature: players splitting hands', () => {
     expect(player.chips).toBe(80);
     expect(game.bets.length).toBe(2);
     expect(game.bets[0].hand.cards.length).toBe(1);
+    expect(game.bets[0].hand.cards[0]).toBe(playerCard1);
     expect(game.bets[1].hand.cards.length).toBe(1);
+    expect(game.bets[1].hand.cards[0]).toBe(playerCard2);
 
   });
   test('player cannot split when both cards have different values', () => {
