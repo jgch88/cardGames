@@ -257,22 +257,27 @@ describe('feature: players splitting hands', () => {
       .then(async () =>  {
         await pages[0].$eval('#playSplit', el => el.click());
       });
-    let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
-    expect(chipsInHand).toBe('Chips: 80');
-    /*
+    await pages[0]
+      .waitForSelector('#playHit', {timeout:200})
+      .then(async () =>  {
+        await pages[0].$eval('#playHit', el => el.click());
+      });
     await pages[0]
       .waitForSelector('#playStand', {timeout:200})
       .then(async () =>  {
         await pages[0].$eval('#playStand', el => el.click());
-      })
-      .catch((e) => {
-        console.log(e)
       });
-    const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
-    expect(messageLog).toContain('wins [Dealer]');
-    chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
-    expect(chipsInHand).toBe('Chips: 110');
-    */
-    killServer();
+    await pages[0]
+      .waitForSelector('#playHit', {timeout:200})
+      .then(async () =>  {
+        await pages[0].$eval('#playHit', el => el.click());
+      });
+    await pages[0]
+      .waitForSelector('#playStand', {timeout:200})
+      .then(async () =>  {
+        await pages[0].$eval('#playStand', el => el.click());
+      });
+    let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    expect(chipsInHand).toBe('Chips: 80');
   });
 });

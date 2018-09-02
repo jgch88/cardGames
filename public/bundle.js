@@ -141,6 +141,9 @@ class BlackjackTable extends Component {
     this.stand = () => {
       this.socket.emit('play', 'stand');
     };
+    this.split = () => {
+      this.socket.emit('play', 'split');
+    };
     this.goToBettingState = () => {
       this.socket.emit('changeState', 'gettingBetsState');
       this.setState({
