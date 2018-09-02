@@ -192,8 +192,11 @@ class BlackjackTable extends Component {
           {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
           <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
           {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
-          <div><Button id="playHit" text={"Hit"} clickHandler={this.hit}/><Button id="playStand" text={"Stand"} clickHandler={this.stand}/></div> : ''}
-          
+          <div>
+            <Button id="playHit" text={"Hit"} clickHandler={this.hit}/>
+            <Button id="playStand" text={"Stand"} clickHandler={this.stand}/>
+            <Button id="playSplit" text={"Split"} clickHandler={this.split}/>
+          </div> : ''}
         </div>
         MessageLog
         <div class="messageLog">

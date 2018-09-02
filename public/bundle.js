@@ -223,7 +223,8 @@ class BlackjackTable extends Component {
           'div',
           null,
           h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
-          h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
+          h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand }),
+          h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split })
         ) : ''
       ),
       'MessageLog',
