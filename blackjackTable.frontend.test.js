@@ -239,7 +239,7 @@ test(`players can create separate game rooms and play different games`, async ()
 }, 13000);
 
 describe('feature: players splitting hands', () => {
-  test.only(`split button appears when player can split`, async () => {
+  test(`split button appears when player can split`, async () => {
     await initServer(`playerSplits`);
     await pages[0].goto(APP);
 
@@ -279,5 +279,23 @@ describe('feature: players splitting hands', () => {
       });
     let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
     expect(chipsInHand).toBe('Chips: 80');
+  });
+});
+
+describe('feature: players splitting hands', () => {
+  test.only(`split button does not appear when player cannot split`, async () => {
+    await initServer(`bothNoBlackjack`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await expect(pages[0].waitForSelector('#playSplit', {timeout:200})).rejects.toThrow('timeout');
   });
 });
