@@ -921,6 +921,8 @@ describe('feature: players splitting hands', () => {
     const player = game.players.find(player => player.name === 'player1');
     expect(player.chips).toBe(80);
     expect(game.bets.length).toBe(2);
+    expect(game.bets[0].hand.cards.length).toBe(1);
+    expect(game.bets[1].hand.cards.length).toBe(1);
 
   });
   test('player cannot split when both cards have different values', () => {
