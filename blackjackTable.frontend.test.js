@@ -237,3 +237,42 @@ test(`players can create separate game rooms and play different games`, async ()
   killServer();
 
 }, 13000);
+
+describe('feature: players splitting hands', () => {
+  test.only(`split button appears when player can split`, async () => {
+    await initServer(`playerSplits`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await pages[0]
+      .waitForSelector('#playSplit', {timeout:200})
+      .then(async () =>  {
+        await pages[0].$eval('#playSplit', el => el.click());
+      });
+    let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    expect(chipsInHand).toBe('Chips: 80');
+    /*
+    await pages[0]
+      .waitForSelector('#playStand', {timeout:200})
+      .then(async () =>  {
+        await pages[0].$eval('#playStand', el => el.click());
+      })
+      .catch((e) => {
+        console.log(e)
+      });
+    const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+    expect(messageLog).toContain('wins [Dealer]');
+    chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    expect(chipsInHand).toBe('Chips: 110');
+    */
+    killServer();
+  });
+});
