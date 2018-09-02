@@ -188,6 +188,16 @@ class BlackjackTable extends Component {
     return false;
   }
 
+  playerCanSplit() {
+    if (this.isPlayersTurn()) {
+      if (this.state.bets[this.state.currentBet].cards[0].value === this.state.bets[this.state.currentBet].cards[1].value) {
+        console.log(this.state.bets);
+        return true;
+      }
+    }
+    return false;
+  }
+
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return h(
@@ -222,13 +232,17 @@ class BlackjackTable extends Component {
         ) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
-        this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+        h(
           'div',
           null,
-          h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
-          h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand }),
-          h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split })
-        ) : ''
+          this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+            'span',
+            null,
+            h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
+            h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
+          ) : '',
+          this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : ''
+        )
       ),
       'MessageLog',
       h(

@@ -239,7 +239,7 @@ test(`players can create separate game rooms and play different games`, async ()
 }, 13000);
 
 describe('feature: players splitting hands', () => {
-  test(`split button appears when player can split`, async () => {
+  test.only(`split button appears when player can split`, async () => {
     await initServer(`playerSplits`);
     await pages[0].goto(APP);
 
@@ -279,6 +279,7 @@ describe('feature: players splitting hands', () => {
       });
     let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
     expect(chipsInHand).toBe('Chips: 80');
+    killServer();
   });
 });
 
@@ -297,5 +298,6 @@ describe('feature: players splitting hands', () => {
 
     await pages[0].$eval('#startRound', el => el.click());
     await expect(pages[0].waitForSelector('#playSplit', {timeout:200})).rejects.toThrow('timeout');
+    killServer();
   });
 });
