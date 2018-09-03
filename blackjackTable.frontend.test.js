@@ -299,7 +299,7 @@ describe('feature: players splitting hands', () => {
     killServer();
   });
 
-  test.only(`bets visually split into two once split button is pressed`, async () => {
+  test(`bets visually split into two once split button is pressed`, async () => {
     await initServer(`playerSplits`);
     await pages[0].goto(APP);
 
@@ -323,7 +323,7 @@ describe('feature: players splitting hands', () => {
     killServer();
   });
 
-  test.only(`when player splits with two aces, he automatically gets one card for each hand and stands`, async () => {
+  test(`when player splits with two aces, he automatically gets one card for each hand and stands`, async () => {
     await initServer(`playerSplitsAces`);
     await pages[0].goto(APP);
 

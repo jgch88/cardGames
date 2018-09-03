@@ -79,6 +79,7 @@ const dealerNoBlackjackState = {
       const splitBet = player.placeBet(this.game.currentBet.betAmount);
       this.game.bets.splice(this.game.bets.indexOf(this.game.currentBet) + 1, 0, splitBet);
       this.game.currentBet.hand.transferTopCard(splitBet.hand);
+      this.game.emitCurrentState();
     }
 
     this.game.emitCurrentBet();

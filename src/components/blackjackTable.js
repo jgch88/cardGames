@@ -158,6 +158,9 @@ class BlackjackTable extends Component {
   }
   
   isPlayersTurn() {
+    if (!(this.state.gameState === 'dealerNoBlackjackState')) {
+      return false;
+    }
     if (this.state.players[this.socket.id] && this.state.currentBet) {
       if (this.state.bets[this.state.currentBet].nickname === this.state.players[this.socket.id].nickname) {
         return true;
@@ -168,6 +171,10 @@ class BlackjackTable extends Component {
 
   playerCanSplit() {
     if (this.isPlayersTurn()) {
+      if (this.state.bets[this.state.currentBet].cards.length < 2) {
+        // this was erroring due to the cards[1] value being checked immediately after splitting hands
+        return false;
+      }
       if (this.state.bets[this.state.currentBet].cards[0].value === this.state.bets[this.state.currentBet].cards[1].value) {
         return true;
       }
