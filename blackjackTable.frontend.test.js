@@ -341,7 +341,7 @@ describe('feature: players splitting hands', () => {
       .then(async () =>  {
         await pages[0].$eval('#playSplit', el => el.click());
       });
-    await expect(pages[0].waitForSelector('#playStand', {timeout:200})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#playStand', {timeout:500})).rejects.toThrow('timeout');
     killServer();
   });
 });

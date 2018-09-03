@@ -61,13 +61,6 @@ const dealerNoBlackjackState = {
       this.game.currentBet = this.getNextBet();
     }
     if (move === 'split') {
-      /*
-      if (this.game.currentBet.hand.cards.length < 2) {
-        // when players have just split and
-        // not yet 'hit'
-        throw `Can't split a single card!`;
-      }
-      */
       if (this.game.currentBet.hand.cards[0].value !== this.game.currentBet.hand.cards[1].value) {
         throw `Can't split. Cards are not the same value!`;
       }
@@ -75,11 +68,20 @@ const dealerNoBlackjackState = {
         throw `Can't split after hitting`;
       }
       const player = this.game.players.find(player => player.name === playerName);
-      // involves 1. creating a new bet
       const splitBet = player.placeBet(this.game.currentBet.betAmount);
       this.game.bets.splice(this.game.bets.indexOf(this.game.currentBet) + 1, 0, splitBet);
       this.game.currentBet.hand.transferTopCard(splitBet.hand);
       this.game.emitCurrentState();
+      if (splitBet.hand.cards[0].value === 1) {
+        // for split aces, dealer gives each hand one card and only one card.
+        // cannot get "blackjack" for 1.5x payout through splits
+        this.game.deck.transferTopCard(this.game.currentBet.hand);
+        this.game.currentBet.hand.cards[1].turnFaceUp();
+        this.game.deck.transferTopCard(splitBet.hand);
+        splitBet.hand.cards[1].turnFaceUp();
+        this.game.play(player.name, 'stand');
+        this.game.play(player.name, 'stand');
+      }
     }
 
     this.game.emitCurrentBet();
