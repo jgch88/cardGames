@@ -141,6 +141,9 @@ class BlackjackTable extends Component {
     this.stand = () => {
       this.socket.emit('play', 'stand');
     };
+    this.split = () => {
+      this.socket.emit('play', 'split');
+    };
     this.goToBettingState = () => {
       this.socket.emit('changeState', 'gettingBetsState');
       this.setState({
@@ -177,9 +180,24 @@ class BlackjackTable extends Component {
   }
 
   isPlayersTurn() {
+    if (!(this.state.gameState === 'dealerNoBlackjackState')) {
+      return false;
+    }
     if (this.state.players[this.socket.id] && this.state.currentBet) {
       if (this.state.bets[this.state.currentBet].nickname === this.state.players[this.socket.id].nickname) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  playerCanSplit() {
+    if (this.isPlayersTurn()) {
+      if (this.state.bets[this.state.currentBet].cards.length === 2) {
+        // this was erroring due to the cards[1] value being checked immediately after splitting hands
+        if (this.state.bets[this.state.currentBet].cards[0].value === this.state.bets[this.state.currentBet].cards[1].value) {
+          return true;
+        }
       }
     }
     return false;
@@ -219,12 +237,17 @@ class BlackjackTable extends Component {
         ) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
         this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
-        this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+        h(
           'div',
           null,
-          h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
-          h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
-        ) : ''
+          this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+            'span',
+            null,
+            h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
+            h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
+          ) : '',
+          this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : ''
+        )
       ),
       'MessageLog',
       h(

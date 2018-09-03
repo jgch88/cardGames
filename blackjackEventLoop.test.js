@@ -889,3 +889,172 @@ test('server can emit player nickname', () => {
 
   expect(game.emitCurrentState().players['player1'].nickname).toBe('john');
 });
+
+describe('feature: players splitting hands', () => {
+
+  test('player can split when both cards have the same value', () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    game.deck = require('./testDeckConfigs/playerSplits.js');
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.changeState(checkDealerForNaturalsState);
+    game.play('player1', 'split');
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(80);
+    expect(game.bets.length).toBe(2);
+    expect(game.bets[0].hand.cards.length).toBe(1);
+    expect(game.bets[0].hand.cards[0].value).toBe(6);
+    expect(game.bets[0].hand.cards[0].suit).toBe("Hearts");
+    expect(game.bets[1].hand.cards.length).toBe(1);
+    expect(game.bets[1].hand.cards[0].value).toBe(6);
+    expect(game.bets[1].hand.cards[0].suit).toBe("Diamonds");
+
+    game.play('player1', 'hit');
+    game.play('player1', 'stand');
+    game.play('player1', 'hit');
+    game.play('player1', 'stand');
+    // both bets lose, player will draw one 10 card for each split bet.
+    expect(game.dealer.chips).toBe(10020);
+
+  });
+  test('player cannot split when both cards have different values', () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    const deck = Object.create(Deck);
+    deck.createStandardDeck();
+    const dealerCard1 = Object.create(CardWithTwoSides);
+    const dealerCard2 = Object.create(CardWithTwoSides);
+    const playerCard1 = Object.create(CardWithTwoSides);
+    const playerCard2 = Object.create(CardWithTwoSides);
+    dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+    dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+    playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+    playerCard2.prepareCard({value: Number(7), suit: "Diamonds"}, {isFaceDown: true});
+    deck.addCardToTop(dealerCard2);
+    deck.addCardToTop(playerCard1);
+    deck.addCardToTop(dealerCard1);
+    deck.addCardToTop(playerCard2);
+    game.deck = deck;
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.changeState(checkDealerForNaturalsState);
+    expect(() => {
+      game.play('player1', 'split');
+    }).toThrow(`Can't split`);
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+
+  });
+
+  test('player cannot split after hitting', () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    const deck = Object.create(Deck);
+    deck.createStandardDeck();
+    const dealerCard1 = Object.create(CardWithTwoSides);
+    const dealerCard2 = Object.create(CardWithTwoSides);
+    const playerCard1 = Object.create(CardWithTwoSides);
+    const playerCard2 = Object.create(CardWithTwoSides);
+    const playerCard3 = Object.create(CardWithTwoSides);
+    dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+    dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+    playerCard1.prepareCard({value: Number(6), suit: "Hearts"}, {isFaceDown: true});
+    playerCard2.prepareCard({value: Number(6), suit: "Diamonds"}, {isFaceDown: true});
+    playerCard3.prepareCard({value: Number(2), suit: "Diamonds"}, {isFaceDown: true});
+    deck.addCardToTop(playerCard3);
+    deck.addCardToTop(dealerCard2);
+    deck.addCardToTop(playerCard2);
+    deck.addCardToTop(dealerCard1);
+    deck.addCardToTop(playerCard1);
+    game.deck = deck;
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.changeState(checkDealerForNaturalsState);
+    game.play('player1', 'hit');
+    expect(() => {
+      game.play('player1', 'split');
+    }).toThrow(`Can't split after hitting`);
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+
+  });
+  test('player cannot split after standing', () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    const deck = Object.create(Deck);
+    deck.createStandardDeck();
+    const dealerCard1 = Object.create(CardWithTwoSides);
+    const dealerCard2 = Object.create(CardWithTwoSides);
+    const playerCard1 = Object.create(CardWithTwoSides);
+    const playerCard2 = Object.create(CardWithTwoSides);
+    const player2Card1 = Object.create(CardWithTwoSides);
+    const player2Card2 = Object.create(CardWithTwoSides);
+    const playerCard3 = Object.create(CardWithTwoSides);
+    dealerCard1.prepareCard({value: Number(10), suit: "Spades"}, {isFaceDown: true});
+    dealerCard2.prepareCard({value: Number(8), suit: "Spades"}, {isFaceDown: true});
+    playerCard1.prepareCard({value: Number(11), suit: "Hearts"}, {isFaceDown: true});
+    playerCard2.prepareCard({value: Number(12), suit: "Diamonds"}, {isFaceDown: true});
+    playerCard3.prepareCard({value: Number(2), suit: "Diamonds"}, {isFaceDown: true});
+    player2Card1.prepareCard({value: Number(3), suit: "Hearts"}, {isFaceDown: true});
+    player2Card2.prepareCard({value: Number(4), suit: "Diamonds"}, {isFaceDown: true});
+    deck.addCardToTop(playerCard3);
+    deck.addCardToTop(dealerCard2);
+    deck.addCardToTop(player2Card2);
+    deck.addCardToTop(playerCard2);
+    deck.addCardToTop(dealerCard1);
+    deck.addCardToTop(player2Card1);
+    deck.addCardToTop(playerCard1);
+    game.deck = deck;
+    game.joinGame('player1', 100);
+    game.joinGame('player2', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.placeBet('player2', 10);
+    game.changeState(checkDealerForNaturalsState);
+    game.play('player1', 'stand');
+    expect(() => {
+      game.play('player1', 'split');
+    }).toThrow(); // will either throw not player's turn, or throw waiting for players to join
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+
+  });
+
+  test('player cannot hit/stand after splitting aces', () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    game.deck = require('./testDeckConfigs/playerSplitsAces.js');
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.changeState(checkDealerForNaturalsState);
+    game.play('player1', 'split');
+    expect(() => {
+      game.play('player1', 'hit');
+    }).toThrow(); // will either throw not player's turn, or throw waiting for players to join
+    expect(() => {
+      game.play('player1', 'stand');
+    }).toThrow(); // will either throw not player's turn, or throw waiting for players to join
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(80);
+  });
+})
