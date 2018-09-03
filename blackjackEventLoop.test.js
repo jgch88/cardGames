@@ -1035,4 +1035,26 @@ describe('feature: players splitting hands', () => {
     expect(player.chips).toBe(90);
 
   });
+
+  test('player cannot hit/stand after splitting aces', () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    game.deck = require('./testDeckConfigs/playerSplitsAces.js');
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.changeState(checkDealerForNaturalsState);
+    game.play('player1', 'split');
+    expect(() => {
+      game.play('player1', 'hit');
+    }).toThrow(); // will either throw not player's turn, or throw waiting for players to join
+    expect(() => {
+      game.play('player1', 'stand');
+    }).toThrow(); // will either throw not player's turn, or throw waiting for players to join
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(80);
+  });
 })

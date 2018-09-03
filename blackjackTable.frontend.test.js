@@ -345,7 +345,7 @@ describe('feature: players splitting hands', () => {
     killServer();
   });
 
-  test.only(`when player splits with two aces and gets blackjacks, he doesn't get paid 1.5x`, async () => {
+  test(`when player splits with two aces and gets blackjacks, he doesn't get paid 1.5x`, async () => {
     await initServer(`playerSplitsAcesGetsBlackjacks`);
     await pages[0].goto(APP);
 
