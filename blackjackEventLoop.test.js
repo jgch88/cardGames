@@ -892,7 +892,7 @@ test('server can emit player nickname', () => {
 
 describe('feature: players splitting hands', () => {
 
-  test.only('player can split when both cards have the same value', () => {
+  test('player can split when both cards have the same value', () => {
 
     const game = Object.create(BlackjackGame);
     game.init(io);

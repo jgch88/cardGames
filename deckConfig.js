@@ -4,6 +4,7 @@ const decks = {
   bothNoBlackjack: require('./testDeckConfigs/bothNoBlackjack.js'),
   dealerNoBlackjack: require('./testDeckConfigs/dealerNoBlackjackPlayerHasBlackjack.js'),
   playerSplits: require('./testDeckConfigs/playerSplits.js'),
+  playerSplitsAces: require('./testDeckConfigs/playerSplitsAces.js'),
 }
 
 module.exports = decks;
