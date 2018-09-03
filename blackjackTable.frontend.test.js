@@ -344,4 +344,28 @@ describe('feature: players splitting hands', () => {
     await expect(pages[0].waitForSelector('#playStand', {timeout:500})).rejects.toThrow('timeout');
     killServer();
   });
+
+  test.only(`when player splits with two aces and gets blackjacks, he doesn't get paid 1.5x`, async () => {
+    await initServer(`playerSplitsAcesGetsBlackjacks`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await pages[0]
+      .waitForSelector('#playSplit', {timeout:200})
+      .then(async () =>  {
+        await pages[0].$eval('#playSplit', el => el.click());
+      });
+    await expect(pages[0].waitForSelector('#playStand', {timeout:500})).rejects.toThrow('timeout');
+    const chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    expect(chipsInHand).toBe('Chips: 120');
+    killServer();
+  });
 });
