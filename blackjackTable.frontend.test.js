@@ -369,3 +369,25 @@ describe('feature: players splitting hands', () => {
     killServer();
   });
 });
+
+
+describe('feature: players can place insurance bets', () => {
+
+  test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+    await initServer(`dealerHasBlackjackDeck`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    const gameState = await pages[0].$eval('.gameStateStatus', el => el.innerHTML);
+    expect(gameState).toContain('Getting Insurance Bets')
+    await pages[0].$eval('#placeInsuranceBet', el => el.click());
+  });
+});
