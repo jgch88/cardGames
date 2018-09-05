@@ -1070,6 +1070,7 @@ describe('feature: players can place insurance bets', () => {
     game.changeState(gettingBetsState);
     game.placeBet('player1', 10);
     game.changeState(checkDealerForNaturalsState);
+    expect(game.state.name).toBe(`gettingInsuranceBetsState`);
     game.placeInsuranceBet('player1', 5); // player can only place up to half his current bet
     
     const player = game.players.find(player => player.name === 'player1');
