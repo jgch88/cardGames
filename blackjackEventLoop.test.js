@@ -1058,3 +1058,21 @@ describe('feature: players splitting hands', () => {
     expect(player.chips).toBe(80);
   });
 })
+
+describe('feature: players can place insurance bets', () => {
+
+  test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    // inject rigged deck such that dealer will get blackjack
+    game.deck = require('./testDeckConfigs/dealerHasBlackjackDeck.js');
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    game.changeState(checkDealerForNaturalsState);
+    game.placeInsuranceBet('player1', 5); // player can only place up to half his current bet
+    
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(95); // 100 - 10 - 5 + (5*2) = 95
+  });
+});
