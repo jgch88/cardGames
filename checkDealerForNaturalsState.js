@@ -1,5 +1,6 @@
 const dealerHasBlackjackState = require('./dealerHasBlackjackState.js');
 const dealerNoBlackjackState = require('./dealerNoBlackjackState.js');
+const gettingInsuranceBetsState = require('./gettingInsuranceBetsState.js');
 
 const checkDealerForNaturalsState = {
   init(game) {
@@ -23,7 +24,11 @@ const checkDealerForNaturalsState = {
     });
     game.render();
 
-    this.checkIfDealerHasBlackjack();
+    if (this.dealerHasFirstCardAce()) {
+      this.game.changeState(gettingInsuranceBetsState);
+    } else {
+      this.checkIfDealerHasBlackjack();
+    }
     // set current player
     // maybe should put the bet inside the player object later
 
@@ -49,6 +54,15 @@ const checkDealerForNaturalsState = {
     this.game.deck.transferTopCard(this.game.dealer.hand);
 
   },
+  dealerHasFirstCardAce() {
+    const dealer = this.game.dealer;
+    if (dealer.hand.cards[0].value === 1) {
+      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
+      return true;
+    }
+    return false;
+  },
+
   checkIfDealerHasBlackjack() {
     const dealer = this.game.dealer;
     if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
