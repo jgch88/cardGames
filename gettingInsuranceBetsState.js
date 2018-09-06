@@ -21,6 +21,22 @@ const gettingInsuranceBetsState = {
   },
   play() {
   },
+  placeInsuranceBet(playerName, amount, game) {
+    console.log(playerName, amount, game);
+    // emit a message to all players and expect a response within 30s?
+    // promise.all?
+    // generate a single promise for each current bet
+    let insuranceBets = this.game.bets.map(bet => new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve('foo');
+        })
+    });
+    );
+    Promise.all(insuranceBets).then(function(values) {
+      console.log(values);
+    })
+    //
+  }
 }
 
 module.exports = gettingInsuranceBetsState;

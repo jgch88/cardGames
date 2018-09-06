@@ -67,6 +67,9 @@ const Game = {
   play(playerName, move) {
     this.state.play(playerName, move, this);
   },
+  placeInsuranceBet(playerName, amount) {
+    this.state.placeInsuranceBet(playerName, amount, this);
+  },
   // helper methods
   render() {
     // show the status of the game.
