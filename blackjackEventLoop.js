@@ -19,6 +19,7 @@ const Game = {
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
     this.bets = []; // restructure the game to decouple bets from players -> just directly resolve bets.
+    this.insuranceBets = [];
 
     // inject the server's io object
     // (different from individual sockets!)
@@ -37,10 +38,10 @@ const Game = {
     this.state.init(this);
 
   },
-  changeState(newState) {
+  async changeState(newState) {
     console.log(`Changing state`);
     this.state = Object.create(newState);
-    this.state.init(this);
+    await this.state.init(this);
     this.sendGameState(this.state.name);
   },
   // gettingPlayers

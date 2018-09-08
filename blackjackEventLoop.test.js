@@ -1069,11 +1069,18 @@ describe('feature: players can place insurance bets', () => {
     game.joinGame('player1', 100);
     game.changeState(gettingBetsState);
     game.placeBet('player1', 10);
-    game.changeState(checkDealerForNaturalsState);
+    jest.useFakeTimers();
+    await game.changeState(checkDealerForNaturalsState);
     expect(game.state.name).toBe(`gettingInsuranceBetsState`);
     game.placeInsuranceBet('player1', 5); // player can only place up to half his current bet
+    await jest.runAllTimers();
     
     const player = game.players.find(player => player.name === 'player1');
-    expect(player.chips).toBe(95); // 100 - 10 - 5 + (5*2) = 95
-  });
+    expect(player.chips).toBe(100);
+
+    // if a player bets $10 on a hand and $5 on their insurance bet, 
+    // they would lose the $10, but be returned the $5 insurance bet
+    // plus the $10 they get for 2:1 insurance payout.
+    // this is effectively a "push", i.e. standoff
+  }, 3000);
 });
