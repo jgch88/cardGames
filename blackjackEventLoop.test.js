@@ -1062,6 +1062,7 @@ describe('feature: players splitting hands', () => {
 describe('feature: players can place insurance bets', () => {
 
   test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+    jest.useFakeTimers();
     const game = Object.create(BlackjackGame);
     game.init(io);
     // inject rigged deck such that dealer will get blackjack
@@ -1069,18 +1070,59 @@ describe('feature: players can place insurance bets', () => {
     game.joinGame('player1', 100);
     game.changeState(gettingBetsState);
     game.placeBet('player1', 10);
-    jest.useFakeTimers();
-    await game.changeState(checkDealerForNaturalsState);
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+    game.changeState(checkDealerForNaturalsState);
     expect(game.state.name).toBe(`gettingInsuranceBetsState`);
     game.placeInsuranceBet('player1', 5); // player can only place up to half his current bet
-    await jest.runAllTimers();
+    expect(player.chips).toBe(85);
+    // getting jest issues because placeInsuranceBet is asynchronous, the bottom will run
+    // it seems like if i put two advanceTimersByTime, the whole thing runs first
+    // before the async stuff comes back
+    // if i do only one, the async stuff comes back before the next setTimeout
+    // console.log(`advancing time 3000ms to wait for bet timeout`);
     
-    const player = game.players.find(player => player.name === 'player1');
+    // doing another set of jest.useFakeTimers doesn't really work, because
+    // they all run first before the async stuff comes back, and
+    // can't really seem to 'await' itl
+    /*
+    Promise.resolve().then(() => jest.advanceTimersByTime(100));
+    await new Promise(resolve => {
+      setTimeout(() => {
+        console.log(`resolve timer promise`)
+        expect(player.chips).toBe(85); // runs
+        resolve();
+      }, 100);
+    })
+    */
+    // Promise.resolve().then(() => jest.advanceTimersByTime(3000));
+    jest.runOnlyPendingTimers();
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    Promise.resolve().then(() => jest.runAllTimers()); // this pattern from stackoverflow
+    // makes it such that the next NEW promise is resolved instantly, without 
+    // causing the test to timeout since the Promise is pending and AWAITING
+    await new Promise(resolve => {
+      setTimeout(() => {
+        console.log(`resolve2`);
+        expect(player.chips).toBe(85); // runs
+        resolve();
+      }, 100);
+    }).then(); // for some reason the .then causes the next row to
+    // actually await
+    /*
+     // this .then runs IMMEDIATELY after the promise is resolved
+      .then(() => {
+      console.log(`after playerchipsfinal`);
+    })
+    */
+    console.log('playerchipsfinal');
     expect(player.chips).toBe(100);
+    // jest only mocks setTimeout inside the modules, not here
+    // await jest.advanceTimersByTime(1000); // this is cumulative!l
 
     // if a player bets $10 on a hand and $5 on their insurance bet, 
     // they would lose the $10, but be returned the $5 insurance bet
     // plus the $10 they get for 2:1 insurance payout.
     // this is effectively a "push", i.e. standoff
-  }, 3000);
+  }, 2000);
 });
