@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"test": "npm run br && jest --silent",
+		"test": "killall -9 node || echo 'no node' && npm run br && jest --silent",
 		"build-client": "browserify public/main.js > public/bundle.js",
 		"br": "browserify -t [ babelify --presets [ react ] ] src/main.js -o public/bundle.js"
 	},

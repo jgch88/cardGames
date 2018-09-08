@@ -380,7 +380,7 @@ describe('feature: players splitting hands', () => {
 describe('feature: players can place insurance bets', () => {
 
   test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
-    await initServer(`dealerHasBlackjackDeck`);
+    await initServer(`dealerHasBlackjackDeck2`);
     await pages[0].goto(APP);
 
     dialogValue = "100"

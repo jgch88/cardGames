@@ -237,6 +237,27 @@ describe('feature: legacy tests', () => {
     expect(player.chips).toBe(70);
   });
 
+  test('dealer gets blackjack with 10 card', async () => {
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    game.deck = require('./testDeckConfigs/dealerHasBlackjackDeckWithTenCard.js');
+    console.log(game.deck);
+
+    game.joinGame('player1', 100);
+    
+    game.changeState(gettingBetsState);
+
+    game.placeBet('player1', 10);
+
+    game.changeState(checkDealerForNaturalsState);
+
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+    expect(game.dealer.chips).toBe(10010);
+
+  });
+
   test('dealer gets blackjack, player and dealer chips resolve correctly', async () => {
     jest.useFakeTimers();
 
