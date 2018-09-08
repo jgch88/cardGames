@@ -462,6 +462,7 @@ const GameStateStatus = function GameStateStatus(props) {
   const gameStates = {
     gettingPlayersState: 'Waiting for Players to join',
     gettingBetsState: 'Waiting for bets to be placed',
+    gettingInsuranceBetsState: 'Getting Insurance Bets',
     checkDealerForNaturals: 'Checking if Dealer has Blackjack',
     dealerHasBlackjackState: 'Dealer Blackjack!',
     dealerNoBlackjackState: 'Playing',

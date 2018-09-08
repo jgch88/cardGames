@@ -6,6 +6,7 @@ let pages;
 let browser;
 let childProcess;
 let dialogValue;
+const INSURANCE_PAUSE = 3000;
 
 const USER_DATA_DIR = 'C:\\Users\\Me\\Downloads\\temp';
 const USER_DATA_DIR_WSL = '/mnt/c/Users/Me/Downloads/temp';
@@ -47,6 +48,7 @@ beforeAll(async () => {
 
 afterAll(() => {
   browser.close();
+  killServer();
 })
 
 test('loads blackjack page', async () => {
@@ -81,10 +83,14 @@ test('dealer has blackjack, player no blackjack', async () => {
   chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
   expect(chipsInHand).toBe('Chips: 90');
   await pages[0].$eval('#startRound', el => el.click());
+  await new Promise((resolve, reject) => {
+    // need to add this because of insurance bet feature
+    setTimeout(resolve, INSURANCE_PAUSE);
+  });
   const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
   expect(messageLog).toContain('[Dealer]: Has a Blackjack');
   killServer();
-});
+}, 6000);
 
 test('player stands, game resolves', async () => {
   await initServer();
@@ -373,7 +379,7 @@ describe('feature: players splitting hands', () => {
 
 describe('feature: players can place insurance bets', () => {
 
-  test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+  test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
     await pages[0].goto(APP);
 
@@ -386,8 +392,12 @@ describe('feature: players can place insurance bets', () => {
     await pages[0].$eval('#placeBet', el => el.click());
 
     await pages[0].$eval('#startRound', el => el.click());
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 200);
+    })
     const gameState = await pages[0].$eval('.gameStateStatus', el => el.innerHTML);
     expect(gameState).toContain('Getting Insurance Bets')
-    await pages[0].$eval('#placeInsuranceBet', el => el.click());
+    // await pages[0].$eval('#placeInsuranceBet', el => el.click());
+    killServer();
   });
 });

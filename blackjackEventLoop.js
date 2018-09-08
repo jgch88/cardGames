@@ -38,10 +38,10 @@ const Game = {
     this.state.init(this);
 
   },
-  async changeState(newState) {
+  changeState(newState) {
     console.log(`Changing state`);
     this.state = Object.create(newState);
-    await this.state.init(this);
+    this.state.init(this);
     this.sendGameState(this.state.name);
   },
   // gettingPlayers
