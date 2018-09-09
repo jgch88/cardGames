@@ -13,15 +13,25 @@ const gettingInsuranceBetsState = {
     // this insuranceBets property is created here and resolves within this state
     // don't add an unncessary 'resolved' property
     this.game.insuranceBets = this.game.bets.map(bet => {
+      let betResolve;
+      let betReject;
+      const insuranceBetPromise = new Promise((resolve, reject) => {
+        betResolve = resolve;
+        betReject = reject;
+      });
       return {
         player: bet.player,
         name: bet.player.name,
         amount: 0,
+        insuranceBetPromise,
+        betResolve,
+        betReject,
       }
     })
     console.log(this.game.insuranceBets);
     // this.insuranceBets = await this.waitForAllInsuranceBets();
-    await this.waitForAllInsuranceBets();
+    // await this.waitForAllInsuranceBets();
+    await this.raceAllBetPromisesWithTimer().then(console.log(`Times up`));
     console.log(`all insurance bets gotten`, this.game.insuranceBets);
     // branch to dealerNoBlackjack or dealerBlackjack
     this.checkIfDealerHasBlackjack();
@@ -53,6 +63,18 @@ const gettingInsuranceBetsState = {
     this.game.dealer.chips += amount;
     this.game.insuranceBets.find(insuranceBet => insuranceBet.name === playerName).amount = amount;
     // emit a message to all players and expect a response within 30s?
+  },
+  // the function returning a promise doesn't need to be async
+  raceAllBetPromisesWithTimer() {
+    betPromises = Promise.all(this.game.insuranceBets.map(insuranceBet => insuranceBet.insuranceBetPromise));
+
+    const timerDuration = 3000;
+    console.log(`Waiting ${timerDuration}ms for insurance bets to be placed.`);
+    const timerPromise = new Promise((resolve) => {
+      setTimeout(resolve, timerDuration, 'Insurance bet timeout');
+    })
+
+    return Promise.race([betPromises, timerPromise]);
   },
   async waitForAllInsuranceBets() {
     // i'm not actually using this... bets.all, i'm actually just using the timer.

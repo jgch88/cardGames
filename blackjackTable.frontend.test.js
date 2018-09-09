@@ -8,8 +8,8 @@ let childProcess;
 let dialogValue;
 const INSURANCE_PAUSE = 3000;
 
-const USER_DATA_DIR = 'C:\\Users\\Me\\Downloads\\temp';
-const USER_DATA_DIR_WSL = '/mnt/c/Users/Me/Downloads/temp';
+const USER_DATA_DIR = 'C:\\Users\\Public\\Public Downloads\\temp';
+const USER_DATA_DIR_WSL = '/mnt/c/Users/Public/Public Downloads/temp';
 
 const initServer = async (deckType) => {
   return new Promise((resolve, reject) => {
@@ -380,7 +380,7 @@ describe('feature: players splitting hands', () => {
 describe('feature: players can place insurance bets', () => {
 
   test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
-    await initServer(`dealerHasBlackjackDeck2`);
+    await initServer(`dealerHasBlackjackDeck`);
     await pages[0].goto(APP);
 
     dialogValue = "100"

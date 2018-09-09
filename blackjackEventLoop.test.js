@@ -7,8 +7,6 @@ const io = require('socket.io')(server);
 const gettingBetsState = require('./gettingBetsState.js');
 const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 
-const importFresh = require('import-fresh');
-
 // Functional testing of game (rather than unit testing)
 
 describe('feature: legacy tests', () => {
@@ -277,6 +275,12 @@ describe('feature: legacy tests', () => {
 
     const player = game.players.find(player => player.name === 'player1');
     expect(player.chips).toBe(90);
+    // console.log(game.bets);
+    // test was failing because of how jest queues the test commands to be executed
+    // before the game state actually executes
+    // is this like a mutex lock WITHIN a test
+    await Promise.resolve().then(() => {jest.runOnlyPendingTimers()}).then();
+    // console.log(game.bets);
     expect(game.dealer.chips).toBe(10010);
 
   });
@@ -345,6 +349,7 @@ describe('feature: legacy tests', () => {
     await Promise.resolve().then(() => {jest.runOnlyPendingTimers()}).then();
 
     const player = game.players.find(player => player.name === 'player1');
+    await Promise.resolve().then(() => {jest.runOnlyPendingTimers()}).then();
     expect(player.chips).toBe(100);
     expect(game.dealer.chips).toBe(10000);
 
@@ -1091,7 +1096,7 @@ describe('feature: players splitting hands', () => {
 
 describe('feature: players can place insurance bets', () => {
 
-  test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+  test(`when dealer's first card is an ace, game status switches to getting insurance bets, then player places insurance and dealer gets blackjack`, async () => {
     jest.useFakeTimers();
 
     const game = Object.create(BlackjackGame);
@@ -1113,6 +1118,8 @@ describe('feature: players can place insurance bets', () => {
 
     await Promise.resolve().then(() => {jest.runAllTimers()}).then();
     expect(setTimeout).toHaveBeenCalledTimes(1);
+    await Promise.resolve().then(() => {jest.runAllTimers()}).then();
+    // this is a 'push' where the player is neither up or down any chips
     expect(player.chips).toBe(100);
   });
 });
