@@ -399,8 +399,18 @@ describe('feature: players can place insurance bets', () => {
     expect(gameState).toContain('Getting Insurance Bets')
     dialogValue = "5"
     await pages[0].$eval('#placeInsuranceBet', el => el.click());
-    const chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
     expect(chipsInHand).toBe('Chips: 85');
+
+    await new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+        resolve();
+      }, 3000);
+    })
+
+    expect(chipsInHand).toBe('Chips: 100');
+
     killServer();
-  });
+  },6000);
 });
