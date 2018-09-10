@@ -132,6 +132,17 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('placeInsuranceBet', (chips) => {
+    try {
+      currentGame.placeInsuranceBet(`${socket.id}`, chips.chips);
+      currentGame.emitCurrentState();
+    } catch(e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
+  });
+
   socket.on('play', (move) => {
     try {
       currentGame.play(socket.id, move);

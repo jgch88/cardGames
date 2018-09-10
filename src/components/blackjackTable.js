@@ -110,9 +110,12 @@ class BlackjackTable extends Component {
     };
     this.placeBet = () => {
       const chips = window.prompt("How many chips would you like to bet?", 10);
-      console.log(chips);
       this.socket.emit('placeBet', {chips: Number(chips)});
     };
+    this.placeInsuranceBet = () => {
+      const chips = window.prompt("Would you like to place an insurance bet? (Max: half your original bet)", 10);
+      this.socket.emit('placeInsuranceBet', {chips: Number(chips)});
+    }
     this.hit = () => {
       this.socket.emit('play', 'hit');
     };
@@ -215,7 +218,7 @@ class BlackjackTable extends Component {
             <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
           {this.playerCanSplit() ?
             <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
-          <Button id="placeInsuranceBet" text={"Insurance"}/>
+          <Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
           </div>
         </div>
         MessageLog
