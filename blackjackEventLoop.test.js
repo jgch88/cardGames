@@ -1126,7 +1126,7 @@ describe('feature: players can place insurance bets', () => {
     expect(player.chips).toBe(100);
   });
 
-  test.only(`player placing insurance bet ends insurance bet timer`, async () => {
+  test(`player placing insurance bet ends insurance bet timer`, async () => {
     jest.useFakeTimers();
 
     const game = Object.create(BlackjackGame);
@@ -1153,5 +1153,29 @@ describe('feature: players can place insurance bets', () => {
 
     console.log(`checking`);
     expect(player.chips).toBe(100);
+  });
+
+  test.only(`player lets insurance timer run out`, async () => {
+    jest.useFakeTimers();
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    game.deck = require('./testDeckConfigs/dealerHasBlackjackDeck2.js');
+    console.log(game.deck);
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+    game.changeState(checkDealerForNaturalsState);
+
+    jest.advanceTimersByTime(3000);
+    await Promise.resolve().then().then();
+    
+    console.log(game.insuranceBets);
+
+    console.log(`checking`);
+    expect(player.chips).toBe(90);
+    expect(game.state.name).toBe(`gettingPlayersState`);
   });
 });
