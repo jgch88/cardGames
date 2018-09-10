@@ -31,7 +31,9 @@ const gettingInsuranceBetsState = {
     console.log(this.game.insuranceBets);
     // this.insuranceBets = await this.waitForAllInsuranceBets();
     // await this.waitForAllInsuranceBets();
-    await this.raceAllBetPromisesWithTimer().then(console.log(`Times up`));
+    await this.raceAllBetPromisesWithTimer().then((raceWinner) => {
+      console.log(`Promise race winner:`, raceWinner);
+    });
     console.log(`all insurance bets gotten`, this.game.insuranceBets);
     // branch to dealerNoBlackjack or dealerBlackjack
     this.checkIfDealerHasBlackjack();
@@ -61,20 +63,28 @@ const gettingInsuranceBetsState = {
     // max insurance bet amount is half
     bet.player.chips -= amount;
     this.game.dealer.chips += amount;
-    this.game.insuranceBets.find(insuranceBet => insuranceBet.name === playerName).amount = amount;
+    const insuranceBet = this.game.insuranceBets.find(insuranceBet => insuranceBet.name === playerName);
+    insuranceBet.amount = amount;
+    insuranceBet.betResolve(`${playerName} placed insurance bet and promise resolved`);
     // emit a message to all players and expect a response within 30s?
   },
   // the function returning a promise doesn't need to be async
   raceAllBetPromisesWithTimer() {
     betPromises = Promise.all(this.game.insuranceBets.map(insuranceBet => insuranceBet.insuranceBetPromise));
+    console.log(`betPromises`, betPromises);
+      /* .then((promises) => {
+      console.log(`All Insurance Bets Placed`)
+    });
+    */
 
     const timerDuration = 3000;
     console.log(`Waiting ${timerDuration}ms for insurance bets to be placed.`);
     const timerPromise = new Promise((resolve) => {
       setTimeout(resolve, timerDuration, 'Insurance bet timeout');
     })
-
-    return Promise.race([betPromises, timerPromise]);
+    const race = Promise.race([betPromises, timerPromise]);
+    console.log(`race`, race);
+    return race;
   },
   async waitForAllInsuranceBets() {
     // i'm not actually using this... bets.all, i'm actually just using the timer.

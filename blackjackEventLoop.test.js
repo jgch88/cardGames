@@ -1148,12 +1148,8 @@ describe('feature: players can place insurance bets', () => {
     jest.advanceTimersByTime(2000);
     await Promise.resolve().then().then();
     
-    //  this is still within the 3 second timer, which will break
-    //  unless we clear the awaiting promise race
-    /*
-    jest.advanceTimersByTime(2000);
     await Promise.resolve().then().then();
-    */
+    console.log(game.insuranceBets);
 
     console.log(`checking`);
     expect(player.chips).toBe(100);
