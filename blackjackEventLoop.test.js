@@ -1116,10 +1116,46 @@ describe('feature: players can place insurance bets', () => {
     game.placeInsuranceBet('player1', 5); // player can only place up to half his current bet
     expect(player.chips).toBe(85);
 
-    await Promise.resolve().then(() => {jest.runAllTimers()}).then();
+    jest.runAllTimers();
+    await Promise.resolve().then().then();
     expect(setTimeout).toHaveBeenCalledTimes(1);
-    await Promise.resolve().then(() => {jest.runAllTimers()}).then();
+
+    jest.runAllTimers();
+    await Promise.resolve().then().then();
     // this is a 'push' where the player is neither up or down any chips
+    expect(player.chips).toBe(100);
+  });
+
+  test.only(`player placing insurance bet ends insurance bet timer`, async () => {
+    jest.useFakeTimers();
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    game.deck = require('./testDeckConfigs/dealerHasBlackjackDeck2.js');
+    console.log(game.deck);
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+    expect(setTimeout).toHaveBeenCalledTimes(0);
+    game.changeState(checkDealerForNaturalsState);
+    // expect(game.state.name).toBe(`gettingInsuranceBetsState`);
+    // expect(setTimeout).toHaveBeenCalledTimes(1);
+    game.placeInsuranceBet('player1', 5); // player can only place up to half his current bet
+    expect(player.chips).toBe(85);
+
+    jest.advanceTimersByTime(2000);
+    await Promise.resolve().then().then();
+    
+    //  this is still within the 3 second timer, which will break
+    //  unless we clear the awaiting promise race
+    /*
+    jest.advanceTimersByTime(2000);
+    await Promise.resolve().then().then();
+    */
+
+    console.log(`checking`);
     expect(player.chips).toBe(100);
   });
 });
