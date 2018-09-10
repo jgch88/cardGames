@@ -215,6 +215,7 @@ class BlackjackTable extends Component {
             <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
           {this.playerCanSplit() ?
             <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
+          <Button id="placeInsuranceBet" text={"Insurance"}/>
           </div>
         </div>
         MessageLog

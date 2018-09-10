@@ -379,7 +379,7 @@ describe('feature: players splitting hands', () => {
 
 describe('feature: players can place insurance bets', () => {
 
-  test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+  test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
     await pages[0].goto(APP);
 
@@ -397,7 +397,7 @@ describe('feature: players can place insurance bets', () => {
     })
     const gameState = await pages[0].$eval('.gameStateStatus', el => el.innerHTML);
     expect(gameState).toContain('Getting Insurance Bets')
-    // await pages[0].$eval('#placeInsuranceBet', el => el.click());
+    await pages[0].$eval('#placeInsuranceBet', el => el.click());
     killServer();
   });
 });
