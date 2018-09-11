@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const APP = 'http://localhost:4000';
 const { spawn } = require('child_process');
 
 let pages;
@@ -11,9 +10,14 @@ const INSURANCE_PAUSE = 3000;
 const USER_DATA_DIR = 'C:\\Users\\Public\\Public Downloads\\temp';
 const USER_DATA_DIR_WSL = '/mnt/c/Users/Public/Public Downloads/temp';
 
+const PORT = 4001; // needed this because jest runs backend and frontend tests simultaneously
+// and frontend tests would fail because backend tests loaded different decks
+// ^ this is not true, tests still failed. it was because waitForSelector #dontPlaceInsuranceBet was there
+// but no eval().click!
+const APP = `http://localhost:${PORT}`;
 const initServer = async (deckType) => {
   return new Promise((resolve, reject) => {
-    childProcess = spawn('node', ['server.js', `--deck=${deckType}`]);
+    childProcess = spawn('node', ['server.js', `--deck=${deckType}`, `--port=${PORT}`]);
 
     childProcess.stdout.on('data', data => {
       console.log(JSON.stringify(data.toString('utf8')));
@@ -93,6 +97,7 @@ test('dealer has blackjack, player no blackjack', async () => {
 }, 6000);
 
 test('player stands, game resolves', async () => {
+  // non deterministic
   await initServer();
   await pages[0].goto(APP);
   dialogValue = "100"
@@ -103,6 +108,13 @@ test('player stands, game resolves', async () => {
   dialogValue = "10"
   await pages[0].$eval('#placeBet', el => el.click());
   await pages[0].$eval('#startRound', el => el.click());
+  try {
+    // if dealer gets Ace, don't buy insurance
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+  } catch(e) {
+    console.log(e);
+  }
   await pages[0]
     .waitForSelector('#playStand', {timeout:200})
     .then(async () =>  {
@@ -139,6 +151,14 @@ test('two players join, both players stand, game resolves', async () => {
   await pages[1].$eval('#placeBet', el => el.click());
 
   await pages[0].$eval('#startRound', el => el.click());
+  // make them press "no insurance" if possible
+  try {
+    // if dealer gets Ace, don't buy insurance
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+  } catch(e) {
+    console.log(e);
+  }
   await pages[0]
     .waitForSelector('#playStand', {timeout:200})
     .then(async () =>  {
@@ -227,6 +247,13 @@ test(`players can create separate game rooms and play different games`, async ()
     await pages[i].$eval('#placeBet', el => el.click());
 
     await pages[i].$eval('#startRound', el => el.click());
+    try {
+      // if dealer gets Ace, don't buy insurance
+      await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+      await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+    } catch(e) {
+      console.log(e);
+    }
     await pages[i]
       .waitForSelector('#playStand', {timeout:200})
       .then(async () =>  {
@@ -379,7 +406,7 @@ describe('feature: players splitting hands', () => {
 
 describe('feature: players can place insurance bets', () => {
 
-  test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+  test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
     await pages[0].goto(APP);
 

@@ -14,7 +14,8 @@ const gettingBetsState = require('./gettingBetsState.js');
 const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 const resolveState = require('./resolveState.js');
 
-server.listen(4000, () => console.log(`Listening on port 4000`));
+const PORT = argv.port || 4000;
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 let defaultRoomName = 'game0';
 let game = Object.create(BlackjackGame);
