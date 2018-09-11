@@ -400,6 +400,8 @@ describe('feature: players can place insurance bets', () => {
     dialogValue = "5"
     await pages[0].$eval('#placeInsuranceBet', el => el.click());
     let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    /* 
+    // no longer need this since the promise race ends the timer
     expect(chipsInHand).toBe('Chips: 85');
 
     await new Promise((resolve, reject) => {
@@ -408,6 +410,7 @@ describe('feature: players can place insurance bets', () => {
         resolve();
       }, 3000);
     })
+    */
 
     expect(chipsInHand).toBe('Chips: 100');
 
