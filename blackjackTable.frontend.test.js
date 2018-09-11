@@ -398,6 +398,7 @@ describe('feature: players can place insurance bets', () => {
     const gameState = await pages[0].$eval('.gameStateStatus', el => el.innerHTML);
     expect(gameState).toContain('Getting Insurance Bets')
     dialogValue = "5"
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
     await pages[0].$eval('#placeInsuranceBet', el => el.click());
     let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
     /* 
