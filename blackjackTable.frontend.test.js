@@ -36,7 +36,7 @@ beforeAll(async () => {
     executablePath: `chrome.exe`,
     userDataDir: USER_DATA_DIR,
     headless: false,
-    slowMo: 50,
+    slowMo: 30,
   });
   await browser.newPage(); // open tab for 2nd player
   await browser.newPage(); // open tab for 3rd player

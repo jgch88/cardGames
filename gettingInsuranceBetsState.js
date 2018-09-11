@@ -29,8 +29,6 @@ const gettingInsuranceBetsState = {
       }
     })
     console.log(this.game.insuranceBets);
-    // this.insuranceBets = await this.waitForAllInsuranceBets();
-    // await this.waitForAllInsuranceBets();
     await this.raceAllBetPromisesWithTimer().then((raceWinner) => {
       console.log(`Promise race winner:`, raceWinner);
     });
@@ -92,23 +90,6 @@ const gettingInsuranceBetsState = {
     console.log(`race`, race);
     return race;
   },
-  async waitForAllInsuranceBets() {
-    // i'm not actually using this... bets.all, i'm actually just using the timer.
-    const timer = 3000;
-    console.log(`Waiting ${timer}ms for insurance bets to be placed.`);
-    /*
-    let insuranceBetPromises = this.game.bets.map(bet => new Promise((resolve, reject) => {
-      setTimeout(resolve, 5000, `insurance bet timeout`);
-      // each bet access a state?
-    }));
-    return await Promise.all(insuranceBetPromises).then(bets => {
-      return bets;
-    });
-    */
-    return new Promise((resolve, reject) => {
-      setTimeout(resolve, timer, `Insurance bet timeout`);
-    })
-  },
   checkIfDealerHasBlackjack() {
     const dealer = this.game.dealer;
     if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
@@ -133,8 +114,6 @@ const gettingInsuranceBetsState = {
         this.game.sendMessageLogMessages(`[Dealer]: Has no Blackjack. Insurance bets collected by the house.`);
         this.game.changeState(dealerNoBlackjackState);
       }
-    } else {
-      this.game.changeState(dealerNoBlackjackState);
     }
   }
 }
