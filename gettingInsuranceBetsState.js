@@ -67,7 +67,11 @@ const gettingInsuranceBetsState = {
     const insuranceBet = this.game.insuranceBets.find(insuranceBet => insuranceBet.name === playerName);
     insuranceBet.amount = amount;
     insuranceBet.betResolve(`${playerName} placed insurance bet and promise resolved`);
-    this.game.sendMessageLogMessages(`[${player.nickname}]: Insurance Bet ${amount} chips`);
+    if (amount !== 0) {
+      this.game.sendMessageLogMessages(`[${player.nickname}]: Insurance Bet ${amount} chips`);
+    } else {
+      this.game.sendMessageLogMessages(`[${player.nickname}]: No Insurance`);
+    }
     // emit a message to all players and expect a response within 30s?
   },
   // the function returning a promise doesn't need to be async
