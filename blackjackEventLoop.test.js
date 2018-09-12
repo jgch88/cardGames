@@ -1179,6 +1179,34 @@ describe('feature: players can place insurance bets', () => {
     expect(game.state.name).toBe(`gettingPlayersState`);
   });
 
+  test(`player places insurance bet, dealer does not have blackjack`, async () => {
+    jest.useFakeTimers();
+
+    const game = Object.create(BlackjackGame);
+    game.init(io);
+    game.deck = require('./testDeckConfigs/dealerHasAceNoBlackjack.js');
+    console.log(game.deck);
+    game.joinGame('player1', 100);
+    game.changeState(gettingBetsState);
+    game.placeBet('player1', 10);
+    const player = game.players.find(player => player.name === 'player1');
+    expect(player.chips).toBe(90);
+    game.changeState(checkDealerForNaturalsState);
+
+    await Promise.resolve().then().then();
+    game.placeInsuranceBet('player1', 5);
+
+    await Promise.resolve().then().then();
+    
+    console.log(game.insuranceBets);
+
+    console.log(`checking`);
+    expect(player.chips).toBe(85);
+    await Promise.resolve().then().then();
+    expect(game.state.name).toBe(`dealerNoBlackjackState`);
+    expect(player.chips).toBe(85);
+  });
+
   test(`player plays no insurance`, async () => {
     jest.useFakeTimers();
 
