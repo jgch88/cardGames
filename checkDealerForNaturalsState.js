@@ -57,7 +57,7 @@ const checkDealerForNaturalsState = {
   dealerHasFirstCardAce() {
     const dealer = this.game.dealer;
     if (dealer.hand.cards[0].value === 1) {
-      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
+      this.game.sendMessageLogMessages(`[Dealer]: First card Ace.`);
       return true;
     }
     return false;
@@ -65,8 +65,8 @@ const checkDealerForNaturalsState = {
 
   checkIfDealerHasBlackjack() {
     const dealer = this.game.dealer;
-    if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
-      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
+    if ([10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
+      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card.`);
       if (dealer.score === 21) {
         dealer.hand.cards[1].turnFaceUp();
         this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);

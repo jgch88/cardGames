@@ -92,28 +92,25 @@ const gettingInsuranceBetsState = {
   },
   checkIfDealerHasBlackjack() {
     const dealer = this.game.dealer;
-    if ([1, 10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
-      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card/Ace.`);
-      if (dealer.score === 21) {
-        dealer.hand.cards[1].turnFaceUp();
-        this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
-        // resolve all insurance plays
-        // if insurance betamount > 0 log the message, payout some chips
-        this.game.sendMessageLogMessages(`[Dealer]: Resolving insurance bets`);
-        this.game.insuranceBets.map(insuranceBet => {
-          if (!(insuranceBet.amount === 0)) {
-            this.game.sendMessageLogMessages(`[${insuranceBet.player.nickname}]: Wins insurance bet`);
-            insuranceBet.player.chips += (insuranceBet.amount * 3);
-            this.game.dealer.chips -= (insuranceBet.amount * 3);
-            this.game.emitCurrentChipsInHand();
-            console.log(insuranceBet.player.chips, this.game.dealer.chips);
-          }
-        })
-        this.game.changeState(dealerHasBlackjackState);
-      } else {
-        this.game.sendMessageLogMessages(`[Dealer]: Has no Blackjack. Insurance bets collected by the house.`);
-        this.game.changeState(dealerNoBlackjackState);
-      }
+    if (dealer.score === 21) {
+      dealer.hand.cards[1].turnFaceUp();
+      this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
+      // resolve all insurance plays
+      // if insurance betamount > 0 log the message, payout some chips
+      this.game.sendMessageLogMessages(`[Dealer]: Resolving insurance bets`);
+      this.game.insuranceBets.map(insuranceBet => {
+        if (!(insuranceBet.amount === 0)) {
+          this.game.sendMessageLogMessages(`[${insuranceBet.player.nickname}]: Wins insurance bet`);
+          insuranceBet.player.chips += (insuranceBet.amount * 3);
+          this.game.dealer.chips -= (insuranceBet.amount * 3);
+          this.game.emitCurrentChipsInHand();
+          console.log(insuranceBet.player.chips, this.game.dealer.chips);
+        }
+      })
+      this.game.changeState(dealerHasBlackjackState);
+    } else {
+      this.game.sendMessageLogMessages(`[Dealer]: Has no Blackjack. Insurance bets collected by the house.`);
+      this.game.changeState(dealerNoBlackjackState);
     }
   }
 }
