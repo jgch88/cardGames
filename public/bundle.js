@@ -253,8 +253,12 @@ class BlackjackTable extends Component {
             h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
           ) : '',
           this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
-          h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
-          h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
+          this.state.gameState === 'gettingInsuranceBetsState' ? h(
+            'span',
+            null,
+            h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
+            h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
+          ) : ''
         )
       ),
       'MessageLog',

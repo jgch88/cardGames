@@ -221,8 +221,9 @@ class BlackjackTable extends Component {
             <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
           {this.playerCanSplit() ?
             <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
-          <Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
-          <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/>
+          {this.state.gameState === 'gettingInsuranceBetsState' ?
+            <span><Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
+            <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}
           </div>
         </div>
         MessageLog
