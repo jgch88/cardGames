@@ -460,8 +460,8 @@ describe('feature: players can place insurance bets', () => {
     await pages[0].$eval('#startRound', el => el.click());
     await expect(pages[0].waitForSelector('#playHit', {timeout:200})).rejects.toThrow('timeout');
     await expect(pages[0].waitForSelector('#playStand', {timeout:200})).rejects.toThrow('timeout');
-    expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:200}));
-    expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200}));
+    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:200});
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
     await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
     killServer();
   });
@@ -481,13 +481,13 @@ describe('feature: players can place insurance bets', () => {
     await pages[0].$eval('#startRound', el => el.click());
     await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
     await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
-    expect(pages[0].waitForSelector('#playHit', {timeout:200}));
-    expect(pages[0].waitForSelector('#playStand', {timeout:200}));
+    await pages[0].waitForSelector('#playHit', {timeout:200});
+    await pages[0].waitForSelector('#playStand', {timeout:200});
     await pages[0].$eval('#playStand', el => el.click());
     killServer();
   });
 
-  test.only(`insurance buttons appear when dealer gets first card ace, and disappear after player places insurance bet`, async () => {
+  test(`insurance buttons appear when dealer gets first card ace, and disappear after player places insurance bet`, async () => {
     await initServer(`dealerHasBlackjackDeckTwoPlayer`);
     await pages[0].goto(APP);
     await pages[1].goto(APP);
@@ -506,13 +506,13 @@ describe('feature: players can place insurance bets', () => {
     await pages[0].$eval('#startRound', el => el.click());
     await expect(pages[0].waitForSelector('#playHit', {timeout:200})).rejects.toThrow('timeout');
     await expect(pages[0].waitForSelector('#playStand', {timeout:200})).rejects.toThrow('timeout');
-    expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:200}));
-    expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200}));
+    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:200});
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
     await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
     await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
     await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
-    expect(pages[1].waitForSelector('#placeInsuranceBet', {timeout:200}));
-    expect(pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:200}));
+    await pages[1].waitForSelector('#placeInsuranceBet', {timeout:200});
+    await pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
     killServer();
   });
 });

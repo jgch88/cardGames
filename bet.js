@@ -6,7 +6,6 @@ const Bet = {
   init(betAmount, player) {
     this.id = Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
     this.betAmount = betAmount;
-    this.insurance = false;
     this.player = player;
     this.resolved = false;
     const hand = Object.create(BlackjackHand);

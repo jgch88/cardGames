@@ -39,6 +39,7 @@ class BlackjackTable extends Component {
       gameState: '',
       chipsInHand: {},
       betAmounts: {},
+      insuranceBetAmounts: {},
       bets: {},
       currentBet: ''
     };
@@ -83,13 +84,18 @@ class BlackjackTable extends Component {
       });
       console.log(`betId`, betId);
     });
+    this.socket.on('currentInsuranceBet', ({ insuranceBetAmounts }) => {
+      this.setState({
+        insuranceBetAmounts
+      });
+    });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
         gameState
       });
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts }) => {
       this.setState({
         gameState,
         messages,
@@ -98,7 +104,8 @@ class BlackjackTable extends Component {
         betAmounts,
         chipsInHand,
         bets,
-        currentBet
+        currentBet,
+        insuranceBetAmounts
       });
       console.log('currentState', {
         gameState,
@@ -108,7 +115,8 @@ class BlackjackTable extends Component {
         betAmounts,
         chipsInHand,
         bets,
-        currentBet
+        currentBet,
+        insuranceBetAmounts
       });
     });
     this.socket.on('emitError', message => {
@@ -164,6 +172,9 @@ class BlackjackTable extends Component {
     };
     this.playerHasBet = () => {
       return this.socket.id in this.state.betAmounts;
+    };
+    this.playerHasBetInsurance = () => {
+      return this.socket.id in this.state.insuranceBetAmounts;
     };
     this.changeNickname = () => {
       const nickname = window.prompt("What nickname would you like to display?");
@@ -253,7 +264,7 @@ class BlackjackTable extends Component {
             h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
           ) : '',
           this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
-          this.state.gameState === 'gettingInsuranceBetsState' ? h(
+          this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ? h(
             'span',
             null,
             h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),

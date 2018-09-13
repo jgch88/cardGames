@@ -151,6 +151,7 @@ const Game = {
     // call all the various state methods here.
     currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.getPlayerBetAmounts();
+    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
     currentState.messages = this.getMessageLogMessages().messages;
     currentState.players = this.renderPlayers();
     currentState.dealerCards = this.renderDealerCards();
@@ -174,6 +175,11 @@ const Game = {
     this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
 
   },
+  emitInsuranceBets() {
+    let currentState = {};
+    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
+    this.io.to(this.roomName).emit('currentInsuranceBets', currentState);
+  },
   emitCurrentBet() {
     this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
   },
@@ -196,6 +202,15 @@ const Game = {
     });
     // this.io.to(this.roomName).emit('betAmounts', betAmounts);
     return betAmounts;
+  },
+  getPlayerInsuranceBetAmounts() {
+    let insuranceBetAmounts = {};
+    this.insuranceBets.map(insuranceBet => {
+      if (insuranceBet.promiseIsResolved) {
+        insuranceBetAmounts[insuranceBet.player.name] = insuranceBet.amount;
+      }
+    });
+    return insuranceBetAmounts;
   },
 };
 

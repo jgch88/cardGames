@@ -23,6 +23,7 @@ const gettingInsuranceBetsState = {
         player: bet.player,
         name: bet.player.name,
         amount: 0,
+        promiseIsResolved: false,
         insuranceBetPromise,
         betResolve,
         betReject,
@@ -65,11 +66,13 @@ const gettingInsuranceBetsState = {
     const insuranceBet = this.game.insuranceBets.find(insuranceBet => insuranceBet.name === playerName);
     insuranceBet.amount = amount;
     insuranceBet.betResolve(`${playerName} placed insurance bet and promise resolved`);
+    insuranceBet.promiseIsResolved = true;
     if (amount !== 0) {
       this.game.sendMessageLogMessages(`[${player.nickname}]: Insurance Bet ${amount} chips`);
     } else {
       this.game.sendMessageLogMessages(`[${player.nickname}]: No Insurance`);
     }
+    this.game.emitInsuranceBets();
     // emit a message to all players and expect a response within 30s?
   },
   // the function returning a promise doesn't need to be async
@@ -84,7 +87,14 @@ const gettingInsuranceBetsState = {
     const timerDuration = 3000;
     console.log(`Waiting ${timerDuration}ms for insurance bets to be placed.`);
     const timerPromise = new Promise((resolve) => {
-      setTimeout(resolve, timerDuration, 'Insurance bet timeout');
+      setTimeout(() => {
+        // resolve all insuranceBet.betResolves here
+        this.game.insuranceBets.forEach((insuranceBet) => {
+          insuranceBet.betResolve();
+          insuranceBet.promiseIsResolved = true;
+        });
+        resolve();
+      }, timerDuration, 'Insurance bet timeout');
     })
     const race = Promise.race([betPromises, timerPromise]);
     console.log(`race`, race);

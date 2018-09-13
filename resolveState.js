@@ -83,6 +83,7 @@ const resolveState = {
     // how long to show last hand for?
     this.game.getPlayerChipsInHand();
     this.game.getPlayerBetAmounts();
+    // TODO: remove insurance bets
   }
 }
 
