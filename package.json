@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"test": "npm run br && jest --silent",
+		"test": "killall -9 node || echo 'no node' && npm run br && jest --silent",
 		"build-client": "browserify public/main.js > public/bundle.js",
 		"br": "browserify -t [ babelify --presets [ react ] ] src/main.js -o public/bundle.js"
 	},
@@ -13,7 +13,8 @@
 		"babelify": "^8.0.0",
 		"browserify": "^16.2.2",
 		"faker": "^4.1.0",
-		"jest": "^23.4.2",
+		"import-fresh": "^2.0.0",
+		"jest": "^23.5.0",
 		"jest-cli": "^23.5.0",
 		"puppeteer": "^1.7.0"
 	},

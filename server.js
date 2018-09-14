@@ -14,11 +14,13 @@ const gettingBetsState = require('./gettingBetsState.js');
 const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 const resolveState = require('./resolveState.js');
 
-server.listen(4000, () => console.log(`Listening on port 4000`));
+const PORT = argv.port || 4000;
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
+const TIMER = argv.timer || 15000;
 let defaultRoomName = 'game0';
 let game = Object.create(BlackjackGame);
-game.init(io, defaultRoomName);
+game.init(io, defaultRoomName, TIMER);
 if (decks[argv.deck]) {
   game.deck = decks[argv.deck];
 }
@@ -61,7 +63,7 @@ io.on('connection', (socket) => {
       changeCurrentGame(roomName);
     } else {
       let newGame = Object.create(BlackjackGame);
-      newGame.init(io, roomName);
+      newGame.init(io, roomName, TIMER);
       games.push(newGame);
       changeCurrentGame(roomName);
     }
@@ -124,6 +126,17 @@ io.on('connection', (socket) => {
   socket.on('placeBet', (chips) => {
     try {
       currentGame.placeBet(`${socket.id}`, chips.chips);
+      currentGame.emitCurrentState();
+    } catch(e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
+  });
+
+  socket.on('placeInsuranceBet', (chips) => {
+    try {
+      currentGame.placeInsuranceBet(`${socket.id}`, chips.chips);
       currentGame.emitCurrentState();
     } catch(e) {
       const errorString = `[Error]: ${e}`;

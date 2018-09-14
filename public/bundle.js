@@ -39,6 +39,7 @@ class BlackjackTable extends Component {
       gameState: '',
       chipsInHand: {},
       betAmounts: {},
+      insuranceBetAmounts: {},
       bets: {},
       currentBet: ''
     };
@@ -83,13 +84,18 @@ class BlackjackTable extends Component {
       });
       console.log(`betId`, betId);
     });
+    this.socket.on('currentInsuranceBet', ({ insuranceBetAmounts }) => {
+      this.setState({
+        insuranceBetAmounts
+      });
+    });
     this.socket.on('gameState', ({ gameState }) => {
       this.setState({
         gameState
       });
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts }) => {
       this.setState({
         gameState,
         messages,
@@ -98,7 +104,8 @@ class BlackjackTable extends Component {
         betAmounts,
         chipsInHand,
         bets,
-        currentBet
+        currentBet,
+        insuranceBetAmounts
       });
       console.log('currentState', {
         gameState,
@@ -108,7 +115,8 @@ class BlackjackTable extends Component {
         betAmounts,
         chipsInHand,
         bets,
-        currentBet
+        currentBet,
+        insuranceBetAmounts
       });
     });
     this.socket.on('emitError', message => {
@@ -132,8 +140,14 @@ class BlackjackTable extends Component {
     };
     this.placeBet = () => {
       const chips = window.prompt("How many chips would you like to bet?", 10);
-      console.log(chips);
       this.socket.emit('placeBet', { chips: Number(chips) });
+    };
+    this.placeInsuranceBet = () => {
+      const chips = window.prompt("Would you like to place an insurance bet? (Max: half your original bet)", 10);
+      this.socket.emit('placeInsuranceBet', { chips: Number(chips) });
+    };
+    this.dontPlaceInsuranceBet = () => {
+      this.socket.emit('placeInsuranceBet', { chips: Number(0) });
     };
     this.hit = () => {
       this.socket.emit('play', 'hit');
@@ -158,6 +172,9 @@ class BlackjackTable extends Component {
     };
     this.playerHasBet = () => {
       return this.socket.id in this.state.betAmounts;
+    };
+    this.playerHasBetInsurance = () => {
+      return this.socket.id in this.state.insuranceBetAmounts;
     };
     this.changeNickname = () => {
       const nickname = window.prompt("What nickname would you like to display?");
@@ -246,7 +263,13 @@ class BlackjackTable extends Component {
             h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
             h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
           ) : '',
-          this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : ''
+          this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
+          this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ? h(
+            'span',
+            null,
+            h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
+            h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
+          ) : ''
         )
       ),
       'MessageLog',
@@ -462,6 +485,7 @@ const GameStateStatus = function GameStateStatus(props) {
   const gameStates = {
     gettingPlayersState: 'Waiting for Players to join',
     gettingBetsState: 'Waiting for bets to be placed',
+    gettingInsuranceBetsState: 'Getting Insurance Bets',
     checkDealerForNaturals: 'Checking if Dealer has Blackjack',
     dealerHasBlackjackState: 'Dealer Blackjack!',
     dealerNoBlackjackState: 'Playing',

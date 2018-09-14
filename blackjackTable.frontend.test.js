@@ -1,18 +1,23 @@
 const puppeteer = require('puppeteer');
-const APP = 'http://localhost:4000';
 const { spawn } = require('child_process');
 
 let pages;
 let browser;
 let childProcess;
 let dialogValue;
+const INSURANCE_PAUSE = 1500;
 
-const USER_DATA_DIR = 'C:\\Users\\Me\\Downloads\\temp';
-const USER_DATA_DIR_WSL = '/mnt/c/Users/Me/Downloads/temp';
+const USER_DATA_DIR = 'C:\\Users\\Public\\Public Downloads\\temp';
+const USER_DATA_DIR_WSL = '/mnt/c/Users/Public/Public Downloads/temp';
 
+const PORT = 4001; // needed this because jest runs backend and frontend tests simultaneously
+// and frontend tests would fail because backend tests loaded different decks
+// ^ this is not true, tests still failed. it was because waitForSelector #dontPlaceInsuranceBet was there
+// but no eval().click!
+const APP = `http://localhost:${PORT}`;
 const initServer = async (deckType) => {
   return new Promise((resolve, reject) => {
-    childProcess = spawn('node', ['server.js', `--deck=${deckType}`]);
+    childProcess = spawn('node', ['server.js', `--deck=${deckType}`, `--port=${PORT}`, `--timer=${INSURANCE_PAUSE}`]);
 
     childProcess.stdout.on('data', data => {
       console.log(JSON.stringify(data.toString('utf8')));
@@ -31,7 +36,7 @@ beforeAll(async () => {
     executablePath: `chrome.exe`,
     userDataDir: USER_DATA_DIR,
     headless: false,
-    slowMo: 50,
+    slowMo: 30,
   });
   await browser.newPage(); // open tab for 2nd player
   await browser.newPage(); // open tab for 3rd player
@@ -47,6 +52,7 @@ beforeAll(async () => {
 
 afterAll(() => {
   browser.close();
+  killServer();
 })
 
 test('loads blackjack page', async () => {
@@ -81,12 +87,17 @@ test('dealer has blackjack, player no blackjack', async () => {
   chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
   expect(chipsInHand).toBe('Chips: 90');
   await pages[0].$eval('#startRound', el => el.click());
+  await new Promise((resolve, reject) => {
+    // need to add this because of insurance bet feature
+    setTimeout(resolve, INSURANCE_PAUSE);
+  });
   const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
   expect(messageLog).toContain('[Dealer]: Has a Blackjack');
   killServer();
-});
+}, 6000);
 
 test('player stands, game resolves', async () => {
+  // non deterministic
   await initServer();
   await pages[0].goto(APP);
   dialogValue = "100"
@@ -97,6 +108,13 @@ test('player stands, game resolves', async () => {
   dialogValue = "10"
   await pages[0].$eval('#placeBet', el => el.click());
   await pages[0].$eval('#startRound', el => el.click());
+  try {
+    // if dealer gets Ace, don't buy insurance
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+  } catch(e) {
+    console.log(e);
+  }
   await pages[0]
     .waitForSelector('#playStand', {timeout:200})
     .then(async () =>  {
@@ -133,6 +151,14 @@ test('two players join, both players stand, game resolves', async () => {
   await pages[1].$eval('#placeBet', el => el.click());
 
   await pages[0].$eval('#startRound', el => el.click());
+  // make them press "no insurance" if possible
+  try {
+    // if dealer gets Ace, don't buy insurance
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+  } catch(e) {
+    console.log(e);
+  }
   await pages[0]
     .waitForSelector('#playStand', {timeout:200})
     .then(async () =>  {
@@ -221,6 +247,13 @@ test(`players can create separate game rooms and play different games`, async ()
     await pages[i].$eval('#placeBet', el => el.click());
 
     await pages[i].$eval('#startRound', el => el.click());
+    try {
+      // if dealer gets Ace, don't buy insurance
+      await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+      await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+    } catch(e) {
+      console.log(e);
+    }
     await pages[i]
       .waitForSelector('#playStand', {timeout:200})
       .then(async () =>  {
@@ -369,3 +402,118 @@ describe('feature: players splitting hands', () => {
     killServer();
   });
 });
+
+
+describe('feature: players can place insurance bets', () => {
+
+  test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+    await initServer(`dealerHasBlackjackDeck`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 200);
+    })
+    const gameState = await pages[0].$eval('.gameStateStatus', el => el.innerHTML);
+    expect(gameState).toContain('Getting Insurance Bets')
+    dialogValue = "5"
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].$eval('#placeInsuranceBet', el => el.click());
+    let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+    /* 
+    // no longer need this since the promise race ends the timer
+    expect(chipsInHand).toBe('Chips: 85');
+
+    await new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+        resolve();
+      }, 3000);
+    })
+    */
+
+    expect(chipsInHand).toBe('Chips: 100');
+
+    killServer();
+  },6000);
+
+  test(`insurance buttons appear when dealer gets first card ace, no other buttons`, async () => {
+    await initServer(`dealerHasBlackjackDeck`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await expect(pages[0].waitForSelector('#playHit', {timeout:200})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#playStand', {timeout:200})).rejects.toThrow('timeout');
+    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:200});
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+    killServer();
+  });
+
+  test(`insurance buttons do not appear when dealer has no first card ace`, async () => {
+    await initServer(`bothNoBlackjack`);
+    await pages[0].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
+    await pages[0].waitForSelector('#playHit', {timeout:200});
+    await pages[0].waitForSelector('#playStand', {timeout:200});
+    await pages[0].$eval('#playStand', el => el.click());
+    killServer();
+  });
+
+  test(`insurance buttons appear when dealer gets first card ace, and disappear after player places insurance bet`, async () => {
+    await initServer(`dealerHasBlackjackDeckTwoPlayer`);
+    await pages[0].goto(APP);
+    await pages[1].goto(APP);
+
+    dialogValue = "100"
+    await pages[0].waitForSelector('#joinGame');
+    await pages[0].$eval('#joinGame', el => el.click());
+    await pages[1].waitForSelector('#joinGame');
+    await pages[1].$eval('#joinGame', el => el.click());
+
+    await pages[0].$eval('#goToBettingState', el => el.click());
+    dialogValue = "10"
+    await pages[0].$eval('#placeBet', el => el.click());
+    await pages[1].$eval('#placeBet', el => el.click());
+
+    await pages[0].$eval('#startRound', el => el.click());
+    await expect(pages[0].waitForSelector('#playHit', {timeout:300})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#playStand', {timeout:100})).rejects.toThrow('timeout');
+    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:100});
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:100});
+    await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+    await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:100})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:100})).rejects.toThrow('timeout');
+    await pages[1].waitForSelector('#placeInsuranceBet', {timeout:100});
+    await pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:100});
+    killServer();
+  });
+});
+

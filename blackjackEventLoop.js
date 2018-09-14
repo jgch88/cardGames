@@ -5,7 +5,7 @@ const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
 const Game = {
-  init(io, roomName) {
+  init(io, roomName, timer) {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
@@ -13,12 +13,14 @@ const Game = {
     this.deck = deck;
 
     this.roomName = roomName;
+    this.timer = timer;
 
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
     this.players = []; // array instead of object because order is preserved and access to map/filter/find
     this.bets = []; // restructure the game to decouple bets from players -> just directly resolve bets.
+    this.insuranceBets = [];
 
     // inject the server's io object
     // (different from individual sockets!)
@@ -66,6 +68,9 @@ const Game = {
   // gettingPlays
   play(playerName, move) {
     this.state.play(playerName, move, this);
+  },
+  placeInsuranceBet(playerName, amount) {
+    this.state.placeInsuranceBet(playerName, amount, this);
   },
   // helper methods
   render() {
@@ -147,6 +152,7 @@ const Game = {
     // call all the various state methods here.
     currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.getPlayerBetAmounts();
+    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
     currentState.messages = this.getMessageLogMessages().messages;
     currentState.players = this.renderPlayers();
     currentState.dealerCards = this.renderDealerCards();
@@ -170,6 +176,11 @@ const Game = {
     this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
 
   },
+  emitInsuranceBets() {
+    let currentState = {};
+    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
+    this.io.to(this.roomName).emit('currentInsuranceBets', currentState);
+  },
   emitCurrentBet() {
     this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
   },
@@ -192,6 +203,15 @@ const Game = {
     });
     // this.io.to(this.roomName).emit('betAmounts', betAmounts);
     return betAmounts;
+  },
+  getPlayerInsuranceBetAmounts() {
+    let insuranceBetAmounts = {};
+    this.insuranceBets.map(insuranceBet => {
+      if (insuranceBet.promiseIsResolved) {
+        insuranceBetAmounts[insuranceBet.player.name] = insuranceBet.amount;
+      }
+    });
+    return insuranceBetAmounts;
   },
 };
 
