@@ -5,7 +5,7 @@ const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
 const Game = {
-  init(io, roomName) {
+  init(io, roomName, timer) {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
@@ -13,6 +13,7 @@ const Game = {
     this.deck = deck;
 
     this.roomName = roomName;
+    this.timer = timer;
 
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);

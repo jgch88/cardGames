@@ -17,9 +17,10 @@ const resolveState = require('./resolveState.js');
 const PORT = argv.port || 4000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
+const TIMER = argv.timer || 15000;
 let defaultRoomName = 'game0';
 let game = Object.create(BlackjackGame);
-game.init(io, defaultRoomName);
+game.init(io, defaultRoomName, TIMER);
 if (decks[argv.deck]) {
   game.deck = decks[argv.deck];
 }
@@ -62,7 +63,7 @@ io.on('connection', (socket) => {
       changeCurrentGame(roomName);
     } else {
       let newGame = Object.create(BlackjackGame);
-      newGame.init(io, roomName);
+      newGame.init(io, roomName, TIMER);
       games.push(newGame);
       changeCurrentGame(roomName);
     }

@@ -5,7 +5,7 @@ let pages;
 let browser;
 let childProcess;
 let dialogValue;
-const INSURANCE_PAUSE = 3000;
+const INSURANCE_PAUSE = 1500;
 
 const USER_DATA_DIR = 'C:\\Users\\Public\\Public Downloads\\temp';
 const USER_DATA_DIR_WSL = '/mnt/c/Users/Public/Public Downloads/temp';
@@ -17,7 +17,7 @@ const PORT = 4001; // needed this because jest runs backend and frontend tests s
 const APP = `http://localhost:${PORT}`;
 const initServer = async (deckType) => {
   return new Promise((resolve, reject) => {
-    childProcess = spawn('node', ['server.js', `--deck=${deckType}`, `--port=${PORT}`]);
+    childProcess = spawn('node', ['server.js', `--deck=${deckType}`, `--port=${PORT}`, `--timer=${INSURANCE_PAUSE}`]);
 
     childProcess.stdout.on('data', data => {
       console.log(JSON.stringify(data.toString('utf8')));
@@ -504,15 +504,15 @@ describe('feature: players can place insurance bets', () => {
     await pages[1].$eval('#placeBet', el => el.click());
 
     await pages[0].$eval('#startRound', el => el.click());
-    await expect(pages[0].waitForSelector('#playHit', {timeout:200})).rejects.toThrow('timeout');
-    await expect(pages[0].waitForSelector('#playStand', {timeout:200})).rejects.toThrow('timeout');
-    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:200});
-    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await expect(pages[0].waitForSelector('#playHit', {timeout:300})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#playStand', {timeout:100})).rejects.toThrow('timeout');
+    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:100});
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:100});
     await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
-    await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
-    await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200})).rejects.toThrow('timeout');
-    await pages[1].waitForSelector('#placeInsuranceBet', {timeout:200});
-    await pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:100})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:100})).rejects.toThrow('timeout');
+    await pages[1].waitForSelector('#placeInsuranceBet', {timeout:100});
+    await pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:100});
     killServer();
   });
 });

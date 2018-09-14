@@ -84,7 +84,7 @@ const gettingInsuranceBetsState = {
     });
     */
 
-    const timerDuration = 3000;
+    const timerDuration = this.game.timer;
     console.log(`Waiting ${timerDuration}ms for insurance bets to be placed.`);
     const timerPromise = new Promise((resolve) => {
       setTimeout(() => {
