@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Cormorant" rel="stylesheet">
+    <title>Blackjack</title>
+    <style>
+
+      .card {
+        font-family: 'Cormorant';
+        -moz-border-radius: 0.8em;
+        border-radius: 0.8em;
+        box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        float: left;
+        width: 16em;
+        height: 22.4em;
+        margin: 0 1.2em 1.2em 0;
+        position: relative;
+        z-index: 2;
+      }
+
+      .card .corner {
+        line-height: 1;
+        position: absolute;
+        text-align: center;
+      }
+
+      .card .corner span {
+        display: block;
+        font-size: 1.8em;
+        font-weight: bold;
+      }
+
+      .card .corner .number {
+        font-size: 2em;
+        height: 1.92em/2;
+        line-height: 1.92em/2;
+      }
+
+      .card .corner.top {
+        left: 0.64em;
+        top: 0.96em;
+      }
+
+      .card .corner.bottom {
+        bottom: 0.96em;
+        right: 0.64em;
+        transform: rotate(180deg);
+      }
+
+      .card .card-ten .corner .number {
+        font-size: 1.5em;
+      }
+
+      .card .suit {
+        font-size: 5.8em;
+        font-weight: normal;
+        width: 0.6897em;
+        height: 0.7862em;
+        line-height: 0.7862em;
+        position: absolute;
+        text-align: center;
+      }
+
+      .card .suit.top_center {
+        left: 1.048em;
+        top: 0.331em;
+      }
+
+      .card .suit.top_left {
+        left: 0.4138em;
+        top: 0.3310em;
+      }
+      
+      .card .suit.top_right {
+        right: 0.4138em;
+        top: 0.3310em;
+      }
+
+      .card .suit.middle_center {
+        left: 1.048em;
+        top: 1.5172em;
+      }
+    
+      .card .suit.middle_top {
+        left: 1.048em;
+        top: 0.9655em;
+      }
+
+      .card .suit.middle_bottom {
+        bottom: 0.9655em;
+        left: 1.048em;
+      }
+
+      .card .suit.middle_left {
+        left: 0.4138em;
+        top: 1.5172em;
+      }
+
+      .card .suit.middle_right {
+        right: 0.4138em;
+        top: 1.5172em;
+      }
+      
+      .card .suit.middle_top_center {
+        left: 1.048em;
+        top: 0.8276em;
+      }
+
+      .card .suit.middle_top_left {
+        left: 0.4138em;
+        top: 1.1034em;
+      }
+
+      .card .suit.middle_top_right {
+        right: 0.4138em;
+        top: 1.1034em;
+      }
+
+      .card .suit.middle_bottom_left {
+        bottom: 1.1034em;
+        left: 0.4138em;
+        transform: rotate(180deg);
+      }
+      
+      .card .suit.middle_bottom_right {
+        bottom: 1.1034em;
+        right: 0.4138em;
+        transform: rotate(180deg);
+      }
+
+      .card .suit.middle_bottom_center {
+        bottom: 0.8276em;
+        left: 1.048em;
+        transform: rotate(180deg);
+      }
+
+      .card .suit.bottom_center {
+        bottom: 0.331em;
+        left: 1.048em;
+        transform: rotate(180deg);
+      }
+
+      .card .suit.bottom_left {
+        bottom: 0.331em;
+        left: 0.4138em;
+        transform: rotate(180deg);
+      }
+
+      .card .suit.bottom_right {
+        bottom: 0.331em;
+        right: 0.4138em;
+        transform: rotate(180deg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-ten spade">
+        <div class="corner top">
+          <span class="number">10</span>
+          <span>♠</span>
+        </div>
+        <span class="suit top_right">♠</span>
+        <span class="suit top_left">♠</span>
+        <span class="suit middle_top_left">♠</span>
+        <span class="suit middle_top_center">♠</span>
+        <span class="suit middle_top_right">♠</span>
+        <span class="suit bottom_left">♠</span>
+        <span class="suit bottom_right">♠</span>
+        <span class="suit middle_bottom_center">♠</span>
+        <span class="suit middle_bottom_left">♠</span>
+        <span class="suit middle_bottom_right">♠</span>
+        <div class="corner bottom">
+          <span class="number">10</span>
+          <span>♠</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
