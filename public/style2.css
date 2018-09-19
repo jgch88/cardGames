@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Cormorant';
+  src: url('./Cormorant/Cormorant-Regular.ttf');
+}
+
+.app {
+  height: 100vh;
+  margin: 0;
+  font-family: 'Cormorant', serif;
+}
