@@ -8,6 +8,7 @@ const PlayerStatus = require('./playerStatus.js');
 const Button = require('./button.js');
 const BetStatus = require('./betStatus.js');
 const Snack = require('./snack.js');
+const StartScreen = require('./startScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -201,6 +202,12 @@ class BlackjackTable extends Component {
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
+      <div>
+        <StartScreen playerNickName={this.socket.id}/>
+      </div>
+    )
+    /*
+    return (
       <div class="deckTable">
         <Button text={"Create room"} id={"createRoom"} clickHandler={this.createRoom}/>
         <Button text={"Join room"} id={"joinRoom"} clickHandler={this.joinRoom}/>
@@ -245,6 +252,7 @@ class BlackjackTable extends Component {
       <Snack message={this.state.errorMessage} />
       </div>
     );
+    */
   }
 }
 

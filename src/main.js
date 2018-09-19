@@ -13,7 +13,7 @@ const socket = io();
 // need actual state in it... shouldn't be functional
 // which i can call setState on...
 
-render(<Clock />, document.body);
+// render(<Clock />, document.body);
 render(<BlackjackTable io={socket}/>, document.body);
 
 socket.on('playerJoined', (player) => {
