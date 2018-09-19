@@ -42,7 +42,8 @@ class BlackjackTable extends Component {
       betAmounts: {},
       insuranceBetAmounts: {},
       bets: {},
-      currentBet: ''
+      currentBet: '',
+      mySocketId: ''
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -107,6 +108,9 @@ class BlackjackTable extends Component {
         bets,
         currentBet,
         insuranceBetAmounts
+      });
+      this.setState({
+        mySocketId: this.socket.id
       });
       console.log('currentState', {
         gameState,
@@ -181,6 +185,14 @@ class BlackjackTable extends Component {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
     };
+    this.joinAndChangeNickname = nickname => {
+      this.socket.emit('joinAndChangeNickname', { chips: Number(1000) }, data => {
+        console.log(data);
+        if (nickname && this.socket.id !== nickname) {
+          this.socket.emit('changeNickname', nickname);
+        }
+      });
+    };
     this.createRoom = () => {
       const roomName = window.prompt("Which room would you like to create?", 123);
       this.socket.emit('createRoom', roomName);
@@ -226,7 +238,7 @@ class BlackjackTable extends Component {
     return h(
       'div',
       null,
-      h(StartScreen, { playerNickName: this.socket.id })
+      h(StartScreen, { playerNickname: this.state.mySocketId, joinAndChangeNickname: this.joinAndChangeNickname })
     );
     /*
     return (
@@ -568,57 +580,80 @@ const GameStateStatus = require('./gameStateStatus.js');
 const Button = require('./button.js');
 const Snack = require('./snack.js');
 
-const StartScreen = function StartScreen(props) {
+class StartScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      nickname: ''
+    };
+    this.handleNicknameChange = this.handleNicknameChange.bind(this);
+  }
 
-  return h(
-    'div',
-    { 'class': 'block' },
-    h(
+  componentDidMount() {
+    this.setState({
+      nickname: this.props.playerNickname
+    });
+  }
+
+  handleNicknameChange(event) {
+    console.log(event.target.value);
+    this.setState({
+      nickname: event.target.value
+    });
+  }
+
+  render() {
+    return h(
       'div',
-      { 'class': 'block block--height-30' },
+      { 'class': 'block' },
       h(
         'div',
-        { 'class': 'block__text' },
-        'It looks like you\'ve stumbled onto our Blackjack Lair.'
-      )
-    ),
-    h(
-      'div',
-      { 'class': 'block block--height-40' },
-      h(
-        'div',
-        { 'class': 'block__text' },
-        'We\'re giving you the nickname'
-      ),
-      h(
-        'div',
-        { 'class': 'block__input' },
-        h('input', {
-          'class': 'block__textbox',
-          type: 'text',
-          value: props.playerNickName })
-      ),
-      h(
-        'div',
-        { 'class': 'block__text' },
-        'because we need to keep you safe and anonymous.'
-      )
-    ),
-    h(
-      'div',
-      { 'class': 'block block--height-30' },
-      h(
-        'div',
-        { 'class': 'block__input' },
+        { 'class': 'block block--height-30' },
         h(
-          'button',
-          { 'class': 'block__button' },
-          'I want to play!'
+          'div',
+          { 'class': 'block__text' },
+          'It looks like you\'ve stumbled onto our Blackjack Lair.'
+        )
+      ),
+      h(
+        'div',
+        { 'class': 'block block--height-40' },
+        h(
+          'div',
+          { 'class': 'block__text' },
+          'We\'re giving you the nickname'
+        ),
+        h(
+          'div',
+          { 'class': 'block__input' },
+          h('input', {
+            'class': 'block__textbox',
+            type: 'text',
+            onChange: this.handleNicknameChange,
+            value: this.state.nickname || this.props.playerNickname })
+        ),
+        h(
+          'div',
+          { 'class': 'block__text' },
+          'because we need to keep you safe and anonymous.'
+        )
+      ),
+      h(
+        'div',
+        { 'class': 'block block--height-30' },
+        h(
+          'div',
+          { 'class': 'block__input' },
+          h(
+            'button',
+            { 'class': 'block__button', onClick: () => this.props.joinAndChangeNickname(this.state.nickname) },
+            'I want to play!'
+          )
         )
       )
-    )
-  );
-};
+    );
+  }
+}
 
 module.exports = StartScreen;
 

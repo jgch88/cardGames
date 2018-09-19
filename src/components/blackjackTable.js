@@ -23,6 +23,7 @@ class BlackjackTable extends Component {
       insuranceBetAmounts: {},
       bets: {},
       currentBet: '',
+      mySocketId: '',
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -87,6 +88,9 @@ class BlackjackTable extends Component {
         bets,
         currentBet,
         insuranceBetAmounts,
+      });
+      this.setState({
+        mySocketId: this.socket.id,
       });
       console.log('currentState', {
         gameState,
@@ -159,6 +163,15 @@ class BlackjackTable extends Component {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
     };
+    this.joinAndChangeNickname = (nickname) => {
+      this.socket.emit('joinAndChangeNickname', {chips: Number(1000)}, (data) => {
+        console.log(data);
+        if (nickname && this.socket.id !== nickname) {
+          this.socket.emit('changeNickname', nickname);
+        }
+      });
+
+    };
     this.createRoom = () => {
       const roomName = window.prompt("Which room would you like to create?", 123);
       this.socket.emit('createRoom', roomName);
@@ -203,7 +216,7 @@ class BlackjackTable extends Component {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
     return (
       <div>
-        <StartScreen playerNickName={this.socket.id}/>
+        <StartScreen playerNickname={this.state.mySocketId} joinAndChangeNickname={this.joinAndChangeNickname}/>
       </div>
     )
     /*
