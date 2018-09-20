@@ -29,6 +29,7 @@ const Button = require('./button.js');
 const BetStatus = require('./betStatus.js');
 const Snack = require('./snack.js');
 const StartScreen = require('./startScreen.js');
+const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -238,7 +239,8 @@ class BlackjackTable extends Component {
     return h(
       'div',
       null,
-      h(StartScreen, { playerNickname: this.state.mySocketId, joinAndChangeNickname: this.joinAndChangeNickname })
+      this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players) ? h(StartScreen, { playerNickname: this.state.mySocketId, joinAndChangeNickname: this.joinAndChangeNickname }) : '',
+      this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, null) : ''
     );
     /*
     return (
@@ -292,7 +294,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":6,"./gameStateStatus.js":7,"./messageLog.js":8,"./playerStatus.js":9,"./snack.js":10,"./startScreen.js":11}],3:[function(require,module,exports){
+},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":6,"./gameStateStatus.js":7,"./gettingBetsStateScreen.js":8,"./messageLog.js":9,"./playerStatus.js":10,"./snack.js":11,"./startScreen.js":12}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -513,6 +515,101 @@ module.exports = GameStateStatus;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+class GettingBetsStateScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      betSlider: 10
+    };
+    this.handleBetChange = this.handleBetChange.bind(this);
+  }
+
+  handleBetChange(event) {
+    console.log(event.target.value);
+    this.setState({
+      betSlider: event.target.value
+    });
+  }
+
+  render() {
+    return h(
+      "div",
+      { "class": "block" },
+      h(
+        "div",
+        { "class": "block block--height-30" },
+        h(
+          "div",
+          { "class": "block__timer" },
+          "120"
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-10" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "How baller ya feelin' right now?"
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-15" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "Place your bet"
+        ),
+        h(
+          "div",
+          { "class": "block__input" },
+          h("input", {
+            "class": "block__slider",
+            type: "range",
+            onChange: this.handleBetChange,
+            min: "0",
+            max: "100",
+            step: "2",
+            value: this.state.betSlider
+          })
+        )
+      ),
+      h("div", { "class": "block block--height-25" }),
+      h("div", { "class": "block block--height-12" }),
+      h(
+        "div",
+        { "class": "block block--height-8 block--rows block--theme-dark" },
+        h(
+          "div",
+          { "class": "block__row--width-33" },
+          h(
+            "div",
+            { "class": "block__text" },
+            "asdf"
+          )
+        ),
+        h(
+          "div",
+          { "class": "block__row--width-34" },
+          "a"
+        ),
+        h(
+          "div",
+          { "class": "block__row--width-33" },
+          "aa"
+        )
+      )
+    );
+  }
+}
+
+module.exports = GettingBetsStateScreen;
+
+},{}],9:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const MessageLog = function MessageLog(props) {
   // need to reverse the messages without mutating the state
   return h(
@@ -530,7 +627,7 @@ const MessageLog = function MessageLog(props) {
 
 module.exports = MessageLog;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 const Button = require('./button.js');
@@ -557,7 +654,7 @@ const PlayerStatus = function PlayerStatus(props) {
 
 module.exports = PlayerStatus;
 
-},{"./button.js":3}],10:[function(require,module,exports){
+},{"./button.js":3}],11:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -573,12 +670,9 @@ const Snack = function Snack(props) {
 
 module.exports = Snack;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
-const GameStateStatus = require('./gameStateStatus.js');
-const Button = require('./button.js');
-const Snack = require('./snack.js');
 
 class StartScreen extends Component {
   constructor(props) {
@@ -604,50 +698,51 @@ class StartScreen extends Component {
 
   render() {
     return h(
-      'div',
-      { 'class': 'block' },
+      "div",
+      { "class": "block" },
       h(
-        'div',
-        { 'class': 'block block--height-30' },
+        "div",
+        { "class": "block block--height-30" },
         h(
-          'div',
-          { 'class': 'block__text' },
-          'It looks like you\'ve stumbled onto our Blackjack Lair.'
+          "div",
+          { "class": "block__text" },
+          "It looks like you've stumbled onto our Blackjack Lair."
         )
       ),
       h(
-        'div',
-        { 'class': 'block block--height-40' },
+        "div",
+        { "class": "block block--height-40" },
         h(
-          'div',
-          { 'class': 'block__text' },
-          'We\'re giving you the nickname'
+          "div",
+          { "class": "block__text" },
+          "We're giving you the nickname"
         ),
         h(
-          'div',
-          { 'class': 'block__input' },
-          h('input', {
-            'class': 'block__textbox',
-            type: 'text',
+          "div",
+          { "class": "block__input" },
+          h("input", {
+            "class": "block__textbox",
+            type: "text",
             onChange: this.handleNicknameChange,
-            value: this.state.nickname || this.props.playerNickname })
+            value: this.state.nickname,
+            placeholder: this.state.nickname || this.props.playerNickname })
         ),
         h(
-          'div',
-          { 'class': 'block__text' },
-          'because we need to keep you safe and anonymous.'
+          "div",
+          { "class": "block__text" },
+          "because we need to keep you safe and anonymous."
         )
       ),
       h(
-        'div',
-        { 'class': 'block block--height-30' },
+        "div",
+        { "class": "block block--height-30" },
         h(
-          'div',
-          { 'class': 'block__input' },
+          "div",
+          { "class": "block__input" },
           h(
-            'button',
-            { 'class': 'block__button', onClick: () => this.props.joinAndChangeNickname(this.state.nickname) },
-            'I want to play!'
+            "button",
+            { "class": "block__button", onClick: () => this.props.joinAndChangeNickname(this.state.nickname) },
+            "I want to play!"
           )
         )
       )
@@ -657,7 +752,7 @@ class StartScreen extends Component {
 
 module.exports = StartScreen;
 
-},{"./button.js":3,"./gameStateStatus.js":7,"./snack.js":10}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -688,4 +783,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":5,"./components/deck":6}]},{},[12]);
+},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":5,"./components/deck":6}]},{},[13]);

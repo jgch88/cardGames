@@ -8,6 +8,8 @@
 .app {
   height: 100vh;
   margin: 0;
+  padding: 0;
+  border: 0;
   font-family: 'Cormorant', serif;
   text-align: center;
 }
@@ -21,8 +23,34 @@
 
 }
 
+.block.block--rows {
+  width: 100%;
+  flex-direction: row;
+}
+
+.block.block--theme-dark {
+  background-color: hsl(125,25%,20%);
+  color: #fff;
+}
+
+.block.block--height-8 {
+  height: 8%;
+}
+
+.block.block--height-10 {
+  height: 10%;
+}
+
+.block.block--height-12 {
+  height: 12%;
+}
+
 .block.block--height-15 {
   height: 15%;
+}
+
+.block.block--height-25 {
+  height: 25%;
 }
 
 .block.block--height-30 {
@@ -33,9 +61,36 @@
   height: 40%;
 }
 
+.block__row--width-33 {
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.block__row--width-34 {
+  width: 34%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .block__text {
   width: 66%;
   margin: auto;
+}
+
+.block__timer {
+  margin: auto;
+  width: 8%;
+  border: 0.1rem solid hsl(125,25%,20%);
+  border-radius: .4rem;
+  height: 2.8rem;
+  padding: 0 1rem;
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 .block__input {
@@ -65,6 +120,58 @@
 .block__textbox:focus {
   border-color: hsl(125,25%,20%);
   outline: 0;
+}
+
+.block__slider {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+
+.block__slider:focus {
+  outline: none;
+}
+
+.block__slider::-moz-range-thumb {
+  border: 0.1rem solid #000;
+  border-radius: .4rem;
+  height: 1.8rem;
+  width: 0.6rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.block__slider::-moz-range-track {
+  height: 0.7rem;
+  background: #d1d1d1;
+}
+
+.block__slider::-moz-range-progress {
+  height: 0.7rem;
+  background: hsl(125,25%,20%);
+}
+
+.block__slider::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+.block__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 0.1rem solid #000;
+  border-radius: .4rem;
+  height: 1.8rem;
+  width: 0.6rem;
+  background: #fff;
+  cursor: pointer;
+  margin-top: -0.55rem; /* (slider-thumb height - track height) / 2 */
+}
+
+.block__slider::-webkit-slider-runnable-track {
+  height: 0.7rem;
+  border: none;
+  background: hsl(125,25%,20%);
 }
 
 .block__button {

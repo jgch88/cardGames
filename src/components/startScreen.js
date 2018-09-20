@@ -1,8 +1,5 @@
 /** @jsx h */
 const { h, render, Component } = preact;
-const GameStateStatus = require('./gameStateStatus.js');
-const Button = require('./button.js');
-const Snack = require('./snack.js');
 
 class StartScreen extends Component {
   constructor(props) {
@@ -39,7 +36,8 @@ class StartScreen extends Component {
               class="block__textbox"
               type="text" 
               onChange={this.handleNicknameChange}
-              value={this.state.nickname || this.props.playerNickname}>
+              value={this.state.nickname}
+              placeholder={this.state.nickname || this.props.playerNickname}>
             </input>
           </div>
           <div class="block__text">because we need to keep you safe and anonymous.</div>
