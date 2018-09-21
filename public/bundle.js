@@ -240,7 +240,10 @@ class BlackjackTable extends Component {
       'div',
       null,
       this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players) ? h(StartScreen, { playerNickname: this.state.mySocketId, joinAndChangeNickname: this.joinAndChangeNickname }) : '',
-      this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, null) : ''
+      this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, {
+        playerName: this.state.players[this.socket.id].nickname,
+        playerChips: this.state.chipsInHand[this.socket.id]
+      }) : ''
     );
     /*
     return (
@@ -519,7 +522,8 @@ class GettingBetsStateScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      betSlider: 10
+      betSlider: 10,
+      nickname: props.nickname
     };
     this.handleBetChange = this.handleBetChange.bind(this);
   }
@@ -575,7 +579,16 @@ class GettingBetsStateScreen extends Component {
           })
         )
       ),
-      h("div", { "class": "block block--height-25" }),
+      h(
+        "div",
+        { "class": "block block--height-25" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "Chips: ",
+          this.state.betSlider
+        )
+      ),
       h("div", { "class": "block block--height-12" }),
       h(
         "div",
@@ -586,18 +599,27 @@ class GettingBetsStateScreen extends Component {
           h(
             "div",
             { "class": "block__text" },
-            "asdf"
+            this.props.playerName
           )
         ),
         h(
           "div",
           { "class": "block__row--width-34" },
-          "a"
+          h(
+            "div",
+            { "class": "block__text" },
+            "Chips: ",
+            this.props.playerChips
+          )
         ),
         h(
           "div",
           { "class": "block__row--width-33" },
-          "aa"
+          h(
+            "div",
+            { "class": "block__text" },
+            "Room: game0"
+          )
         )
       )
     );

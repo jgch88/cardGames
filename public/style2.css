@@ -63,6 +63,7 @@
 
 .block__row--width-33 {
   width: 33%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,6 +71,7 @@
 
 .block__row--width-34 {
   width: 34%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -171,7 +173,7 @@
 .block__slider::-webkit-slider-runnable-track {
   height: 0.7rem;
   border: none;
-  background: hsl(125,25%,20%);
+  background: #d1d1d1;
 }
 
 .block__button {

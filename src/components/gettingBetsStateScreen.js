@@ -49,20 +49,27 @@ class GettingBetsStateScreen extends Component {
           </div>
         </div>
         <div class="block block--height-25">
+          <div class="block__text">
+            Chips: {this.state.betSlider}
+          </div>
         </div>
         <div class="block block--height-12">
         </div>
         <div class="block block--height-8 block--rows block--theme-dark">
           <div class="block__row--width-33">
             <div class="block__text">
-              asdf
+              {this.props.playerName}
             </div>
           </div>
           <div class="block__row--width-34">
-      a
+            <div class="block__text">
+              Chips: {this.props.playerChips}
+            </div>
           </div>
           <div class="block__row--width-33">
-      aa
+            <div class="block__text">
+              Room: game0
+            </div>
           </div>
         </div>
       </div>
