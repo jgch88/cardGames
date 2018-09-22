@@ -120,7 +120,7 @@ class BlackjackTable extends Component {
         errorMessage: message
       });
       snack.className = "show";
-      setTimeout(() => {snack.className = snack.className.replace("show", "")}, 2000);
+      setTimeout(() => {snack.className = snack.className.replace("show", "")}, 4000);
     };
     this.placeBet = () => {
       const chips = window.prompt("How much would you like to bet?", 10);
@@ -233,16 +233,16 @@ class BlackjackTable extends Component {
     return (
       <div class="app">
         <div class="block">
-        <div class="block block--height-12">
+        <div class="block block--rows block--height-8 actions">
           <Button text={"Create room"} id={"createRoom"} clickHandler={this.createRoom}/>
           <Button text={"Join room"} id={"joinRoom"} clickHandler={this.joinRoom}/>
         </div>
-        <div class="block block--height-8">
+        <div class="block block--height-4">
           <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
         </div>
-        <div class="block block--height-53">
+        <div class="block block--height-50">
           <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
-          <div class="horizontalScroll playerHands">
+          <div class="block block--overflow">
           {Object.keys(this.state.bets).map((bet, index) => {
             return <Deck 
               betAmount={this.state.bets[bet].betAmount} 
@@ -253,7 +253,8 @@ class BlackjackTable extends Component {
               cards={this.state.bets[bet].cards} />
           })}
           </div>
-          <div class="actions">
+        </div>
+          <div class="block block--rows block--height-8 actions">
             {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
             <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
             {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
@@ -273,14 +274,11 @@ class BlackjackTable extends Component {
               <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}
             </div>
           </div>
+        <div class="block block--height-4">MessageLog</div>
+        <div class="block block--height-22">
+          <MessageLog messages={this.state.messages} />
         </div>
-        <div class="block block--height-25 block--overflow-y">
-          MessageLog
-          <div class="messageLog">
-            <MessageLog messages={this.state.messages} />
-          </div>
-        </div>
-        <div class="block block--height-8">
+        <div class="block block--height-4">
           <GameStateStatus gameState={this.state.gameState}/>
         </div>
       </div>
