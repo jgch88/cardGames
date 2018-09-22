@@ -1,6 +1,6 @@
 /** @jsx h */
 const { h, render, Component } = preact;
-const Card = require('./card.js');
+const Card = require('./cardContainer.js');
 const BetStatus = require('./betStatus.js');
 
 // Deck is a collection of cards

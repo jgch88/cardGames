@@ -61,6 +61,14 @@
   height: 40%;
 }
 
+.block.block--height-53 {
+  height: 53%;
+}
+
+.block.block--overflow-y {
+  overflow-y: auto;
+}
+
 .block__row--width-33 {
   width: 33%;
   overflow: hidden;
@@ -80,6 +88,10 @@
 .block__text {
   width: 66%;
   margin: auto;
+}
+
+.block__text--border {
+  border: 0.1rem solid hsl(125,25%,20%);
 }
 
 .block__timer {
@@ -186,4 +198,112 @@
   font-family: inherit;
   font-size: 1.1rem;
   border:none;
+}
+
+.card {
+  font-family: 'Cormorant';
+  border-radius: 0.8em;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  float: left;
+  width: 4em;
+  height: 5.6em;
+  margin: 0 0.2em 0.2em 0;
+  position: relative;
+  z-index: 2;
+}
+
+.card--black {
+  color: #000;
+}
+
+.card--red {
+  color: #d30000;
+}
+
+.card__corner {
+  line-height: 1;
+  position: absolute;
+  text-align: center;
+}
+
+.card__corner--top {
+  left: 0.32em;
+  top: 0.48em;
+}
+
+.card__corner--bottom {
+  bottom: 0.48em;
+  right: 0.32em;
+  transform: rotate(180deg);
+}
+
+.card__corner span {
+  display: block;
+  font-size: 0.45em;
+  font-weight: bold;
+}
+
+.card__pip {
+  font-size: 1.45em;
+  font-weight: normal;
+  width: 0.6897em;
+  height: 0.7862em;
+  line-height: 0.7862em;
+  position: absolute;
+  text-align: center;
+}
+
+.card__pip--top_left {
+  left: 0.4138em;
+  top: 0.3310em;
+}
+
+.card__pip--top_right {
+  right: 0.4138em;
+  top: 0.3310em;
+}
+
+.card__pip--middle_top_left {
+  left: 0.4138em;
+  top: 1.1034em;
+}
+
+.card__pip--middle_top_center {
+  left: 1.048em;
+  top: 0.8276em;
+}
+
+.card__pip--middle_top_right {
+  right: 0.4138em;
+  top: 1.1034em;
+}
+
+.card__pip--middle_bottom_left {
+  left: 0.4138em;
+  bottom: 1.1034em;
+  transform: rotate(180deg);
+}
+
+.card__pip--middle_bottom_center {
+  left: 1.048em;
+  bottom: 0.8276em;
+  transform: rotate(180deg);
+}
+
+.card__pip--middle_bottom_right {
+  right: 0.4138em;
+  bottom: 1.1034em;
+  transform: rotate(180deg);
+}
+
+.card__pip--bottom_left {
+  bottom: 0.331em;
+  left: 0.4138em;
+  transform: rotate(180deg);
+}
+
+.card__pip--bottom_right {
+  bottom: 0.331em;
+  right: 0.4138em;
+  transform: rotate(180deg);
 }

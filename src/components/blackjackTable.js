@@ -123,7 +123,7 @@ class BlackjackTable extends Component {
       setTimeout(() => {snack.className = snack.className.replace("show", "")}, 2000);
     };
     this.placeBet = () => {
-      const chips = window.prompt("How many chips would you like to bet?", 10);
+      const chips = window.prompt("How much would you like to bet?", 10);
       this.socket.emit('placeBet', {chips: Number(chips)});
     };
     this.placeInsuranceBet = () => {
@@ -215,6 +215,7 @@ class BlackjackTable extends Component {
 
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
+    /*
     return (
       <div>
         {this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players)? 
@@ -223,56 +224,70 @@ class BlackjackTable extends Component {
         <GettingBetsStateScreen 
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
+          placeBet={this.placeBet}
         /> : ''}
       </div>
     )
-    /*
+    */
+    
     return (
-      <div class="deckTable">
-        <Button text={"Create room"} id={"createRoom"} clickHandler={this.createRoom}/>
-        <Button text={"Join room"} id={"joinRoom"} clickHandler={this.joinRoom}/>
-        <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
-        <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
-        <div class="horizontalScroll playerHands">
-        {Object.keys(this.state.bets).map((bet, index) => {
-          return <Deck 
-            betAmount={this.state.bets[bet].betAmount} 
-            isCurrentPlayer={this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``}
-            isCurrentBet={this.state.currentBet === bet} 
-            playerName={this.state.bets[bet].nickname} 
-            key={index} 
-            cards={this.state.bets[bet].cards} />
-        })}
+      <div class="app">
+        <div class="block">
+        <div class="block block--height-12">
+          <Button text={"Create room"} id={"createRoom"} clickHandler={this.createRoom}/>
+          <Button text={"Join room"} id={"joinRoom"} clickHandler={this.joinRoom}/>
         </div>
-        <div class="actions">
-          {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
-          <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
-          {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
-          <span><Button id="changeName" text={"Change name"} clickHandler={this.changeNickname}/><Button id="goToBettingState" text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
-          {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? 
-          <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
-          {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
-          <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
-          <div>
-          {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
-            <span><Button id="playHit" text={"Hit"} clickHandler={this.hit}/>
-            <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
-          {this.playerCanSplit() ?
-            <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
-          {this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ?
-            <span><Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
-            <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}
+        <div class="block block--height-8">
+          <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
+        </div>
+        <div class="block block--height-53">
+          <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
+          <div class="horizontalScroll playerHands">
+          {Object.keys(this.state.bets).map((bet, index) => {
+            return <Deck 
+              betAmount={this.state.bets[bet].betAmount} 
+              isCurrentPlayer={this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``}
+              isCurrentBet={this.state.currentBet === bet} 
+              playerName={this.state.bets[bet].nickname} 
+              key={index} 
+              cards={this.state.bets[bet].cards} />
+          })}
+          </div>
+          <div class="actions">
+            {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
+            <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
+            {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
+            <span><Button id="changeName" text={"Change name"} clickHandler={this.changeNickname}/><Button id="goToBettingState" text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
+            {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? 
+            <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
+            {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
+            <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
+            <div>
+            {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
+              <span><Button id="playHit" text={"Hit"} clickHandler={this.hit}/>
+              <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
+            {this.playerCanSplit() ?
+              <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
+            {this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ?
+              <span><Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
+              <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}
+            </div>
           </div>
         </div>
-        MessageLog
-        <div class="messageLog">
-          <MessageLog messages={this.state.messages} />
+        <div class="block block--height-25 block--overflow-y">
+          MessageLog
+          <div class="messageLog">
+            <MessageLog messages={this.state.messages} />
+          </div>
         </div>
-      <GameStateStatus gameState={this.state.gameState}/>
+        <div class="block block--height-8">
+          <GameStateStatus gameState={this.state.gameState}/>
+        </div>
+      </div>
       <Snack message={this.state.errorMessage} />
       </div>
     );
-    */
+    
   }
 }
 
