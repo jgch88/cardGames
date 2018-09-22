@@ -202,12 +202,12 @@
 
 .card {
   font-family: 'Cormorant';
-  border-radius: 0.8em;
+  border-radius: 0.5em;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
   float: left;
   width: 4em;
   height: 5.6em;
-  margin: 0 0.2em 0.2em 0;
+  margin: 0.2em 0.2em 0.2em 0.2em;
   position: relative;
   z-index: 2;
 }
@@ -217,7 +217,7 @@
 }
 
 .card--red {
-  color: #d30000;
+  color: #df0000;
 }
 
 .card__corner {
@@ -258,9 +258,25 @@
   top: 0.3310em;
 }
 
+.card__pip--top_center {
+  left: 1.048em;
+  top: 0.3310em;
+}
+
 .card__pip--top_right {
   right: 0.4138em;
   top: 0.3310em;
+}
+
+.card__pip--middle_top {
+  left: 1.048em;
+  top: 0.9655em;
+}
+
+.card__pip--middle_bottom {
+  left: 1.048em;
+  bottom: 0.9655em;
+  transform: rotate(180deg);
 }
 
 .card__pip--middle_top_left {
@@ -276,6 +292,21 @@
 .card__pip--middle_top_right {
   right: 0.4138em;
   top: 1.1034em;
+}
+
+.card__pip--middle_left {
+  left: 0.4138em;
+  top: 1.5172em;
+}
+
+.card__pip--middle_center {
+  left: 1.048em;
+  top: 1.5172em;
+}
+
+.card__pip--middle_right {
+  right: 0.4138em;
+  top: 1.5172em;
 }
 
 .card__pip--middle_bottom_left {
@@ -302,8 +333,28 @@
   transform: rotate(180deg);
 }
 
+.card__pip--bottom_center {
+  bottom: 0.3310em;
+  left: 1.048em;
+  transform: rotate(180deg);
+}
+
 .card__pip--bottom_right {
   bottom: 0.331em;
   right: 0.4138em;
   transform: rotate(180deg);
+}
+
+.card__pip--large_pip {
+  font-size: 3.24em;
+  left: 0.28em;
+  top: 0.42em;
+}
+
+.card__face img{
+  position: absolute;
+  left: 0.64em;
+  top: 0.52em;
+  width: 2.7em;
+  height: 4.56em;
 }

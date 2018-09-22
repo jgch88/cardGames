@@ -339,7 +339,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":8,"./gameStateStatus.js":9,"./gettingBetsStateScreen.js":10,"./messageLog.js":11,"./playerStatus.js":12,"./snack.js":13,"./startScreen.js":14}],3:[function(require,module,exports){
+},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":21,"./gameStateStatus.js":22,"./gettingBetsStateScreen.js":23,"./messageLog.js":24,"./playerStatus.js":25,"./snack.js":26,"./startScreen.js":27}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -460,20 +460,896 @@ module.exports = Card;
 },{}],5:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
-const CardTen = require('./cardTen.js');
 
-const CardContainer = function CardContainer(props) {
-  // list of card number templates to populate it
+const CardAce = function CardAce(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `A`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
   return h(
     "div",
-    { "class": "card" },
-    h(CardTen, { suit: "Spades" })
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center card__pip--large_pip" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardAce;
+
+},{}],6:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+const CardAce = require('./cardAce.js');
+const CardTwo = require('./cardTwo.js');
+const CardThree = require('./cardThree.js');
+const CardFour = require('./cardFour.js');
+const CardFive = require('./cardFive.js');
+const CardSix = require('./cardSix.js');
+const CardSeven = require('./cardSeven.js');
+const CardEight = require('./cardEight.js');
+const CardNine = require('./cardNine.js');
+const CardTen = require('./cardTen.js');
+const CardJack = require('./cardJack.js');
+const CardQueen = require('./cardQueen.js');
+const CardKing = require('./cardKing.js');
+
+const CardFaceDown = require('./cardFaceDown.js');
+
+const CardContainer = function CardContainer(props) {
+  const mapValueToCardComponent = suit => ({
+    1: h(CardAce, { suit: suit }),
+    2: h(CardTwo, { suit: suit }),
+    3: h(CardThree, { suit: suit }),
+    4: h(CardFour, { suit: suit }),
+    5: h(CardFive, { suit: suit }),
+    6: h(CardSix, { suit: suit }),
+    7: h(CardSeven, { suit: suit }),
+    8: h(CardEight, { suit: suit }),
+    9: h(CardNine, { suit: suit }),
+    10: h(CardTen, { suit: suit }),
+    11: h(CardJack, { suit: suit }),
+    12: h(CardQueen, { suit: suit }),
+    13: h(CardKing, { suit: suit })
+  });
+  // list of card number templates to populate it
+  return h(
+    'div',
+    { 'class': 'card' },
+    props.isFaceDown ? h(CardFaceDown, null) : '',
+    !props.isFaceDown && props.value ? mapValueToCardComponent(props.suit)[props.value] : ''
   );
 };
 
 module.exports = CardContainer;
 
-},{"./cardTen.js":6}],6:[function(require,module,exports){
+},{"./cardAce.js":5,"./cardEight.js":7,"./cardFaceDown.js":8,"./cardFive.js":9,"./cardFour.js":10,"./cardJack.js":11,"./cardKing.js":12,"./cardNine.js":13,"./cardQueen.js":14,"./cardSeven.js":15,"./cardSix.js":16,"./cardTen.js":17,"./cardThree.js":18,"./cardTwo.js":19}],7:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardEight = function CardEight(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `8`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardEight;
+
+},{}],8:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardFaceDown = function CardFaceDown(props) {
+
+  return h(
+    "div",
+    null,
+    h("div", { "class": "card__corner card__corner--top" }),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-down.png" })
+    ),
+    h("div", { "class": "card__corner card__corner--bottom" })
+  );
+};
+
+module.exports = CardFaceDown;
+
+},{}],9:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardFive = function CardFive(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `5`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardFive;
+
+},{}],10:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardFour = function CardFour(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `4`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardFour;
+
+},{}],11:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardJack = function CardJack(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `J`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-" + number + "-" + props.suit + ".png" })
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardJack;
+
+},{}],12:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardKing = function CardKing(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `K`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-" + number + "-" + props.suit + ".png" })
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardKing;
+
+},{}],13:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardNine = function CardNine(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `9`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardNine;
+
+},{}],14:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardQueen = function CardQueen(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `Q`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-" + number + "-" + props.suit + ".png" })
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardQueen;
+
+},{}],15:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardSeven = function CardSeven(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `7`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardSeven;
+
+},{}],16:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardSix = function CardSix(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `6`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardSix;
+
+},{}],17:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -584,7 +1460,154 @@ const CardTen = function CardTen(props) {
 
 module.exports = CardTen;
 
-},{}],7:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardThree = function CardThree(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `3`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_center" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardThree;
+
+},{}],19:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardTwo = function CardTwo(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `2`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_center" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardTwo;
+
+},{}],20:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -616,7 +1639,7 @@ class Clock extends Component {
 
 module.exports = Clock;
 
-},{}],8:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 const Card = require('./cardContainer.js');
@@ -658,7 +1681,7 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{"./betStatus.js":1,"./cardContainer.js":5}],9:[function(require,module,exports){
+},{"./betStatus.js":1,"./cardContainer.js":6}],22:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -684,7 +1707,7 @@ const GameStateStatus = function GameStateStatus(props) {
 
 module.exports = GameStateStatus;
 
-},{}],10:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -814,7 +1837,7 @@ class GettingBetsStateScreen extends Component {
 
 module.exports = GettingBetsStateScreen;
 
-},{}],11:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -835,7 +1858,7 @@ const MessageLog = function MessageLog(props) {
 
 module.exports = MessageLog;
 
-},{}],12:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 const Button = require('./button.js');
@@ -862,7 +1885,7 @@ const PlayerStatus = function PlayerStatus(props) {
 
 module.exports = PlayerStatus;
 
-},{"./button.js":3}],13:[function(require,module,exports){
+},{"./button.js":3}],26:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -878,7 +1901,7 @@ const Snack = function Snack(props) {
 
 module.exports = Snack;
 
-},{}],14:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -960,7 +1983,7 @@ class StartScreen extends Component {
 
 module.exports = StartScreen;
 
-},{}],15:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -991,4 +2014,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":7,"./components/deck":8}]},{},[15]);
+},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":20,"./components/deck":21}]},{},[28]);
