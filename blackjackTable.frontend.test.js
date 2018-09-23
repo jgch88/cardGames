@@ -36,7 +36,7 @@ beforeAll(async () => {
     executablePath: `chrome.exe`,
     userDataDir: USER_DATA_DIR,
     headless: false,
-    slowMo: 30,
+    slowMo: 50,
   });
   await browser.newPage(); // open tab for 2nd player
   await browser.newPage(); // open tab for 3rd player
@@ -91,7 +91,7 @@ test('dealer has blackjack, player no blackjack', async () => {
     // need to add this because of insurance bet feature
     setTimeout(resolve, INSURANCE_PAUSE);
   });
-  const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
   expect(messageLog).toContain('[Dealer]: Has a Blackjack');
   killServer();
 }, 6000);
@@ -123,7 +123,7 @@ test('player stands, game resolves', async () => {
     .catch((e) => {
       console.log(e)
     });
-  const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
   expect(messageLog).toContain('All bets resolved!');
   killServer();
 }, 7000);
@@ -175,7 +175,7 @@ test('two players join, both players stand, game resolves', async () => {
     .catch((e) => {
       console.log(e)
     });
-  const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
   expect(messageLog).toContain('All bets resolved!');
   killServer();
 }, 7000);
@@ -212,7 +212,7 @@ test(`dealer bursts after hitting, player doesn't burst`, async () => {
     .catch((e) => {
       console.log(e)
     });
-  const messageLog = await pages[0].$eval('div.messageLog', el => el.innerHTML);
+  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
   expect(messageLog).toContain('wins [Dealer]');
   chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
   expect(chipsInHand).toBe('Chips: 110');
@@ -263,7 +263,7 @@ test(`players can create separate game rooms and play different games`, async ()
         console.log(e)
       });
 
-    const messageLog = await pages[i].$eval('div.messageLog', el => el.innerHTML);
+    const messageLog = await pages[i].$eval('#messageLog', el => el.innerHTML);
     expect(messageLog).toContain('resolved');
 
   }
@@ -351,7 +351,7 @@ describe('feature: players splitting hands', () => {
         await pages[0].$eval('#playSplit', el => el.click());
       });
     // add code to test two child divs in "horizontolScroll playerHands" div
-    const numberOfBets = await pages[0].$eval('.playerHands', el => el.childElementCount);
+    const numberOfBets = await pages[0].$eval('#playerHands', el => el.childElementCount);
     expect(numberOfBets).toBe(2);
     killServer();
   });

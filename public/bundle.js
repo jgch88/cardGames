@@ -274,7 +274,7 @@ class BlackjackTable extends Component {
           h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
           h(
             'div',
-            { 'class': 'block block--overflow' },
+            { 'class': 'block block--overflow', id: 'playerHands' },
             Object.keys(this.state.bets).map((bet, index) => {
               return h(Deck, {
                 betAmount: this.state.bets[bet].betAmount,
@@ -1845,7 +1845,7 @@ const MessageLog = function MessageLog(props) {
   // need to reverse the messages without mutating the state
   return h(
     "div",
-    { "class": "block block--overflow" },
+    { "class": "block block--overflow", id: "messageLog" },
     props.messages.slice().reverse().map(message => {
       return h(
         "div",

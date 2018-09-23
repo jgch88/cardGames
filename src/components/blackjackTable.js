@@ -242,7 +242,7 @@ class BlackjackTable extends Component {
         </div>
         <div class="block block--height-50">
           <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
-          <div class="block block--overflow">
+          <div class="block block--overflow" id="playerHands">
           {Object.keys(this.state.bets).map((bet, index) => {
             return <Deck 
               betAmount={this.state.bets[bet].betAmount} 
