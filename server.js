@@ -168,6 +168,21 @@ io.on('connection', (socket) => {
     }
   })
 
+  // adding a 'acknowledgement callback'
+  socket.on('joinAndChangeNickname', (chips, fn) => {
+    try {
+      currentGame.joinGame(`${socket.id}`, chips.chips);
+      console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
+      currentGame.emitCurrentState();
+      fn(`joined, changing nickname`);
+    } catch (e) {
+      const errorString = `[Error]: ${e}`;
+      socket.emit('emitError', errorString);
+      console.log(errorString);
+    }
+
+  })
+
   socket.on('changeState', (newState) => {
     if (newState === 'gettingBetsState') {
       if (currentGame.state.name === 'gettingPlayersState') {

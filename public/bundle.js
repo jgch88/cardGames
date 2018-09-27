@@ -28,6 +28,8 @@ const PlayerStatus = require('./playerStatus.js');
 const Button = require('./button.js');
 const BetStatus = require('./betStatus.js');
 const Snack = require('./snack.js');
+const StartScreen = require('./startScreen.js');
+const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -41,7 +43,8 @@ class BlackjackTable extends Component {
       betAmounts: {},
       insuranceBetAmounts: {},
       bets: {},
-      currentBet: ''
+      currentBet: '',
+      mySocketId: ''
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -107,6 +110,9 @@ class BlackjackTable extends Component {
         currentBet,
         insuranceBetAmounts
       });
+      this.setState({
+        mySocketId: this.socket.id
+      });
       console.log('currentState', {
         gameState,
         messages,
@@ -136,10 +142,10 @@ class BlackjackTable extends Component {
       snack.className = "show";
       setTimeout(() => {
         snack.className = snack.className.replace("show", "");
-      }, 2000);
+      }, 4000);
     };
     this.placeBet = () => {
-      const chips = window.prompt("How many chips would you like to bet?", 10);
+      const chips = window.prompt("How much would you like to bet?", 10);
       this.socket.emit('placeBet', { chips: Number(chips) });
     };
     this.placeInsuranceBet = () => {
@@ -179,6 +185,14 @@ class BlackjackTable extends Component {
     this.changeNickname = () => {
       const nickname = window.prompt("What nickname would you like to display?");
       this.socket.emit('changeNickname', nickname);
+    };
+    this.joinAndChangeNickname = nickname => {
+      this.socket.emit('joinAndChangeNickname', { chips: Number(1000) }, data => {
+        console.log(data);
+        if (nickname && this.socket.id !== nickname) {
+          this.socket.emit('changeNickname', nickname);
+        }
+      });
     };
     this.createRoom = () => {
       const roomName = window.prompt("Which room would you like to create?", 123);
@@ -222,63 +236,102 @@ class BlackjackTable extends Component {
 
   render() {
     // const pchipsInHand = this.state.chipsInHand[this.socket.id]
+    /*
+    return (
+      <div>
+        {this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players)? 
+        <StartScreen playerNickname={this.state.mySocketId} joinAndChangeNickname={this.joinAndChangeNickname}/> : ''}
+        {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.players)? 
+        <GettingBetsStateScreen 
+          playerName={this.state.players[this.socket.id].nickname} 
+          playerChips={this.state.chipsInHand[this.socket.id]}
+          placeBet={this.placeBet}
+        /> : ''}
+      </div>
+    )
+    */
+
     return h(
       'div',
-      { 'class': 'deckTable' },
-      h(Button, { text: "Create room", id: "createRoom", clickHandler: this.createRoom }),
-      h(Button, { text: "Join room", id: "joinRoom", clickHandler: this.joinRoom }),
-      h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id }),
-      h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
+      { 'class': 'app' },
       h(
         'div',
-        { 'class': 'horizontalScroll playerHands' },
-        Object.keys(this.state.bets).map((bet, index) => {
-          return h(Deck, {
-            betAmount: this.state.bets[bet].betAmount,
-            isCurrentPlayer: this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``,
-            isCurrentBet: this.state.currentBet === bet,
-            playerName: this.state.bets[bet].nickname,
-            key: index,
-            cards: this.state.bets[bet].cards });
-        })
-      ),
-      h(
-        'div',
-        { 'class': 'actions' },
-        this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
-        this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
-          'span',
-          null,
-          h(Button, { id: 'changeName', text: "Change name", clickHandler: this.changeNickname }),
-          h(Button, { id: 'goToBettingState', text: "Next", clickHandler: this.goToBettingState })
-        ) : '',
-        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
-        this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
+        { 'class': 'block' },
         h(
           'div',
-          null,
-          this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+          { 'class': 'block block--rows block--height-8 actions' },
+          h(Button, { text: "Create room", id: "createRoom", clickHandler: this.createRoom }),
+          h(Button, { text: "Join room", id: "joinRoom", clickHandler: this.joinRoom })
+        ),
+        h(
+          'div',
+          { 'class': 'block block--height-4' },
+          h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id })
+        ),
+        h(
+          'div',
+          { 'class': 'block block--height-50' },
+          h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
+          h(
+            'div',
+            { 'class': 'block block--overflow', id: 'playerHands' },
+            Object.keys(this.state.bets).map((bet, index) => {
+              return h(Deck, {
+                betAmount: this.state.bets[bet].betAmount,
+                isCurrentPlayer: this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``,
+                isCurrentBet: this.state.currentBet === bet,
+                playerName: this.state.bets[bet].nickname,
+                key: index,
+                cards: this.state.bets[bet].cards });
+            })
+          )
+        ),
+        h(
+          'div',
+          { 'class': 'block block--rows block--height-8 actions' },
+          this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
+          this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
             'span',
             null,
-            h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
-            h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
+            h(Button, { id: 'changeName', text: "Change name", clickHandler: this.changeNickname }),
+            h(Button, { id: 'goToBettingState', text: "Next", clickHandler: this.goToBettingState })
           ) : '',
-          this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
-          this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ? h(
-            'span',
+          this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
+          this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
+          h(
+            'div',
             null,
-            h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
-            h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
-          ) : ''
+            this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+              'span',
+              null,
+              h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
+              h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
+            ) : '',
+            this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
+            this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ? h(
+              'span',
+              null,
+              h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
+              h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
+            ) : ''
+          )
+        ),
+        h(
+          'div',
+          { 'class': 'block block--height-4' },
+          'MessageLog'
+        ),
+        h(
+          'div',
+          { 'class': 'block block--height-22' },
+          h(MessageLog, { messages: this.state.messages })
+        ),
+        h(
+          'div',
+          { 'class': 'block block--height-4' },
+          h(GameStateStatus, { gameState: this.state.gameState })
         )
       ),
-      'MessageLog',
-      h(
-        'div',
-        { 'class': 'messageLog' },
-        h(MessageLog, { messages: this.state.messages })
-      ),
-      h(GameStateStatus, { gameState: this.state.gameState }),
       h(Snack, { message: this.state.errorMessage })
     );
   }
@@ -286,7 +339,7 @@ class BlackjackTable extends Component {
 
 module.exports = BlackjackTable;
 
-},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":6,"./gameStateStatus.js":7,"./messageLog.js":8,"./playerStatus.js":9,"./snack.js":10}],3:[function(require,module,exports){
+},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":21,"./gameStateStatus.js":22,"./gettingBetsStateScreen.js":23,"./messageLog.js":24,"./playerStatus.js":25,"./snack.js":26,"./startScreen.js":27}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -294,6 +347,7 @@ const Button = function Button(props) {
   return h(
     "button",
     {
+      "class": "block__button",
       key: props.id,
       id: props.id,
       onClick: props.clickHandler },
@@ -407,6 +461,1156 @@ module.exports = Card;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+const CardAce = function CardAce(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `A`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center card__pip--large_pip" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardAce;
+
+},{}],6:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+const CardAce = require('./cardAce.js');
+const CardTwo = require('./cardTwo.js');
+const CardThree = require('./cardThree.js');
+const CardFour = require('./cardFour.js');
+const CardFive = require('./cardFive.js');
+const CardSix = require('./cardSix.js');
+const CardSeven = require('./cardSeven.js');
+const CardEight = require('./cardEight.js');
+const CardNine = require('./cardNine.js');
+const CardTen = require('./cardTen.js');
+const CardJack = require('./cardJack.js');
+const CardQueen = require('./cardQueen.js');
+const CardKing = require('./cardKing.js');
+
+const CardFaceDown = require('./cardFaceDown.js');
+
+const CardContainer = function CardContainer(props) {
+  const mapValueToCardComponent = suit => ({
+    1: h(CardAce, { suit: suit }),
+    2: h(CardTwo, { suit: suit }),
+    3: h(CardThree, { suit: suit }),
+    4: h(CardFour, { suit: suit }),
+    5: h(CardFive, { suit: suit }),
+    6: h(CardSix, { suit: suit }),
+    7: h(CardSeven, { suit: suit }),
+    8: h(CardEight, { suit: suit }),
+    9: h(CardNine, { suit: suit }),
+    10: h(CardTen, { suit: suit }),
+    11: h(CardJack, { suit: suit }),
+    12: h(CardQueen, { suit: suit }),
+    13: h(CardKing, { suit: suit })
+  });
+  // list of card number templates to populate it
+  return h(
+    'div',
+    { 'class': 'card' },
+    props.isFaceDown ? h(CardFaceDown, null) : '',
+    !props.isFaceDown && props.value ? mapValueToCardComponent(props.suit)[props.value] : ''
+  );
+};
+
+module.exports = CardContainer;
+
+},{"./cardAce.js":5,"./cardEight.js":7,"./cardFaceDown.js":8,"./cardFive.js":9,"./cardFour.js":10,"./cardJack.js":11,"./cardKing.js":12,"./cardNine.js":13,"./cardQueen.js":14,"./cardSeven.js":15,"./cardSix.js":16,"./cardTen.js":17,"./cardThree.js":18,"./cardTwo.js":19}],7:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardEight = function CardEight(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `8`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardEight;
+
+},{}],8:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardFaceDown = function CardFaceDown(props) {
+
+  return h(
+    "div",
+    null,
+    h("div", { "class": "card__corner card__corner--top" }),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-down.png" })
+    ),
+    h("div", { "class": "card__corner card__corner--bottom" })
+  );
+};
+
+module.exports = CardFaceDown;
+
+},{}],9:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardFive = function CardFive(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `5`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardFive;
+
+},{}],10:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardFour = function CardFour(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `4`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardFour;
+
+},{}],11:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardJack = function CardJack(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `J`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-" + number + "-" + props.suit + ".png" })
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardJack;
+
+},{}],12:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardKing = function CardKing(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `K`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-" + number + "-" + props.suit + ".png" })
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardKing;
+
+},{}],13:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardNine = function CardNine(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `9`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardNine;
+
+},{}],14:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardQueen = function CardQueen(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `Q`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__face" },
+      h("img", { src: "images/faces/face-" + number + "-" + props.suit + ".png" })
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardQueen;
+
+},{}],15:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardSeven = function CardSeven(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `7`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardSeven;
+
+},{}],16:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardSix = function CardSix(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `6`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardSix;
+
+},{}],17:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardTen = function CardTen(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `10`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_top_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_left" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_bottom_right" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardTen;
+
+},{}],18:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardThree = function CardThree(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `3`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--middle_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_center" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardThree;
+
+},{}],19:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+const CardTwo = function CardTwo(props) {
+
+  const suitSymbols = {
+    "Clubs": "\u2663",
+    "Diamonds": "\u2666",
+    "Hearts": "\u2665",
+    "Spades": "\u2660"
+  };
+
+  const suitColors = {
+    "Hearts": "red",
+    "Diamonds": "red",
+    "Clubs": "black",
+    "Spades": "black"
+  };
+
+  const number = `2`;
+
+  const suitSymbol = suitSymbols[props.suit];
+  const suitColor = suitColors[props.suit];
+
+  return h(
+    "div",
+    { "class": `card--` + suitColor },
+    h(
+      "div",
+      { "class": "card__corner card__corner--top" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--top_center" },
+      suitSymbol
+    ),
+    h(
+      "span",
+      { "class": "card__pip card__pip--bottom_center" },
+      suitSymbol
+    ),
+    h(
+      "div",
+      { "class": "card__corner card__corner--bottom" },
+      h(
+        "span",
+        { "class": "card__number" },
+        number
+      ),
+      h(
+        "span",
+        null,
+        suitSymbol
+      )
+    )
+  );
+};
+
+module.exports = CardTwo;
+
+},{}],20:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 class Clock extends Component {
   constructor() {
     super();
@@ -435,10 +1639,10 @@ class Clock extends Component {
 
 module.exports = Clock;
 
-},{}],6:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
-const Card = require('./card.js');
+const Card = require('./cardContainer.js');
 const BetStatus = require('./betStatus.js');
 
 // Deck is a collection of cards
@@ -477,7 +1681,7 @@ const Deck = function Deck(props) {
 
 module.exports = Deck;
 
-},{"./betStatus.js":1,"./card.js":4}],7:[function(require,module,exports){
+},{"./betStatus.js":1,"./cardContainer.js":6}],22:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -503,7 +1707,137 @@ const GameStateStatus = function GameStateStatus(props) {
 
 module.exports = GameStateStatus;
 
-},{}],8:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+class GettingBetsStateScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      betSlider: 10,
+      nickname: props.nickname
+    };
+    this.handleBetChange = this.handleBetChange.bind(this);
+  }
+
+  handleBetChange(event) {
+    console.log(event.target.value);
+    this.setState({
+      betSlider: event.target.value
+    });
+  }
+
+  render() {
+    return h(
+      "div",
+      { "class": "block" },
+      h(
+        "div",
+        { "class": "block block--height-30" },
+        h(
+          "div",
+          { "class": "block__timer" },
+          "120"
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-10" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "How baller ya feelin' right now?"
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-15" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "Place your bet"
+        ),
+        h(
+          "div",
+          { "class": "block__input" },
+          h("input", {
+            "class": "block__slider",
+            type: "range",
+            onChange: this.handleBetChange,
+            onInput: this.handleBetChange,
+            min: "0",
+            max: "100",
+            step: "2",
+            value: this.state.betSlider
+          })
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-25" },
+        h(
+          "div",
+          { "class": "block__text block__text--border" },
+          "Chips: ",
+          this.state.betSlider
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-12" },
+        h(
+          "div",
+          { "class": "block__text" },
+          h(
+            "button",
+            {
+              "class": "block__button",
+              onClick: () => this.props.placeBet(Number(this.state.betSlider))
+            },
+            "Place Bet"
+          )
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-8 block--rows block--theme-dark" },
+        h(
+          "div",
+          { "class": "block__row--width-33" },
+          h(
+            "div",
+            { "class": "block__text" },
+            this.props.playerName
+          )
+        ),
+        h(
+          "div",
+          { "class": "block__row--width-34" },
+          h(
+            "div",
+            { "class": "block__text" },
+            "Chips: ",
+            this.props.playerChips
+          )
+        ),
+        h(
+          "div",
+          { "class": "block__row--width-33" },
+          h(
+            "div",
+            { "class": "block__text" },
+            "Room: game0"
+          )
+        )
+      )
+    );
+  }
+}
+
+module.exports = GettingBetsStateScreen;
+
+},{}],24:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -511,7 +1845,7 @@ const MessageLog = function MessageLog(props) {
   // need to reverse the messages without mutating the state
   return h(
     "div",
-    null,
+    { "class": "block block--overflow", id: "messageLog" },
     props.messages.slice().reverse().map(message => {
       return h(
         "div",
@@ -524,7 +1858,7 @@ const MessageLog = function MessageLog(props) {
 
 module.exports = MessageLog;
 
-},{}],9:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 const Button = require('./button.js');
@@ -551,7 +1885,7 @@ const PlayerStatus = function PlayerStatus(props) {
 
 module.exports = PlayerStatus;
 
-},{"./button.js":3}],10:[function(require,module,exports){
+},{"./button.js":3}],26:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -567,7 +1901,89 @@ const Snack = function Snack(props) {
 
 module.exports = Snack;
 
-},{}],11:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
+class StartScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      nickname: ''
+    };
+    this.handleNicknameChange = this.handleNicknameChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      nickname: this.props.playerNickname
+    });
+  }
+
+  handleNicknameChange(event) {
+    console.log(event.target.value);
+    this.setState({
+      nickname: event.target.value
+    });
+  }
+
+  render() {
+    return h(
+      "div",
+      { "class": "block" },
+      h(
+        "div",
+        { "class": "block block--height-30" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "It looks like you've stumbled onto our Blackjack Lair."
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-40" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "We're giving you the nickname"
+        ),
+        h(
+          "div",
+          { "class": "block__input" },
+          h("input", {
+            "class": "block__textbox",
+            type: "text",
+            onChange: this.handleNicknameChange,
+            value: this.state.nickname,
+            placeholder: this.state.nickname || this.props.playerNickname })
+        ),
+        h(
+          "div",
+          { "class": "block__text" },
+          "because we need to keep you safe and anonymous."
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-30" },
+        h(
+          "div",
+          { "class": "block__input" },
+          h(
+            "button",
+            { "class": "block__button", onClick: () => this.props.joinAndChangeNickname(this.state.nickname) },
+            "I want to play!"
+          )
+        )
+      )
+    );
+  }
+}
+
+module.exports = StartScreen;
+
+},{}],28:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -583,7 +1999,7 @@ const socket = io();
 // need actual state in it... shouldn't be functional
 // which i can call setState on...
 
-render(h(Clock, null), document.body);
+// render(<Clock />, document.body);
 render(h(BlackjackTable, { io: socket }), document.body);
 
 socket.on('playerJoined', player => {
@@ -598,4 +2014,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":5,"./components/deck":6}]},{},[11]);
+},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":20,"./components/deck":21}]},{},[28]);
