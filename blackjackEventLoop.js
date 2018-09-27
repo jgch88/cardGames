@@ -77,27 +77,15 @@ const Game = {
     this.state.init(this);
     this.sendGameState(this.state.name);
   },
-  // gettingPlayers
   joinGame(playerName, chips) {
     this.state.joinGame(playerName, chips, this);
   },
   changeNickname(playerName, nickname) {
     this.state.changeNickname(playerName, nickname, this);
   },
-  /*
-  leaveGame(playerName) {
-    try {
-      this.state.leaveGame(playerName, this);
-    } catch(e) {
-      console.log(`[Error]: ${e}`);
-    }
-  },
-  */
-  // gettingBets
   placeBet(playerName, amount) {
     this.state.placeBet(playerName, amount, this);
   },
-  // gettingPlays
   play(playerName, move) {
     this.state.play(playerName, move, this);
   },
@@ -165,36 +153,37 @@ const Game = {
     });
     return dealerCards;
   },
-  getMessageLogMessages() {
+  _getMessageLogMessages() {
     return {messages: this.messageLog.messages}
   },
-  sendMessageLogMessages(message) {
-    // the front end "console.log" api, last x no of console messages
+  addMessageToMessageLog(message) {
     console.log(message);
+    // the front end "console.log" api, last x no of console messages
     this.messageLog.addMessage(message);
-    this.io.to(this.roomName).emit('message', this.getMessageLogMessages());
   },
   sendGameState(gameState) {
     this.io.to(this.roomName).emit('gameState',{ gameState });
   },
+  sendMessageLogMessages(message) {
+    this.addMessageToMessageLog(message);
+    this.io.to(this.roomName).emit('message', this._getMessageLogMessages());
+  },
   emitCurrentState() {
-    // minified state
-    // build the "lastEmittedState" here!
+    const currentState = this._getMinifiedState();
+    this.io.to(this.roomName).emit('currentState', currentState);
+    return currentState;
+  },
+  _getMinifiedState() {
     const currentState = {};
-    // call all the various state methods here.
     currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.getPlayerBetAmounts();
     currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
-    currentState.messages = this.getMessageLogMessages().messages;
+    currentState.messages = this.messageLog.messages;
     currentState.players = this.renderPlayers();
     currentState.dealerCards = this.renderDealerCards();
     currentState.gameState = this.state.name;
     currentState.bets = this.renderBets(); 
-    // use logic to change background colour of current bets
     currentState.currentBet = this.getCurrentBetId();
-
-    this.io.to(this.roomName).emit('currentState', currentState);
-    // console.log(currentState);
     return currentState;
   },
   getCurrentBetId() {
