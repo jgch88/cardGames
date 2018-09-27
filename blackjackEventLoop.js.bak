@@ -8,69 +8,42 @@ const MessageLog = require('./messageLog.js');
 // Single responsibility
 // To initialise a game and expose its API for state changes within the game
 // Allows players to do "actions" on the game "such as join room/create room/play move"
-const defaultTimerDuration = 30000;
-const maxMessages = 12;
 
 const Game = {
-
-  //init(roomName)
   init(io, roomName, timer) {
-    this.roomName = roomName;
-    this.registerIO(io);
-    this.setTimerDuration(timer);
-
-    this._setupGameTable();
-
-    this.state = Object.create(gettingPlayersState);
-    this.state.init(this);
-  },
-
-  _setupGameTable() {
-    this._loadData();
-    this._loadDeck();
-    this._loadMessageLog();
-    this._loadDealer();
-  },
-
-  _loadData() {
-    this.players = [];
-    this.bets = [];
-    this.insuranceBets = [];
-    this.currentBet = null;
-  },
-
-  _loadDeck() {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
     deck.shuffle();
     this.deck = deck;
-  },
 
-  _loadMessageLog() {
-    const messageLog = Object.create(MessageLog);
-    messageLog.init(maxMessages);
-    this.messageLog = messageLog;
-    this.sendMessageLogMessages(`Game initialised`);
-  },
+    this.roomName = roomName;
+    this.timer = timer;
 
-  _loadDealer() {
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
-  },
+    this.players = []; // array instead of object because order is preserved and access to map/filter/find
+    this.bets = []; // restructure the game to decouple bets from players -> just directly resolve bets.
+    this.insuranceBets = [];
 
-  setTimerDuration(duration) {
-    if (duration > 0) {
-      this.timer = duration;
-    }
-  },
-
-  registerIO(io) {
+    // inject the server's io object
+    // (different from individual sockets!)
+    // so the game has access to broadcast events
     this.io = io;
+
+    this.currentBet = null;
+
+    const messageLog = Object.create(MessageLog);
+    const maxMessages = 12;
+    messageLog.init(maxMessages);
+    this.messageLog = messageLog;
+    this.sendMessageLogMessages(`Game initialised`);
+
+    this.state = Object.create(gettingPlayersState);
+    this.state.init(this);
+
   },
-
-
   changeState(newState) {
     console.log(`Changing state`);
     this.state = Object.create(newState);
