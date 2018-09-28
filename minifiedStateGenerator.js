@@ -9,6 +9,28 @@ class MinifiedStateGenerator {
 
   }
 
+  /*
+  render() {
+    // show the status of the game.
+    console.log(`******`)
+    console.log(`Dealer`);
+    this.game.dealer.hand.cards.forEach(card => {
+      console.log(`   ${card.readFace()}`);
+    });
+    this.game.bets.forEach((bet) => {
+      console.log(`${bet.player.name}`);
+      bet.hand.cards.forEach((card) => {
+        console.log(`   ${card.readFace()}`);
+      })
+    });
+    console.log(`******`);
+
+    // this.io.to(this.roomName).emit('render', this.renderCards());
+    this.game.emitCurrentState();
+
+  }
+  */
+
   _getMinifiedState() {
     const currentState = {};
     currentState.chipsInHand = this.game.getPlayerChipsInHand();

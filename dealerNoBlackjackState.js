@@ -39,7 +39,7 @@ const dealerNoBlackjackState = {
     if (move === 'hit') {
       this.game.deck.transferTopCard(this.game.currentBet.hand);
       this.game.currentBet.hand.cards[this.game.currentBet.hand.cards.length - 1].turnFaceUp();
-      this.game.render();
+      // this.game.observer.render();
       if (this.game.currentBet.score > 21) {
         const playerBurstsMessage = `[${this.game.currentBet.player.nickname}]: bursts (${this.game.currentBet.score}).`;
         this.game.sendMessageLogMessages(playerBurstsMessage);
@@ -56,7 +56,7 @@ const dealerNoBlackjackState = {
     } 
     if (move === 'stand') {
       this.game.currentBet.stand = true;
-      this.game.render();
+      // this.game.observer.render();
       this.game.emitCurrentChipsInHand();
       this.game.currentBet = this.getNextBet();
     }

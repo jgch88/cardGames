@@ -7,7 +7,7 @@ const dealerHasBlackjackState = {
     this.game.sendMessageLogMessages(`[State]: Dealer has a blackjack! Checking if players have blackjack.`);
     this.checkIfPlayersHaveBlackjack();
     
-    game.render();
+    // game.observer.render();
     game.changeState(resolveState);
   },
   joinGame() {

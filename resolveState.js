@@ -9,7 +9,7 @@ const resolveState = {
       card.turnFaceUp();
     });
     this.game.sendMessageLogMessages(`[Dealer]: Revealing face down card!`);
-    this.game.render();
+    // this.game.observer.render();
     // players with unresolved bets
     // this thing is duplicated in dealerNoBlackjackState on 'hit'
     // -> can we extract method and put it in Player?
@@ -42,7 +42,7 @@ const resolveState = {
       this.game.sendMessageLogMessages(`[Dealer]: 'hit'`);
       this.game.deck.transferTopCard(dealer.hand);
       dealer.hand.cards[dealer.hand.cards.length - 1].turnFaceUp();
-      this.game.render();
+      // this.game.observer.render();
     }
   },
   resolveBet(bet) {

@@ -100,25 +100,6 @@ const Game = {
   placeInsuranceBet(playerName, amount) {
     this.state.placeInsuranceBet(playerName, amount, this);
   },
-  // helper methods
-  render() {
-    // show the status of the game.
-    console.log(`******`)
-    console.log(`Dealer`);
-    this.dealer.hand.cards.forEach(card => {
-      console.log(`   ${card.readFace()}`);
-    });
-    this.bets.forEach((bet) => {
-      console.log(`${bet.player.name}`);
-      bet.hand.cards.forEach((card) => {
-        console.log(`   ${card.readFace()}`);
-      })
-    });
-    console.log(`******`);
-
-    // this.io.to(this.roomName).emit('render', this.renderCards());
-    this.emitCurrentState();
-  },
   renderBets() {
     // state => bets: { idno: cards, player.nickname }
     const bets = {};
