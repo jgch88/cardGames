@@ -40,24 +40,28 @@ const dealerNoBlackjackState = {
       this.game.deck.transferTopCard(this.game.currentBet.hand);
       this.game.currentBet.hand.cards[this.game.currentBet.hand.cards.length - 1].turnFaceUp();
       // this.game.observer.render();
+      this.game.emitCurrentState();
       if (this.game.currentBet.score > 21) {
         const playerBurstsMessage = `[${this.game.currentBet.player.nickname}]: bursts (${this.game.currentBet.score}).`;
         this.game.sendMessageLogMessages(playerBurstsMessage);
         this.game.sendMessageLogMessages(this.game.currentBet.resolve('playerLoses', 1, this.game.dealer));
-        this.game.emitCurrentChipsInHand();
+        //this.game.emitCurrentChipsInHand();
+        this.game.emitCurrentState();
         this.game.currentBet = this.getNextBet();
       } else if (this.game.currentBet.score === 21) {
         const playerBlackjackMessage = `[${this.game.currentBet.player.nickname}]: Blackjack!`;
         this.game.sendMessageLogMessages(playerBlackjackMessage);
         this.game.sendMessageLogMessages(this.game.currentBet.resolve('playerWins', 1, this.game.dealer));
-        this.game.emitCurrentChipsInHand();
+        //this.game.emitCurrentChipsInHand();
+        this.game.emitCurrentState();
         this.game.currentBet = this.getNextBet();
       }
     } 
     if (move === 'stand') {
       this.game.currentBet.stand = true;
       // this.game.observer.render();
-      this.game.emitCurrentChipsInHand();
+      this.game.emitCurrentState();
+      // this.game.emitCurrentChipsInHand();
       this.game.currentBet = this.getNextBet();
     }
     if (move === 'split') {

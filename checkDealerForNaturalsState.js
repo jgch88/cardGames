@@ -23,6 +23,7 @@ const checkDealerForNaturalsState = {
       bet.hand.cards[1].turnFaceUp();
     });
     // game.observer.render();
+    game.emitCurrentState();
 
     if (this.dealerHasFirstCardAce()) {
       this.game.changeState(gettingInsuranceBetsState);

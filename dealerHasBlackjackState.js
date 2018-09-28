@@ -8,6 +8,7 @@ const dealerHasBlackjackState = {
     this.checkIfPlayersHaveBlackjack();
     
     // game.observer.render();
+    game.emitCurrentState();
     game.changeState(resolveState);
   },
   joinGame() {

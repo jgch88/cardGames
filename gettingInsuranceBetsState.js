@@ -72,7 +72,8 @@ const gettingInsuranceBetsState = {
     } else {
       this.game.sendMessageLogMessages(`[${player.nickname}]: No Insurance`);
     }
-    this.game.emitInsuranceBets();
+    // this.game.emitInsuranceBets();
+    this.game.emitCurrentState();
     // emit a message to all players and expect a response within 30s?
   },
   // the function returning a promise doesn't need to be async
@@ -113,7 +114,8 @@ const gettingInsuranceBetsState = {
           this.game.sendMessageLogMessages(`[${insuranceBet.player.nickname}]: Wins insurance bet`);
           insuranceBet.player.chips += (insuranceBet.amount * 3);
           this.game.dealer.chips -= (insuranceBet.amount * 3);
-          this.game.emitCurrentChipsInHand();
+          // this.game.emitCurrentChipsInHand();
+          this.game.emitCurrentState();
           console.log(insuranceBet.player.chips, this.game.dealer.chips);
         }
       })

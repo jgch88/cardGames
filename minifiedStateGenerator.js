@@ -5,46 +5,79 @@ class MinifiedStateGenerator {
     this.game = game;
   }
 
-  emitState() {
-
-  }
-
-  /*
-  render() {
-    // show the status of the game.
-    console.log(`******`)
-    console.log(`Dealer`);
-    this.game.dealer.hand.cards.forEach(card => {
-      console.log(`   ${card.readFace()}`);
-    });
-    this.game.bets.forEach((bet) => {
-      console.log(`${bet.player.name}`);
-      bet.hand.cards.forEach((card) => {
-        console.log(`   ${card.readFace()}`);
-      })
-    });
-    console.log(`******`);
-
-    // this.io.to(this.roomName).emit('render', this.renderCards());
-    this.game.emitCurrentState();
-
-  }
-  */
-
   _getMinifiedState() {
     const currentState = {};
     currentState.chipsInHand = this.game.getPlayerChipsInHand();
     currentState.betAmounts = this.game.getPlayerBetAmounts();
-    currentState.insuranceBetAmounts = this.game.getPlayerInsuranceBetAmounts();
+    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
     currentState.messages = this.game.messageLog.messages;
-    currentState.players = this.game.renderPlayers();
-    currentState.dealerCards = this.game.renderDealerCards();
+    currentState.players = this.renderPlayers();
+    currentState.dealerCards = this.renderDealerCards();
     currentState.gameState = this.game.state.name;
-    currentState.bets = this.game.renderBets(); 
-    currentState.currentBet = this.game.getCurrentBetId();
+    currentState.bets = this.renderBets(); 
+    currentState.currentBet = this.getCurrentBetId();
     return currentState;
   }
 
+  getCurrentBetId() {
+    return this.game.currentBet ? this.game.currentBet.id : '';
+
+  }
+
+  renderBets() {
+    // state => bets: { idno: cards, player.nickname }
+    const bets = {};
+
+    this.game.bets.forEach((bet) => {
+      bets[bet.id] = {
+        betAmount: bet.betAmount,
+        cards: [],
+        nickname: bet.player.nickname
+      };
+      bet.hand.cards.forEach((card) => {
+        bets[bet.id].cards.push(card);
+      });
+    });
+
+    return bets;
+  }
+
+  renderPlayers() {
+    const players = {};
+    this.game.players.forEach((player) => {
+      players[player.name] = {
+        nickname: player.nickname
+      }
+    });
+    return players;
+  }
+
+  renderDealerCards() {
+    const blankCard = {
+      value: 0,
+      suit: "-",
+      isFaceDown: true,
+    };
+    const dealerCards = [];
+    this.game.dealer.hand.cards.forEach(card => {
+      if (card.isFaceDown) {
+        dealerCards.push(blankCard);
+      } else {
+        dealerCards.push(card);
+      }
+    });
+    return dealerCards;
+  }
+
+  getPlayerInsuranceBetAmounts() {
+    let insuranceBetAmounts = {};
+    this.game.insuranceBets.map(insuranceBet => {
+      if (insuranceBet.promiseIsResolved) {
+        insuranceBetAmounts[insuranceBet.player.name] = insuranceBet.amount;
+      }
+    });
+    return insuranceBetAmounts;
+  }
 }
 
 module.exports = MinifiedStateGenerator;

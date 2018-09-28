@@ -100,48 +100,6 @@ const Game = {
   placeInsuranceBet(playerName, amount) {
     this.state.placeInsuranceBet(playerName, amount, this);
   },
-  renderBets() {
-    // state => bets: { idno: cards, player.nickname }
-    const bets = {};
-
-    this.bets.forEach((bet) => {
-      bets[bet.id] = {
-        betAmount: bet.betAmount,
-        cards: [],
-        nickname: bet.player.nickname
-      };
-      bet.hand.cards.forEach((card) => {
-        bets[bet.id].cards.push(card);
-      });
-    });
-
-    return bets;
-  },
-  renderPlayers() {
-    const players = {};
-    this.players.forEach((player) => {
-      players[player.name] = {
-        nickname: player.nickname
-      }
-    });
-    return players;
-  },
-  renderDealerCards() {
-    const blankCard = {
-      value: 0,
-      suit: "-",
-      isFaceDown: true,
-    };
-    const dealerCards = [];
-    this.dealer.hand.cards.forEach(card => {
-      if (card.isFaceDown) {
-        dealerCards.push(blankCard);
-      } else {
-        dealerCards.push(card);
-      }
-    });
-    return dealerCards;
-  },
   _getMessageLogMessages() {
     return {messages: this.messageLog.messages}
   },
@@ -169,18 +127,6 @@ const Game = {
     return this.currentBet ? this.currentBet.id : '';
 
   },
-  emitCurrentChipsInHand() {
-    let chipsInHand = {};
-    chipsInHand.chipsInHand = this.getPlayerChipsInHand();
-
-    this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
-
-  },
-  emitInsuranceBets() {
-    let currentState = {};
-    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
-    this.io.to(this.roomName).emit('currentInsuranceBets', currentState);
-  },
   emitCurrentBet() {
     this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
   },
@@ -203,15 +149,6 @@ const Game = {
     });
     // this.io.to(this.roomName).emit('betAmounts', betAmounts);
     return betAmounts;
-  },
-  getPlayerInsuranceBetAmounts() {
-    let insuranceBetAmounts = {};
-    this.insuranceBets.map(insuranceBet => {
-      if (insuranceBet.promiseIsResolved) {
-        insuranceBetAmounts[insuranceBet.player.name] = insuranceBet.amount;
-      }
-    });
-    return insuranceBetAmounts;
   },
 };
 
