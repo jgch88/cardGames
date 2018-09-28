@@ -4,6 +4,8 @@ const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
+const MinifiedStateGenerator = require('./minifiedStateGenerator.js');
+
 // Game module
 // Single responsibility
 // To initialise a game and expose its API for state changes within the game
@@ -21,8 +23,14 @@ const Game = {
 
     this._setupGameTable();
 
+    this._registerObserver();
+
     this.state = Object.create(gettingPlayersState);
     this.state.init(this);
+  },
+
+  _registerObserver() {
+    this.observer = new MinifiedStateGenerator(this);
   },
 
   _setupGameTable() {
@@ -174,17 +182,7 @@ const Game = {
     return currentState;
   },
   _getMinifiedState() {
-    const currentState = {};
-    currentState.chipsInHand = this.getPlayerChipsInHand();
-    currentState.betAmounts = this.getPlayerBetAmounts();
-    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
-    currentState.messages = this.messageLog.messages;
-    currentState.players = this.renderPlayers();
-    currentState.dealerCards = this.renderDealerCards();
-    currentState.gameState = this.state.name;
-    currentState.bets = this.renderBets(); 
-    currentState.currentBet = this.getCurrentBetId();
-    return currentState;
+    return this.observer._getMinifiedState();
   },
   getCurrentBetId() {
     return this.currentBet ? this.currentBet.id : '';
