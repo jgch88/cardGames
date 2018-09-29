@@ -83,7 +83,8 @@ const Game = {
     console.log(`Changing state`);
     this.state = Object.create(newState);
     this.state.init(this);
-    this.sendGameState(this.state.name);
+    this.emitCurrentState();
+    // this.sendGameState(this.state.name);
   },
   joinGame(playerName, chips) {
     this.state.joinGame(playerName, chips, this);
@@ -103,13 +104,11 @@ const Game = {
   _getMessageLogMessages() {
     return {messages: this.messageLog.messages}
   },
+  // not sure what the "logger" pattern should be. feels like a type of observer.
   addMessageToMessageLog(message) {
     console.log(message);
     // the front end "console.log" api, last x no of console messages
     this.messageLog.addMessage(message);
-  },
-  sendGameState(gameState) {
-    this.io.to(this.roomName).emit('gameState',{ gameState });
   },
   sendMessageLogMessages(message) {
     this.addMessageToMessageLog(message);
