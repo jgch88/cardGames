@@ -123,13 +123,6 @@ const Game = {
   _getMinifiedState() {
     return this.observer._getMinifiedState();
   },
-  getCurrentBetId() {
-    return this.currentBet ? this.currentBet.id : '';
-
-  },
-  emitCurrentBet() {
-    this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
-  },
   // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!

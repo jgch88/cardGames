@@ -24,6 +24,12 @@ class MinifiedStateGenerator {
 
   }
 
+  /*
+  emitCurrentBet() {
+    this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
+  }
+  */
+
   renderBets() {
     // state => bets: { idno: cards, player.nickname }
     const bets = {};

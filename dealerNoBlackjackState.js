@@ -88,7 +88,13 @@ const dealerNoBlackjackState = {
       }
     }
 
-    this.game.emitCurrentBet();
+    this.game.emitCurrentState();
+    // this part needs a state transition so taht
+    // players can see what dealer got before
+    // the table gets wiped out.
+    // transition to "waiting for players" with timer
+    // or something..
+    // this.game.emitCurrentBet();
   },
   checkIfPlayersHaveBlackjack() {
     // checkIfBetsHaveBlackjack
