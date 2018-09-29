@@ -123,16 +123,6 @@ const Game = {
   _getMinifiedState() {
     return this.observer._getMinifiedState();
   },
-  getPlayerBetAmounts() {
-    // get current minified state of 
-    // playerBets
-    let betAmounts = {};
-    this.bets.map(bet => {
-      betAmounts[bet.player.name] = bet.betAmount;
-    });
-    // this.io.to(this.roomName).emit('betAmounts', betAmounts);
-    return betAmounts;
-  },
 };
 
 module.exports = Game;

@@ -8,7 +8,7 @@ class MinifiedStateGenerator {
   _getMinifiedState() {
     const currentState = {};
     currentState.chipsInHand = this.getPlayerChipsInHand();
-    currentState.betAmounts = this.game.getPlayerBetAmounts();
+    currentState.betAmounts = this.getPlayerBetAmounts();
     currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
     currentState.messages = this.game.messageLog.messages;
     currentState.players = this.renderPlayers();
@@ -28,6 +28,17 @@ class MinifiedStateGenerator {
     this.game.players.map(player => {chipsInHand[player.name] = player.chips});
     // this.io.to(this.roomName).emit('chipsInHand', chipsInHand);
     return chipsInHand;
+  }
+
+  getPlayerBetAmounts() {
+    // get current minified state of 
+    // playerBets
+    let betAmounts = {};
+    this.game.bets.map(bet => {
+      betAmounts[bet.player.name] = bet.betAmount;
+    });
+    // this.io.to(this.roomName).emit('betAmounts', betAmounts);
+    return betAmounts;
   }
 
   getCurrentBetId() {
