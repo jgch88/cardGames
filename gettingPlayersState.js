@@ -21,7 +21,7 @@ const gettingPlayersState = {
     const player = Object.create(Player);
     player.init(playerName, chips);
     game.players.push(player);
-    this.game.getPlayerChipsInHand();
+    // this.game.getPlayerChipsInHand();
 
 
     this.game.sendMessageLogMessages(`[${player.nickname}]: Joined with ${chips} chips`);

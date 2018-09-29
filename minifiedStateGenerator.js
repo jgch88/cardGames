@@ -7,7 +7,7 @@ class MinifiedStateGenerator {
 
   _getMinifiedState() {
     const currentState = {};
-    currentState.chipsInHand = this.game.getPlayerChipsInHand();
+    currentState.chipsInHand = this.getPlayerChipsInHand();
     currentState.betAmounts = this.game.getPlayerBetAmounts();
     currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
     currentState.messages = this.game.messageLog.messages;
@@ -17,6 +17,17 @@ class MinifiedStateGenerator {
     currentState.bets = this.renderBets(); 
     currentState.currentBet = this.getCurrentBetId();
     return currentState;
+  }
+
+  // almost like redux "reducers?" like reducing state?
+  getPlayerChipsInHand() {
+    // this is me designing the backend API for frontend to use!!
+    // create current minified state
+    // from players{}
+    let chipsInHand = {};
+    this.game.players.map(player => {chipsInHand[player.name] = player.chips});
+    // this.io.to(this.roomName).emit('chipsInHand', chipsInHand);
+    return chipsInHand;
   }
 
   getCurrentBetId() {

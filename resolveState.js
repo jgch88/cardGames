@@ -84,8 +84,8 @@ const resolveState = {
     })
     this.game.sendMessageLogMessages(`[State]: Discarding cards, reshuffling.`);
     // how long to show last hand for?
-    this.game.getPlayerChipsInHand();
-    this.game.getPlayerBetAmounts();
+    // this.game.getPlayerChipsInHand();
+    // this.game.getPlayerBetAmounts();
     // TODO: remove insurance bets
   }
 }
