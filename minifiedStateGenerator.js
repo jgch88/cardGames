@@ -21,7 +21,8 @@ class MinifiedStateGenerator {
 
   emitCurrentState() {
     const currentState = this._getMinifiedState();
-    this.game.io.to(this.game.roomName).emit('currentState', currentState);
+    // this.game.io.to(this.game.roomName).emit('currentState', currentState);
+    this.game.gameDataChanged();
     return currentState;
   }
 

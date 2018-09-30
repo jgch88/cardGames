@@ -5,6 +5,7 @@ const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
 const MinifiedStateGenerator = require('./minifiedStateGenerator.js');
+const emitterObserver = require('./emitterObserver.js');
 
 // Game module
 // Single responsibility
@@ -14,6 +15,7 @@ const defaultTimerDuration = 30000;
 const maxMessages = 12;
 
 const Game = {
+  // Game should really be GameState, like TCPState
 
   //init(roomName)
   init(io, roomName, timer) {
@@ -24,13 +26,18 @@ const Game = {
     this._registerObserver();
     this._setupGameTable();
 
-
     this.state = Object.create(gettingPlayersState);
+    this.EmitterObserver = new emitterObserver(this);
     this.state.init(this);
   },
 
   _registerObserver() {
     this.observer = new MinifiedStateGenerator(this);
+  },
+
+  gameDataChanged() {
+    // ALL data mutations should call this method
+    this._notifyObservers(this.observer._getMinifiedState());
   },
 
   _setupGameTable() {
@@ -119,8 +126,33 @@ const Game = {
   */
   emitCurrentState() {
     return this.observer.emitCurrentState();
-  }
+  },
+
+  /* observer stuff, figure a way to compose it with classes / oloo later */
+  registerObserver(observer) {
+    this._observers.push(observer);
+  },
+
+  _notifyObservers(data) {
+    this._observers.forEach(observer => {
+      observer.update(data);
+    })
+  },
 };
+
+Game._observers = [];
+/*
+Game.registerObserver = function(observer) {
+  this._observers.push(observer);
+}
+
+Game._notifyObservers = function(data) {
+  this._observers.forEach(observer => {
+    observer.update(data);
+  })
+}
+*/
+
 
 module.exports = Game;
 
