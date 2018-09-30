@@ -19,6 +19,7 @@ const Game = {
 
   //init(roomName)
   init(io, roomName, timer) {
+    this._observers = [];
     this.roomName = roomName;
     this.registerIO(io);
     this.setTimerDuration(timer);
@@ -27,10 +28,12 @@ const Game = {
     this._setupGameTable();
 
     this.state = Object.create(gettingPlayersState);
-    this.EmitterObserver = new emitterObserver(this);
+    this.EmitterObserver = new emitterObserver(this); // this should be "on" parent class, not within the game?
     this.state.init(this);
+    this.addMessageToMessageLog(`Game initialised`);
   },
 
+  // this isn't an observer, it's a helper function
   _registerObserver() {
     this.observer = new MinifiedStateGenerator(this);
   },
@@ -66,7 +69,6 @@ const Game = {
     const messageLog = Object.create(MessageLog);
     messageLog.init(maxMessages);
     this.messageLog = messageLog;
-    this.addMessageToMessageLog(`Game initialised`);
   },
 
   _loadDealer() {
@@ -108,22 +110,11 @@ const Game = {
   placeInsuranceBet(playerName, amount) {
     this.state.placeInsuranceBet(playerName, amount, this);
   },
-  _getMessageLogMessages() {
-    return {messages: this.messageLog.messages}
-  },
-  // not sure what the "logger" pattern should be. feels like a type of observer.
   addMessageToMessageLog(message) {
     console.log(message);
-    // the front end "console.log" api, last x no of console messages
     this.messageLog.addMessage(message);
+    this.gameDataChanged();
   },
-  // an example of tangled coupling -> addAndSendMessageLog
-  /*
-  sendMessageLogMessages(message) {
-    this.addMessageToMessageLog(message);
-    this.io.to(this.roomName).emit('message', this._getMessageLogMessages());
-  },
-  */
   emitCurrentState() {
     return this.observer.emitCurrentState();
   },
@@ -140,8 +131,8 @@ const Game = {
   },
 };
 
-Game._observers = [];
 /*
+Game._observers = [];
 Game.registerObserver = function(observer) {
   this._observers.push(observer);
 }

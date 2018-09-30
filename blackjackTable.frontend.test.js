@@ -508,16 +508,16 @@ describe('feature: players can place insurance bets', () => {
     await pages[1].$eval('#placeBet', el => el.click());
 
     await pages[0].$eval('#startRound', el => el.click());
-    await expect(pages[0].waitForSelector('#playHit', {timeout:300})).rejects.toThrow('timeout');
+    await expect(pages[0].waitForSelector('#playHit', {timeout:100})).rejects.toThrow('timeout');
     await expect(pages[0].waitForSelector('#playStand', {timeout:100})).rejects.toThrow('timeout');
-    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:200});
-    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[0].waitForSelector('#placeInsuranceBet', {timeout:300});
+    await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:300});
     await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
     await expect(pages[0].waitForSelector('#placeInsuranceBet', {timeout:100})).rejects.toThrow('timeout');
     await expect(pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:100})).rejects.toThrow('timeout');
-    await pages[1].waitForSelector('#placeInsuranceBet', {timeout:200});
-    await pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
+    await pages[1].waitForSelector('#placeInsuranceBet', {timeout:300});
+    await pages[1].waitForSelector('#dontPlaceInsuranceBet', {timeout:300});
     killServer();
-  });
+  }, 5000);
 });
 
