@@ -118,13 +118,8 @@ const Game = {
   },
   */
   emitCurrentState() {
-    const currentState = this._getMinifiedState();
-    this.io.to(this.roomName).emit('currentState', currentState);
-    return currentState;
-  },
-  _getMinifiedState() {
-    return this.observer._getMinifiedState();
-  },
+    return this.observer.emitCurrentState();
+  }
 };
 
 module.exports = Game;

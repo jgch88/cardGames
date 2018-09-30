@@ -19,6 +19,12 @@ class MinifiedStateGenerator {
     return currentState;
   }
 
+  emitCurrentState() {
+    const currentState = this._getMinifiedState();
+    this.game.io.to(this.game.roomName).emit('currentState', currentState);
+    return currentState;
+  }
+
   // almost like redux "reducers?" like reducing state?
   getPlayerChipsInHand() {
     // this is me designing the backend API for frontend to use!!
