@@ -4,11 +4,13 @@ const resolveState = {
   init(game) {
     this.name = 'resolveState';
     this.game = game;
-    this.game.sendMessageLogMessages(`[State]: Resolving remaining bets`);
+    this.game.addMessageToMessageLog(`[State]: Resolving remaining bets`);
+    this.game.emitCurrentState();
     this.game.dealer.hand.cards.forEach(card => {
       card.turnFaceUp();
     });
-    this.game.sendMessageLogMessages(`[Dealer]: Revealing face down card!`);
+    this.game.addMessageToMessageLog(`[Dealer]: Revealing face down card!`);
+    this.game.emitCurrentState();
     // this.game.observer.render();
     this.game.emitCurrentState();
     // players with unresolved bets
@@ -23,7 +25,8 @@ const resolveState = {
     });
     // this.game.emitCurrentChipsInHand();
     this.game.emitCurrentState();
-    this.game.sendMessageLogMessages(`[State]: All bets resolved! Round over.`);
+    this.game.addMessageToMessageLog(`[State]: All bets resolved! Round over.`);
+    this.game.emitCurrentState();
 
     this.cleanUp();
     this.game.changeState(gettingPlayersState);
@@ -41,7 +44,7 @@ const resolveState = {
   dealerPlays() {
     const dealer = this.game.dealer;
     while (dealer.score < 17) {
-      this.game.sendMessageLogMessages(`[Dealer]: 'hit'`);
+      this.game.addMessageToMessageLog(`[Dealer]: 'hit'`);
       this.game.deck.transferTopCard(dealer.hand);
       dealer.hand.cards[dealer.hand.cards.length - 1].turnFaceUp();
       // this.game.observer.render();
@@ -54,17 +57,21 @@ const resolveState = {
     if (dealer.score > 21) {
       // player burst or player blackjack should
       // already have been resolved
-      this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));
+      this.game.addMessageToMessageLog(bet.resolve('playerWins', 1, dealer));
+      this.game.emitCurrentState();
       return;
     }
     // don't need case where player > 21, since it
     // should already have been resolved!
     if (dealer.score > bet.score) {
-      this.game.sendMessageLogMessages(bet.resolve('playerLoses', 1, dealer));
+      this.game.addMessageToMessageLog(bet.resolve('playerLoses', 1, dealer));
+      this.game.emitCurrentState();
     } else if (dealer.score === bet.score) {
-      this.game.sendMessageLogMessages(bet.resolve('playerDraws', 1, dealer));
+      this.game.addMessageToMessageLog(bet.resolve('playerDraws', 1, dealer));
+      this.game.emitCurrentState();
     } else {
-      this.game.sendMessageLogMessages(bet.resolve('playerWins', 1, dealer));
+      this.game.addMessageToMessageLog(bet.resolve('playerWins', 1, dealer));
+      this.game.emitCurrentState();
     }
   },
   cleanUp() {
@@ -82,7 +89,8 @@ const resolveState = {
     this.game.deck.cards.forEach(card => {
       card.turnFaceDown();
     })
-    this.game.sendMessageLogMessages(`[State]: Discarding cards, reshuffling.`);
+    this.game.addMessageToMessageLog(`[State]: Discarding cards, reshuffling.`);
+    this.game.emitCurrentState();
     // how long to show last hand for?
     // this.game.getPlayerChipsInHand();
     // this.game.getPlayerBetAmounts();

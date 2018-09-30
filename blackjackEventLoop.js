@@ -21,9 +21,9 @@ const Game = {
     this.registerIO(io);
     this.setTimerDuration(timer);
 
+    this._registerObserver();
     this._setupGameTable();
 
-    this._registerObserver();
 
     this.state = Object.create(gettingPlayersState);
     this.state.init(this);
@@ -34,9 +34,9 @@ const Game = {
   },
 
   _setupGameTable() {
+    this._loadMessageLog();
     this._loadData();
     this._loadDeck();
-    this._loadMessageLog();
     this._loadDealer();
   },
 
@@ -59,7 +59,7 @@ const Game = {
     const messageLog = Object.create(MessageLog);
     messageLog.init(maxMessages);
     this.messageLog = messageLog;
-    this.sendMessageLogMessages(`Game initialised`);
+    this.addMessageToMessageLog(`Game initialised`);
   },
 
   _loadDealer() {
@@ -110,10 +110,13 @@ const Game = {
     // the front end "console.log" api, last x no of console messages
     this.messageLog.addMessage(message);
   },
+  // an example of tangled coupling -> addAndSendMessageLog
+  /*
   sendMessageLogMessages(message) {
     this.addMessageToMessageLog(message);
     this.io.to(this.roomName).emit('message', this._getMessageLogMessages());
   },
+  */
   emitCurrentState() {
     const currentState = this._getMinifiedState();
     this.io.to(this.roomName).emit('currentState', currentState);

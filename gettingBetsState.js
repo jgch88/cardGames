@@ -3,7 +3,8 @@ const Bet = require('./bet.js');
 const gettingBetsState = {
   init(game) {
     this.game = game;
-    this.game.sendMessageLogMessages(`[State]: Getting bets`);
+    this.game.addMessageToMessageLog(`[State]: Getting bets`);
+    this.game.emitCurrentState();
     this.name = 'gettingBetsState';
   },
   joinGame() {
@@ -32,7 +33,8 @@ const gettingBetsState = {
     const bet = player.placeBet(betAmount);
     this.game.bets.push(bet);
 
-    this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
+    this.game.addMessageToMessageLog(`[${player.nickname}]: Bet ${betAmount} chips`);
+    this.game.emitCurrentState();
    
     // this.game.getPlayerChipsInHand();
     // this.game.getPlayerBetAmounts();
