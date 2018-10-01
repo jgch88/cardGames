@@ -91,8 +91,7 @@ const Game = {
     console.log(`Changing state`);
     this.state = Object.create(newState);
     this.state.init(this);
-    this.emitCurrentState();
-    // this.sendGameState(this.state.name);
+    this.gameDataChanged();
   },
   joinGame(playerName, chips) {
     this.state.joinGame(playerName, chips, this);
