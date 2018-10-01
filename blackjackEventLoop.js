@@ -24,7 +24,7 @@ const Game = {
     this.registerIO(io);
     this.setTimerDuration(timer);
 
-    this._registerObserver();
+    this._minifyStateHelper();
     this._setupGameTable();
 
     this.state = Object.create(gettingPlayersState);
@@ -34,7 +34,7 @@ const Game = {
   },
 
   // this isn't an observer, it's a helper function
-  _registerObserver() {
+  _minifyStateHelper() {
     this.observer = new MinifiedStateGenerator(this);
   },
 
