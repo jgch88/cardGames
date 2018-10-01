@@ -4,7 +4,6 @@ const gettingBetsState = {
   init(game) {
     this.game = game;
     this.game.addMessageToMessageLog(`[State]: Getting bets`);
-    this.game.emitCurrentState();
     this.name = 'gettingBetsState';
   },
   joinGame() {
@@ -34,7 +33,6 @@ const gettingBetsState = {
     this.game.bets.push(bet);
 
     this.game.addMessageToMessageLog(`[${player.nickname}]: Bet ${betAmount} chips`);
-    this.game.emitCurrentState();
    
     // this.game.getPlayerChipsInHand();
     // this.game.getPlayerBetAmounts();
