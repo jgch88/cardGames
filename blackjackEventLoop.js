@@ -33,14 +33,13 @@ const Game = {
     this.addMessageToMessageLog(`Game initialised`);
   },
 
-  // this isn't an observer, it's a helper function
   _minifyStateHelper() {
-    this.observer = new MinifiedStateGenerator(this);
+    this._minifyStateHelper = new MinifiedStateGenerator(this);
   },
 
   gameDataChanged() {
     // ALL data mutations should call this method
-    this._notifyObservers(this.observer._getMinifiedState());
+    this._notifyObservers(this._minifyStateHelper._getMinifiedState());
   },
 
   _setupGameTable() {
@@ -111,12 +110,13 @@ const Game = {
     this.state.placeInsuranceBet(playerName, amount, this);
   },
   addMessageToMessageLog(message) {
+    // 'global' gameData mutator
     console.log(message);
     this.messageLog.addMessage(message);
     this.gameDataChanged();
   },
   emitCurrentState() {
-    return this.observer.emitCurrentState();
+    return this._minifyStateHelper.emitCurrentState();
   },
 
   /* observer stuff, figure a way to compose it with classes / oloo later */

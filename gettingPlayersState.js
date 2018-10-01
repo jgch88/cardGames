@@ -5,7 +5,6 @@ const gettingPlayersState = {
   init(game) {
     this.game = game;
     this.game.addMessageToMessageLog(`[State]: Getting players`);
-    this.game.emitCurrentState();
     this.name = 'gettingPlayersState';
   },
   joinGame(playerName, chips, game) {
@@ -26,7 +25,6 @@ const gettingPlayersState = {
 
 
     this.game.addMessageToMessageLog(`[${player.nickname}]: Joined with ${chips} chips`);
-    this.game.emitCurrentState();
   },
   leaveGame() {
   },
