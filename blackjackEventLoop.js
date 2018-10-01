@@ -115,7 +115,7 @@ const Game = {
     this.gameDataChanged();
   },
   emitCurrentState() {
-    return this._minifyStateHelper.emitCurrentState();
+    return this._minifyStateHelper._getMinifiedState();
   },
 
   /* observer stuff, figure a way to compose it with classes / oloo later */
