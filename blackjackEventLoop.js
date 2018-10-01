@@ -10,6 +10,7 @@ const emitterObserver = require('./emitterObserver.js');
 // Game module
 // Single responsibility
 // To initialise a game and expose its API for state changes within the game
+// Act as an "Observable/Subject" that observers can register and see Minified State updates
 // Allows players to do "actions" on the game "such as join room/create room/play move"
 const defaultTimerDuration = 30000;
 const maxMessages = 12;

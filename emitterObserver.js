@@ -1,12 +1,12 @@
 class emitterObserver {
   // Responsibility: Observe game state changes, and emit the state changes via io
-  constructor(gameState) {
-    this.gameState = gameState;
-    this.gameState.registerObserver(this);
+  constructor(game) {
+    this.game = game;
+    this.game.registerObserver(this);
   }
 
   update(minifiedState) {
-    this.gameState.io.to(this.gameState.roomName).emit('currentState', minifiedState);
+    this.game.io.to(this.game.roomName).emit('currentState', minifiedState);
   }
 }
 

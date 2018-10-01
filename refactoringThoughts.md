@@ -49,4 +49,18 @@ render() // is actually another function/class's job to use getGameDataState() a
 The io socket object can use an adapter to be an observer to emit state
 
 
+// Thoughts after refactoring (1 Oct 2018)
+Untangling reponsibilities (especially coupled functions) probably comes from "at the time it was
+a good idea to couple the function to reuse duplication", but now we need to split the functions into two and then propagate
+this throughout the app because we actually know why we need to decouple it back again to follow
+a certain design pattern.
+
+good to write out the FLOW of the pattern being implemented:
+mutate gameData/gameState -> call gameDataChanged() -> notifyObservers() (the emitter) -> emit via socket.io to frontend
+
+
+NEXT STEPS:
+Tidy up State Pattern (don't expose a "changeState()" method if we're going to let subclasses be responsible for transitions, turn it into _changeState())
+
+Use the Command Pattern (so that we can abstract away all the actions "joinGame", "changeNickname", "placeBet", "play" .etc)
 
