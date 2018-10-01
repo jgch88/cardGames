@@ -114,7 +114,7 @@ const Game = {
     this.messageLog.addMessage(message);
     this.gameDataChanged();
   },
-  emitCurrentState() {
+  _getMinifiedState() {
     return this._minifyStateHelper._getMinifiedState();
   },
 
