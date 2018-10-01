@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
 
   // called when react client invokes componentDidMount
   socket.on('newSocketReady', () => {
-    currentGame.emitCurrentState();
+    currentGame.gameDataChanged();
   })
 
   socket.on('createRoom', (roomName) => {
@@ -67,13 +67,13 @@ io.on('connection', (socket) => {
       games.push(newGame);
       changeCurrentGame(roomName);
     }
-    currentGame.emitCurrentState();
+    currentGame.gameDataChanged();
   })
   
   socket.on('joinRoom', (roomName) => {
     try {
       changeCurrentGame(roomName);
-      currentGame.emitCurrentState();
+      currentGame.gameDataChanged();
       console.log('joining room', roomName);
     } catch(e) {
       console.log(`No such room`);
@@ -108,14 +108,13 @@ io.on('connection', (socket) => {
       console.log(`All players disconnected`);
       currentGame.changeState(resolveState);
     }
-    currentGame.emitCurrentState();
+    currentGame.gameDataChanged();
   });
 
   socket.on('joinGame', (chips) => {
     try {
       currentGame.joinGame(`${socket.id}`, chips.chips);
       console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
-      currentGame.emitCurrentState();
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -126,7 +125,6 @@ io.on('connection', (socket) => {
   socket.on('placeBet', (chips) => {
     try {
       currentGame.placeBet(`${socket.id}`, chips.chips);
-      currentGame.emitCurrentState();
     } catch(e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -137,7 +135,6 @@ io.on('connection', (socket) => {
   socket.on('placeInsuranceBet', (chips) => {
     try {
       currentGame.placeInsuranceBet(`${socket.id}`, chips.chips);
-      currentGame.emitCurrentState();
     } catch(e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -160,7 +157,6 @@ io.on('connection', (socket) => {
     try {
       console.log(`changing nickname to ${nickname}`);
       currentGame.changeNickname(socket.id, nickname);
-      currentGame.emitCurrentState();
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -173,7 +169,6 @@ io.on('connection', (socket) => {
     try {
       currentGame.joinGame(`${socket.id}`, chips.chips);
       console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
-      currentGame.emitCurrentState();
       fn(`joined, changing nickname`);
     } catch (e) {
       const errorString = `[Error]: ${e}`;
