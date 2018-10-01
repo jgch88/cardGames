@@ -8,7 +8,6 @@ const gettingInsuranceBetsState = {
     const greeting = `[State]: Getting insurance bets`;
     this.game = game;
     this.game.addMessageToMessageLog(greeting);
-    this.game.emitCurrentState();
     this.name = 'gettingInsuranceBetsState';
     console.log(`waiting for insurance bets`);
     // this insuranceBets property is created here and resolves within this state
@@ -70,14 +69,9 @@ const gettingInsuranceBetsState = {
     insuranceBet.promiseIsResolved = true;
     if (amount !== 0) {
       this.game.addMessageToMessageLog(`[${player.nickname}]: Insurance Bet ${amount} chips`);
-      this.game.emitCurrentState();
     } else {
       this.game.addMessageToMessageLog(`[${player.nickname}]: No Insurance`);
-      this.game.emitCurrentState();
     }
-    // this.game.emitInsuranceBets();
-    this.game.emitCurrentState();
-    // emit a message to all players and expect a response within 30s?
   },
   // the function returning a promise doesn't need to be async
   raceAllBetPromisesWithTimer() {
@@ -109,25 +103,20 @@ const gettingInsuranceBetsState = {
     if (dealer.score === 21) {
       dealer.hand.cards[1].turnFaceUp();
       this.game.addMessageToMessageLog(`[Dealer]: Has a Blackjack!`);
-      this.game.emitCurrentState();
       // resolve all insurance plays
       // if insurance betamount > 0 log the message, payout some chips
       this.game.addMessageToMessageLog(`[Dealer]: Resolving insurance bets`);
-      this.game.emitCurrentState();
       this.game.insuranceBets.map(insuranceBet => {
         if (!(insuranceBet.amount === 0)) {
           this.game.addMessageToMessageLog(`[${insuranceBet.player.nickname}]: Wins insurance bet`);
           insuranceBet.player.chips += (insuranceBet.amount * 3);
           this.game.dealer.chips -= (insuranceBet.amount * 3);
-          // this.game.emitCurrentChipsInHand();
-          this.game.emitCurrentState();
-          console.log(insuranceBet.player.chips, this.game.dealer.chips);
+          this.game.gameDataChanged();
         }
       })
       this.game.changeState(dealerHasBlackjackState);
     } else {
       this.game.addMessageToMessageLog(`[Dealer]: Has no Blackjack. Insurance bets collected by the house.`);
-      this.game.emitCurrentState();
       this.game.changeState(dealerNoBlackjackState);
     }
   }
