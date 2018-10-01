@@ -32,6 +32,7 @@ const gettingPlayersState = {
     const player = game.players.find(player => player.name === playerName);
     if (player) {
       player.setNickname(nickname);
+      this.game.addMessageToMessageLog(`[${playerName}]: Changed nickname to ${nickname}`);
     } else {
       throw `Player not found`;
     }
