@@ -10,8 +10,9 @@ const emitterObserver = require('./emitterObserver.js');
 // Game module
 // Single responsibility
 // To initialise a game and expose its API for state changes within the game
-// Act as an "Observable/Subject" that observers can register and see Minified State updates
 // Allows players to do "actions" on the game "such as join room/create room/play move"
+//
+// Act as an "Observable/Subject" that observers can register and see Minified State updates
 const defaultTimerDuration = 30000;
 const maxMessages = 12;
 
@@ -87,34 +88,40 @@ const Game = {
     this.io = io;
   },
 
-
   changeState(newState) {
     console.log(`Changing state`);
     this.state = Object.create(newState);
     this.state.init(this);
     this.gameDataChanged();
   },
+
   joinGame(playerName, chips) {
     this.state.joinGame(playerName, chips, this);
   },
+
   changeNickname(playerName, nickname) {
     this.state.changeNickname(playerName, nickname, this);
   },
+
   placeBet(playerName, amount) {
     this.state.placeBet(playerName, amount, this);
   },
+
   play(playerName, move) {
     this.state.play(playerName, move, this);
   },
+  
   placeInsuranceBet(playerName, amount) {
     this.state.placeInsuranceBet(playerName, amount, this);
   },
+
   addMessageToMessageLog(message) {
     // 'global' gameData mutator
     console.log(message);
     this.messageLog.addMessage(message);
     this.gameDataChanged();
   },
+
   _getMinifiedState() {
     return this._minifyStateHelper._getMinifiedState();
   },

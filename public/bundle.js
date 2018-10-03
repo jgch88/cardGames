@@ -30,6 +30,7 @@ const BetStatus = require('./betStatus.js');
 const Snack = require('./snack.js');
 const StartScreen = require('./startScreen.js');
 const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
+const GettingPlayersStateScreen = require('./gettingPlayersStateScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -235,111 +236,86 @@ class BlackjackTable extends Component {
   }
 
   render() {
-    // const pchipsInHand = this.state.chipsInHand[this.socket.id]
-    /*
-    return (
-      <div>
-        {this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players)? 
-        <StartScreen playerNickname={this.state.mySocketId} joinAndChangeNickname={this.joinAndChangeNickname}/> : ''}
-        {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.players)? 
-        <GettingBetsStateScreen 
-          playerName={this.state.players[this.socket.id].nickname} 
-          playerChips={this.state.chipsInHand[this.socket.id]}
-          placeBet={this.placeBet}
-        /> : ''}
-      </div>
-    )
-    */
-
     return h(
       'div',
-      { 'class': 'app' },
-      h(
-        'div',
-        { 'class': 'block' },
-        h(
-          'div',
-          { 'class': 'block block--rows block--height-8 actions' },
-          h(Button, { text: "Create room", id: "createRoom", clickHandler: this.createRoom }),
-          h(Button, { text: "Join room", id: "joinRoom", clickHandler: this.joinRoom })
-        ),
-        h(
-          'div',
-          { 'class': 'block block--height-4' },
-          h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id })
-        ),
-        h(
-          'div',
-          { 'class': 'block block--height-50' },
-          h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
-          h(
-            'div',
-            { 'class': 'block block--overflow', id: 'playerHands' },
-            Object.keys(this.state.bets).map((bet, index) => {
-              return h(Deck, {
-                betAmount: this.state.bets[bet].betAmount,
-                isCurrentPlayer: this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``,
-                isCurrentBet: this.state.currentBet === bet,
-                playerName: this.state.bets[bet].nickname,
-                key: index,
-                cards: this.state.bets[bet].cards });
-            })
-          )
-        ),
-        h(
-          'div',
-          { 'class': 'block block--rows block--height-8 actions' },
-          this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
-          this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
-            'span',
-            null,
-            h(Button, { id: 'changeName', text: "Change name", clickHandler: this.changeNickname }),
-            h(Button, { id: 'goToBettingState', text: "Next", clickHandler: this.goToBettingState })
-          ) : '',
-          this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
-          this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
-          h(
-            'div',
-            null,
-            this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
-              'span',
-              null,
-              h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
-              h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
-            ) : '',
-            this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
-            this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ? h(
-              'span',
-              null,
-              h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
-              h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
-            ) : ''
-          )
-        ),
-        h(
-          'div',
-          { 'class': 'block block--height-4' },
-          'MessageLog'
-        ),
-        h(
-          'div',
-          { 'class': 'block block--height-22' },
-          h(MessageLog, { messages: this.state.messages })
-        ),
-        h(
-          'div',
-          { 'class': 'block block--height-4' },
-          h(GameStateStatus, { gameState: this.state.gameState })
-        )
-      ),
-      h(Snack, { message: this.state.errorMessage })
+      null,
+      this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players) ? h(StartScreen, { playerNickname: this.state.mySocketId, joinAndChangeNickname: this.joinAndChangeNickname }) : '',
+      this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.players ? h(GettingPlayersStateScreen, {
+        playerName: this.state.players[this.socket.id].nickname,
+        playerChips: this.state.chipsInHand[this.socket.id],
+        placeBet: this.placeBet,
+        goToBettingState: this.goToBettingState
+      }) : '',
+      this.state.gameState === 'gettingBetsState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, {
+        playerName: this.state.players[this.socket.id].nickname,
+        playerChips: this.state.chipsInHand[this.socket.id],
+        placeBet: this.placeBet
+      }) : ''
     );
+
+    /*
+    return (
+      <div class="app">
+        <div class="block">
+        <div class="block block--rows block--height-8 actions">
+          <Button text={"Create room"} id={"createRoom"} clickHandler={this.createRoom}/>
+          <Button text={"Join room"} id={"joinRoom"} clickHandler={this.joinRoom}/>
+        </div>
+        <div class="block block--height-4">
+          <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
+        </div>
+        <div class="block block--height-50">
+          <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
+          <div class="block block--overflow" id="playerHands">
+          {Object.keys(this.state.bets).map((bet, index) => {
+            return <Deck 
+              betAmount={this.state.bets[bet].betAmount} 
+              isCurrentPlayer={this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``}
+              isCurrentBet={this.state.currentBet === bet} 
+              playerName={this.state.bets[bet].nickname} 
+              key={index} 
+              cards={this.state.bets[bet].cards} />
+          })}
+          </div>
+        </div>
+          <div class="block block--rows block--height-8 actions">
+            {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
+            <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
+            {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
+            <span><Button id="changeName" text={"Change name"} clickHandler={this.changeNickname}/><Button id="goToBettingState" text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
+            {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? 
+            <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
+            {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
+            <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
+            <div>
+            {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
+              <span><Button id="playHit" text={"Hit"} clickHandler={this.hit}/>
+              <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
+            {this.playerCanSplit() ?
+              <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
+            {this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ?
+              <span><Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
+              <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}
+            </div>
+          </div>
+        <div class="block block--height-4">MessageLog</div>
+        <div class="block block--height-22">
+          <MessageLog messages={this.state.messages} />
+        </div>
+        <div class="block block--height-4">
+          <GameStateStatus gameState={this.state.gameState}/>
+        </div>
+      </div>
+      <Snack message={this.state.errorMessage} />
+      </div>
+    );
+    */
   }
 }
 
 module.exports = BlackjackTable;
 
-},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":21,"./gameStateStatus.js":22,"./gettingBetsStateScreen.js":23,"./messageLog.js":24,"./playerStatus.js":25,"./snack.js":26,"./startScreen.js":27}],3:[function(require,module,exports){
+},{"./betStatus.js":1,"./button.js":3,"./card.js":4,"./deck.js":21,"./gameStateStatus.js":22,"./gettingBetsStateScreen.js":23,"./gettingPlayersStateScreen.js":24,"./messageLog.js":25,"./playerStatus.js":26,"./snack.js":27,"./startScreen.js":28}],3:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -1841,6 +1817,91 @@ module.exports = GettingBetsStateScreen;
 /** @jsx h */
 const { h, render, Component } = preact;
 
+class GettingPlayersStateScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      timerCountdown: 10,
+      nickname: props.nickname
+      // this.handleBetChange = this.handleBetChange.bind(this);
+    };
+  }
+
+  componentDidMount() {
+    setInterval(() => {
+      this.setState({ timerCountdown: this.state.timerCountdown - 1 });
+      if (this.state.timerCountdown === 0) {
+        console.log(`Done!`);
+        this.props.goToBettingState();
+      }
+    }, 1000);
+  }
+
+  render() {
+    return h(
+      "div",
+      { "class": "block" },
+      h(
+        "div",
+        { "class": "block block--height-30" },
+        h(
+          "div",
+          { "class": "block__timer" },
+          this.state.timerCountdown
+        )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-40" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "Waiting for other players to join..."
+        )
+      ),
+      h("div", { "class": "block block--height-22" }),
+      h(
+        "div",
+        { "class": "block block--height-8 block--rows block--theme-dark" },
+        h(
+          "div",
+          { "class": "block__row--width-33" },
+          h(
+            "div",
+            { "class": "block__text" },
+            this.props.playerName
+          )
+        ),
+        h(
+          "div",
+          { "class": "block__row--width-34" },
+          h(
+            "div",
+            { "class": "block__text" },
+            "Chips: ",
+            this.props.playerChips
+          )
+        ),
+        h(
+          "div",
+          { "class": "block__row--width-33" },
+          h(
+            "div",
+            { "class": "block__text" },
+            "Room: game0"
+          )
+        )
+      )
+    );
+  }
+}
+
+module.exports = GettingPlayersStateScreen;
+
+},{}],25:[function(require,module,exports){
+/** @jsx h */
+const { h, render, Component } = preact;
+
 const MessageLog = function MessageLog(props) {
   // need to reverse the messages without mutating the state
   return h(
@@ -1858,7 +1919,7 @@ const MessageLog = function MessageLog(props) {
 
 module.exports = MessageLog;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 const Button = require('./button.js');
@@ -1885,7 +1946,7 @@ const PlayerStatus = function PlayerStatus(props) {
 
 module.exports = PlayerStatus;
 
-},{"./button.js":3}],26:[function(require,module,exports){
+},{"./button.js":3}],27:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -1901,7 +1962,7 @@ const Snack = function Snack(props) {
 
 module.exports = Snack;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -1983,7 +2044,7 @@ class StartScreen extends Component {
 
 module.exports = StartScreen;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /** @jsx h */
 const { h, render, Component } = preact;
 
@@ -2014,4 +2075,4 @@ socket.on('render', state => {
   console.log(state);
 });
 
-},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":20,"./components/deck":21}]},{},[28]);
+},{"./components/blackjackTable.js":2,"./components/button.js":3,"./components/card":4,"./components/clock":20,"./components/deck":21}]},{},[29]);

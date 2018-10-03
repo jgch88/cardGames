@@ -10,6 +10,7 @@ const BetStatus = require('./betStatus.js');
 const Snack = require('./snack.js');
 const StartScreen = require('./startScreen.js');
 const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
+const GettingPlayersStateScreen = require('./gettingPlayersStateScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -214,13 +215,18 @@ class BlackjackTable extends Component {
   }
 
   render() {
-    // const pchipsInHand = this.state.chipsInHand[this.socket.id]
-    /*
     return (
       <div>
         {this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players)? 
         <StartScreen playerNickname={this.state.mySocketId} joinAndChangeNickname={this.joinAndChangeNickname}/> : ''}
         {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.players)? 
+        <GettingPlayersStateScreen 
+          playerName={this.state.players[this.socket.id].nickname} 
+          playerChips={this.state.chipsInHand[this.socket.id]}
+          placeBet={this.placeBet}
+          goToBettingState={this.goToBettingState}
+        /> : ''}
+        {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
@@ -228,8 +234,8 @@ class BlackjackTable extends Component {
         /> : ''}
       </div>
     )
-    */
     
+    /*
     return (
       <div class="app">
         <div class="block">
@@ -285,6 +291,7 @@ class BlackjackTable extends Component {
       <Snack message={this.state.errorMessage} />
       </div>
     );
+    */
     
   }
 }
