@@ -16,7 +16,12 @@ class MinifiedStateGenerator {
     currentState.gameState = this.game.state.name;
     currentState.bets = this.renderBets(); 
     currentState.currentBet = this.getCurrentBetId();
+    currentState.countdown = this.getCountdown();
     return currentState;
+  }
+
+  getCountdown() {
+    return this.game.countdown;
   }
 
   // almost like redux "reducers?" like reducing state?

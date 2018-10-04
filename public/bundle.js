@@ -45,7 +45,8 @@ class BlackjackTable extends Component {
       insuranceBetAmounts: {},
       bets: {},
       currentBet: '',
-      mySocketId: ''
+      mySocketId: '',
+      countdown: ''
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -99,7 +100,7 @@ class BlackjackTable extends Component {
       });
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts, countdown }) => {
       this.setState({
         gameState,
         messages,
@@ -109,7 +110,8 @@ class BlackjackTable extends Component {
         chipsInHand,
         bets,
         currentBet,
-        insuranceBetAmounts
+        insuranceBetAmounts,
+        countdown
       });
       this.setState({
         mySocketId: this.socket.id
@@ -123,7 +125,8 @@ class BlackjackTable extends Component {
         chipsInHand,
         bets,
         currentBet,
-        insuranceBetAmounts
+        insuranceBetAmounts,
+        countdown
       });
     });
     this.socket.on('emitError', message => {
@@ -244,7 +247,7 @@ class BlackjackTable extends Component {
         playerName: this.state.players[this.socket.id].nickname,
         playerChips: this.state.chipsInHand[this.socket.id],
         placeBet: this.placeBet,
-        goToBettingState: this.goToBettingState
+        countdown: this.state.countdown
       }) : '',
       this.state.gameState === 'gettingBetsState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, {
         playerName: this.state.players[this.socket.id].nickname,
@@ -1817,84 +1820,63 @@ module.exports = GettingBetsStateScreen;
 /** @jsx h */
 const { h, render, Component } = preact;
 
-class GettingPlayersStateScreen extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      timerCountdown: 10,
-      nickname: props.nickname
-      // this.handleBetChange = this.handleBetChange.bind(this);
-    };
-  }
-
-  componentDidMount() {
-    setInterval(() => {
-      this.setState({ timerCountdown: this.state.timerCountdown - 1 });
-      if (this.state.timerCountdown === 0) {
-        console.log(`Done!`);
-        this.props.goToBettingState();
-      }
-    }, 1000);
-  }
-
-  render() {
-    return h(
+const GettingPlayersStateScreen = function GettingPlayersStateScreen(props) {
+  return h(
+    "div",
+    { "class": "block" },
+    h(
       "div",
-      { "class": "block" },
+      { "class": "block block--height-30" },
       h(
         "div",
-        { "class": "block block--height-30" },
-        h(
-          "div",
-          { "class": "block__timer" },
-          this.state.timerCountdown
-        )
-      ),
+        { "class": "block__timer" },
+        this.props.countdown
+      )
+    ),
+    h(
+      "div",
+      { "class": "block block--height-40" },
       h(
         "div",
-        { "class": "block block--height-40" },
+        { "class": "block__text" },
+        "Waiting for other players to join..."
+      )
+    ),
+    h("div", { "class": "block block--height-22" }),
+    h(
+      "div",
+      { "class": "block block--height-8 block--rows block--theme-dark" },
+      h(
+        "div",
+        { "class": "block__row--width-33" },
         h(
           "div",
           { "class": "block__text" },
-          "Waiting for other players to join..."
+          this.props.playerName
         )
       ),
-      h("div", { "class": "block block--height-22" }),
       h(
         "div",
-        { "class": "block block--height-8 block--rows block--theme-dark" },
+        { "class": "block__row--width-34" },
         h(
           "div",
-          { "class": "block__row--width-33" },
-          h(
-            "div",
-            { "class": "block__text" },
-            this.props.playerName
-          )
-        ),
+          { "class": "block__text" },
+          "Chips: ",
+          this.props.playerChips
+        )
+      ),
+      h(
+        "div",
+        { "class": "block__row--width-33" },
         h(
           "div",
-          { "class": "block__row--width-34" },
-          h(
-            "div",
-            { "class": "block__text" },
-            "Chips: ",
-            this.props.playerChips
-          )
-        ),
-        h(
-          "div",
-          { "class": "block__row--width-33" },
-          h(
-            "div",
-            { "class": "block__text" },
-            "Room: game0"
-          )
+          { "class": "block__text" },
+          "Room: game0"
         )
       )
-    );
-  }
-}
+    )
+  );
+};
 
 module.exports = GettingPlayersStateScreen;
 

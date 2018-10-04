@@ -25,10 +25,13 @@ const Game = {
     this.roomName = roomName;
     this.registerIO(io);
     this.setTimerDuration(timer);
+    this.countdown;
 
     this._minifyStateHelper();
     this._setupGameTable();
 
+    // make an abstract factory for states and
+    // store them all in an object for easy referencing?
     this.state = Object.create(gettingPlayersState);
     this.EmitterObserver = new emitterObserver(this); // this should be "on" parent class, not within the game?
     this.state.init(this);

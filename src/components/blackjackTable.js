@@ -26,6 +26,7 @@ class BlackjackTable extends Component {
       bets: {},
       currentBet: '',
       mySocketId: '',
+      countdown: '',
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -79,7 +80,7 @@ class BlackjackTable extends Component {
       })
     });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts, countdown }) => {
       this.setState({
         gameState,
         messages,
@@ -90,6 +91,7 @@ class BlackjackTable extends Component {
         bets,
         currentBet,
         insuranceBetAmounts,
+        countdown,
       });
       this.setState({
         mySocketId: this.socket.id,
@@ -104,6 +106,7 @@ class BlackjackTable extends Component {
         bets,
         currentBet,
         insuranceBetAmounts,
+        countdown,
       });
     });
     this.socket.on('emitError', (message) => {
@@ -224,7 +227,7 @@ class BlackjackTable extends Component {
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
           placeBet={this.placeBet}
-          goToBettingState={this.goToBettingState}
+          countdown={this.state.countdown}
         /> : ''}
         {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 

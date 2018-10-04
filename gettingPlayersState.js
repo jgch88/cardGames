@@ -6,6 +6,21 @@ const gettingPlayersState = {
     this.game = game;
     this.game.addMessageToMessageLog(`[State]: Getting players`);
     this.name = 'gettingPlayersState';
+    this.game.countdown = 10;
+    this.countdown = setInterval(() => {
+      this.game.countdown -= 1;
+      this.game.gameDataChanged();
+      // console.log(`${this.game.countdown}`);
+      if (this.game.countdown === 0) {
+        if (this.game.players.length !== 0) {
+          this.game.changeState(gettingBetsState);
+          clearInterval(this.countdown);
+        } else {
+          this.game.countdown = 10;
+          this.game.gameDataChanged();
+        }
+      }
+    }, 1000)
   },
   joinGame(playerName, chips, game) {
     // maybe playerName will be playerId because of socket.io
