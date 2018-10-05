@@ -1,12 +1,14 @@
 const Player = require('./player.js');
 const gettingBetsState = require('./gettingBetsState.js');
 
+const TIMER_COUNTDOWN = 10;
+
 const gettingPlayersState = {
   init(game) {
     this.game = game;
     this.game.addMessageToMessageLog(`[State]: Getting players`);
     this.name = 'gettingPlayersState';
-    this.game.countdown = 10;
+    this.game.countdown = TIMER_COUNTDOWN;
     this.countdown = setInterval(() => {
       this.game.countdown -= 1;
       this.game.gameDataChanged();
@@ -16,7 +18,7 @@ const gettingPlayersState = {
           this.game.changeState(gettingBetsState);
           clearInterval(this.countdown);
         } else {
-          this.game.countdown = 10;
+          this.game.countdown = TIMER_COUNTDOWN;
           this.game.gameDataChanged();
         }
       }

@@ -148,8 +148,8 @@ class BlackjackTable extends Component {
         snack.className = snack.className.replace("show", "");
       }, 4000);
     };
-    this.placeBet = () => {
-      const chips = window.prompt("How much would you like to bet?", 10);
+    this.placeBet = chips => {
+      // const chips = window.prompt("How much would you like to bet?", 10);
       this.socket.emit('placeBet', { chips: Number(chips) });
     };
     this.placeInsuranceBet = () => {
