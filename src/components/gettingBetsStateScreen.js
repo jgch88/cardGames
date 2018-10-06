@@ -55,7 +55,7 @@ class GettingBetsStateScreen extends Component {
           </div>
           {Object.keys(this.props.bets).map((bet, index) => {
             return <div>
-                Chips: 1
+                Chips: {this.props.bets[bet].betAmount}
             </div>
           })}
         </div>

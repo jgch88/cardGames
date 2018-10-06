@@ -1844,7 +1844,8 @@ class GettingBetsStateScreen extends Component {
           return h(
             "div",
             null,
-            "Chips: 1"
+            "Chips: ",
+            this.props.bets[bet].betAmount
           );
         })
       ),
