@@ -226,7 +226,6 @@ class BlackjackTable extends Component {
         <GettingPlayersStateScreen 
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
-          placeBet={this.placeBet}
           countdown={this.state.countdown}
         /> : ''}
         {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
@@ -234,6 +233,8 @@ class BlackjackTable extends Component {
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
           placeBet={this.placeBet}
+          countdown={this.state.countdown}
+          bets={this.state.bets}
         /> : ''}
         {this.state.gameState === 'dealerNoBlackjackState' && (this.socket.id in this.state.players)? 
       <div class="app">

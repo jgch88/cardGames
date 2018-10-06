@@ -23,7 +23,7 @@ class GettingBetsStateScreen extends Component {
       <div class="block">
         <div class="block block--height-30">
           <div class="block__timer">
-            120
+            {this.props.countdown}
           </div>
         </div>
         <div class="block block--height-10">
@@ -53,6 +53,11 @@ class GettingBetsStateScreen extends Component {
           <div class="block__text block__text--border">
             Chips: {this.state.betSlider}
           </div>
+          {Object.keys(this.props.bets).map((bet, index) => {
+            return <div>
+                Chips: 1
+            </div>
+          })}
         </div>
         <div class="block block--height-12">
           <div class="block__text">

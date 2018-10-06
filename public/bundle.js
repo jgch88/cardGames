@@ -246,13 +246,14 @@ class BlackjackTable extends Component {
       this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.players ? h(GettingPlayersStateScreen, {
         playerName: this.state.players[this.socket.id].nickname,
         playerChips: this.state.chipsInHand[this.socket.id],
-        placeBet: this.placeBet,
         countdown: this.state.countdown
       }) : '',
       this.state.gameState === 'gettingBetsState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, {
         playerName: this.state.players[this.socket.id].nickname,
         playerChips: this.state.chipsInHand[this.socket.id],
-        placeBet: this.placeBet
+        placeBet: this.placeBet,
+        countdown: this.state.countdown,
+        bets: this.state.bets
       }) : '',
       this.state.gameState === 'dealerNoBlackjackState' && this.socket.id in this.state.players ? h(
         'div',
@@ -1795,7 +1796,7 @@ class GettingBetsStateScreen extends Component {
         h(
           "div",
           { "class": "block__timer" },
-          "120"
+          this.props.countdown
         )
       ),
       h(
@@ -1838,7 +1839,14 @@ class GettingBetsStateScreen extends Component {
           { "class": "block__text block__text--border" },
           "Chips: ",
           this.state.betSlider
-        )
+        ),
+        Object.keys(this.props.bets).map((bet, index) => {
+          return h(
+            "div",
+            null,
+            "Chips: 1"
+          );
+        })
       ),
       h(
         "div",
