@@ -33,7 +33,7 @@ class GettingBetsStateScreen extends Component {
         </div>
         <div class="block block--height-15">
           <div class="block__text">
-            Place your bet
+            Place your bet: {this.state.betSlider}
           </div>
           <div class="block__input">
             <input 
@@ -49,16 +49,6 @@ class GettingBetsStateScreen extends Component {
             </input>
           </div>
         </div>
-        <div class="block block--height-25">
-          <div class="block__text block__text--border">
-            Chips: {this.state.betSlider}
-          </div>
-          {Object.keys(this.props.bets).map((bet, index) => {
-            return <div>
-                Chips: {this.props.bets[bet].betAmount}
-            </div>
-          })}
-        </div>
         <div class="block block--height-12">
           <div class="block__text">
             <button 
@@ -68,6 +58,15 @@ class GettingBetsStateScreen extends Component {
             Place Bet
             </button>
           </div>
+        </div>
+        <div class="block block--height-25">
+          <div class="block__text">
+          </div>
+          {Object.keys(this.props.bets).map((bet, index) => {
+            return <div>
+                Your bet: {this.props.bets[bet].betAmount}
+            </div>
+          })}
         </div>
         <div class="block block--height-8 block--rows block--theme-dark">
           <div class="block__row--width-33">

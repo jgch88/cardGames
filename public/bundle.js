@@ -1814,7 +1814,8 @@ class GettingBetsStateScreen extends Component {
         h(
           "div",
           { "class": "block__text" },
-          "Place your bet"
+          "Place your bet: ",
+          this.state.betSlider
         ),
         h(
           "div",
@@ -1833,24 +1834,6 @@ class GettingBetsStateScreen extends Component {
       ),
       h(
         "div",
-        { "class": "block block--height-25" },
-        h(
-          "div",
-          { "class": "block__text block__text--border" },
-          "Chips: ",
-          this.state.betSlider
-        ),
-        Object.keys(this.props.bets).map((bet, index) => {
-          return h(
-            "div",
-            null,
-            "Chips: ",
-            this.props.bets[bet].betAmount
-          );
-        })
-      ),
-      h(
-        "div",
         { "class": "block block--height-12" },
         h(
           "div",
@@ -1864,6 +1847,19 @@ class GettingBetsStateScreen extends Component {
             "Place Bet"
           )
         )
+      ),
+      h(
+        "div",
+        { "class": "block block--height-25" },
+        h("div", { "class": "block__text" }),
+        Object.keys(this.props.bets).map((bet, index) => {
+          return h(
+            "div",
+            null,
+            "Your bet: ",
+            this.props.bets[bet].betAmount
+          );
+        })
       ),
       h(
         "div",
