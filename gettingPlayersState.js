@@ -1,5 +1,4 @@
 const Player = require('./player.js');
-const gettingBetsState = require('./gettingBetsState.js');
 
 const TIMER_COUNTDOWN = 10;
 
@@ -15,8 +14,8 @@ const gettingPlayersState = {
       // console.log(`${this.game.countdown}`);
       if (this.game.countdown === 0) {
         if (this.game.players.length !== 0) {
-          this.game.changeState(gettingBetsState);
           clearInterval(this.countdown);
+          this.game.changeState(require('./gettingBetsState.js'));
         } else {
           this.game.countdown = TIMER_COUNTDOWN;
           this.game.gameDataChanged();

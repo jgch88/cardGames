@@ -253,7 +253,85 @@ class BlackjackTable extends Component {
         playerName: this.state.players[this.socket.id].nickname,
         playerChips: this.state.chipsInHand[this.socket.id],
         placeBet: this.placeBet
-      }) : ''
+      }) : '',
+      this.state.gameState === 'dealerNoBlackjackState' && this.socket.id in this.state.players ? h(
+        'div',
+        { 'class': 'app' },
+        h(
+          'div',
+          { 'class': 'block' },
+          h(
+            'div',
+            { 'class': 'block block--height-4' },
+            h(PlayerStatus, { playerName: this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id, gameState: this.state, socketId: this.socket.id })
+          ),
+          h(
+            'div',
+            { 'class': 'block block--height-50' },
+            h(Deck, { playerName: 'Dealer', key: 'Dealer', cards: this.state.dealerCards }),
+            h(
+              'div',
+              { 'class': 'block block--overflow', id: 'playerHands' },
+              Object.keys(this.state.bets).map((bet, index) => {
+                return h(Deck, {
+                  betAmount: this.state.bets[bet].betAmount,
+                  isCurrentPlayer: this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``,
+                  isCurrentBet: this.state.currentBet === bet,
+                  playerName: this.state.bets[bet].nickname,
+                  key: index,
+                  cards: this.state.bets[bet].cards });
+              })
+            )
+          ),
+          h(
+            'div',
+            { 'class': 'block block--rows block--height-8 actions' },
+            this.state.gameState === 'gettingPlayersState' && !this.playerHasJoined() ? h(Button, { text: "Join Game", id: "joinGame", clickHandler: this.joinGame }) : '',
+            this.state.gameState === 'gettingPlayersState' && this.socket.id in this.state.chipsInHand ? h(
+              'span',
+              null,
+              h(Button, { id: 'changeName', text: "Change name", clickHandler: this.changeNickname }),
+              h(Button, { id: 'goToBettingState', text: "Next", clickHandler: this.goToBettingState })
+            ) : '',
+            this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? h(Button, { id: 'placeBet', text: "Place Bet", clickHandler: this.placeBet }) : '',
+            this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? h(Button, { id: 'startRound', text: "Start Round", clickHandler: this.goToCheckDealerForNaturalsState }) : '',
+            h(
+              'div',
+              null,
+              this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? h(
+                'span',
+                null,
+                h(Button, { id: 'playHit', text: "Hit", clickHandler: this.hit }),
+                h(Button, { id: 'playStand', text: "Stand", clickHandler: this.stand })
+              ) : '',
+              this.playerCanSplit() ? h(Button, { id: 'playSplit', text: "Split", clickHandler: this.split }) : '',
+              this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ? h(
+                'span',
+                null,
+                h(Button, { id: 'placeInsuranceBet', text: "Insurance", clickHandler: this.placeInsuranceBet }),
+                h(Button, { id: 'dontPlaceInsuranceBet', text: "No Insurance", clickHandler: this.dontPlaceInsuranceBet })
+              ) : ''
+            )
+          ),
+          h(
+            'div',
+            { 'class': 'block block--height-4' },
+            'MessageLog'
+          ),
+          h(
+            'div',
+            { 'class': 'block block--height-22' },
+            h(MessageLog, { messages: this.state.messages })
+          ),
+          h(
+            'div',
+            { 'class': 'block block--height-4' },
+            h(GameStateStatus, { gameState: this.state.gameState })
+          )
+        ),
+        h(Snack, { message: this.state.errorMessage })
+      ) : '',
+      '/* /> : \'\'}*/'
     );
 
     /*

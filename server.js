@@ -11,7 +11,7 @@ console.log(decks[argv.deck]);
 
 const gettingPlayersState = require('./gettingPlayersState.js');
 const gettingBetsState = require('./gettingBetsState.js');
-const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
+// const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 const resolveState = require('./resolveState.js');
 
 const PORT = argv.port || 4000;
@@ -178,6 +178,7 @@ io.on('connection', (socket) => {
 
   })
 
+  /*
   socket.on('changeState', (newState) => {
     if (newState === 'gettingBetsState') {
       if (currentGame.state.name === 'gettingPlayersState') {
@@ -193,6 +194,7 @@ io.on('connection', (socket) => {
       }
     }
   })
+  */
 
 })
 

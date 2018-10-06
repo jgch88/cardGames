@@ -1,10 +1,28 @@
 const Bet = require('./bet.js');
+//const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
+
+const TIMER_COUNTDOWN = 10;
 
 const gettingBetsState = {
   init(game) {
     this.game = game;
     this.game.addMessageToMessageLog(`[State]: Getting bets`);
     this.name = 'gettingBetsState';
+    this.game.countdown = TIMER_COUNTDOWN;
+    this.countdown = setInterval(() => {
+      this.game.countdown -= 1;
+      this.game.gameDataChanged();
+      // console.log(`${this.game.countdown}`);
+      if (this.game.countdown === 0) {
+        if (this.game.players.length !== 0) {
+          this.game.changeState(require('./checkDealerForNaturalsState.js'));
+          clearInterval(this.countdown);
+        } else {
+          this.game.countdown = TIMER_COUNTDOWN;
+          this.game.gameDataChanged();
+        }
+      }
+    }, 1000)
   },
   joinGame() {
     throw `Betting has started! Join the next round`;
