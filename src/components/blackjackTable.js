@@ -11,6 +11,7 @@ const Snack = require('./snack.js');
 const StartScreen = require('./startScreen.js');
 const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
 const GettingPlayersStateScreen = require('./gettingPlayersStateScreen.js');
+const GameTableScreen = require('./gameTableScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -236,7 +237,19 @@ class BlackjackTable extends Component {
           countdown={this.state.countdown}
           bets={this.state.bets}
         /> : ''}
-        {this.state.gameState === 'dealerNoBlackjackState' && (this.socket.id in this.state.players)? 
+        {(this.state.gameState === 'dealerNoBlackjackState' || this.state.gameState === 'gettingInsuranceBetsState') && (this.socket.id in this.state.players)? 
+        <GameTableScreen
+          bets={this.state.bets}
+          players={this.state.players}
+          socket={this.socket}
+          currentBet={this.state.currentBet}
+          dealerCards={this.state.dealerCards}
+
+        /> : ''}
+      </div>
+    )
+    
+    /*
       <div class="app">
         <div class="block">
         <div class="block block--height-4">
@@ -287,9 +300,8 @@ class BlackjackTable extends Component {
       <Snack message={this.state.errorMessage} />
       </div>
         :''}
-        /* /> : ''}*/
-      </div>
-    )
+    */
+
     
     /*
     return (

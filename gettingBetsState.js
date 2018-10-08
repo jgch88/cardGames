@@ -1,7 +1,7 @@
 const Bet = require('./bet.js');
 //const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 
-const TIMER_COUNTDOWN = 1000;
+const TIMER_COUNTDOWN = 5;
 
 const gettingBetsState = {
   init(game) {
@@ -9,14 +9,14 @@ const gettingBetsState = {
     this.game.addMessageToMessageLog(`[State]: Getting bets`);
     this.name = 'gettingBetsState';
     this.game.countdown = TIMER_COUNTDOWN;
-    this.countdown = setInterval(() => {
+    this.betCountdown = setInterval(() => {
       this.game.countdown -= 1;
       this.game.gameDataChanged();
       // console.log(`${this.game.countdown}`);
       if (this.game.countdown === 0) {
         if (this.game.players.length !== 0) {
           this.game.changeState(require('./checkDealerForNaturalsState.js'));
-          clearInterval(this.countdown);
+          clearInterval(this.betCountdown);
         } else {
           this.game.countdown = TIMER_COUNTDOWN;
           this.game.gameDataChanged();
