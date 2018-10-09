@@ -8,13 +8,11 @@ const gettingPlayersState = {
     this.game.addMessageToMessageLog(`[State]: Getting players`);
     this.name = 'gettingPlayersState';
     this.game.countdown = TIMER_COUNTDOWN;
-    this.countdown = setInterval(() => {
+    this.game.timer = setInterval(() => {
       this.game.countdown -= 1;
       this.game.gameDataChanged();
-      // console.log(`${this.game.countdown}`);
       if (this.game.countdown === 0) {
         if (this.game.players.length !== 0) {
-          clearInterval(this.countdown);
           this.game.changeState(require('./gettingBetsState.js'));
         } else {
           this.game.countdown = TIMER_COUNTDOWN;

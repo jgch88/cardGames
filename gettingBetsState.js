@@ -9,14 +9,12 @@ const gettingBetsState = {
     this.game.addMessageToMessageLog(`[State]: Getting bets`);
     this.name = 'gettingBetsState';
     this.game.countdown = TIMER_COUNTDOWN;
-    this.betCountdown = setInterval(() => {
+    this.game.timer = setInterval(() => {
       this.game.countdown -= 1;
       this.game.gameDataChanged();
-      // console.log(`${this.game.countdown}`);
       if (this.game.countdown === 0) {
         if (this.game.players.length !== 0) {
           this.game.changeState(require('./checkDealerForNaturalsState.js'));
-          clearInterval(this.betCountdown);
         } else {
           this.game.countdown = TIMER_COUNTDOWN;
           this.game.gameDataChanged();

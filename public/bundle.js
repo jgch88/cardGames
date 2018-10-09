@@ -1768,15 +1768,19 @@ const GameTableScreen = function GameTableScreen(props) {
     { "class": "block" },
     h("div", { "class": "block block--height-8" }),
     h(PlayerBetDisplay, { playerName: "Dealer", key: "Dealer", cards: props.dealerCards }),
-    Object.keys(props.bets).map((bet, index) => {
-      return h(PlayerBetDisplay, {
-        betAmount: props.bets[bet].betAmount,
-        isCurrentPlayer: props.players[props.socket.id] ? props.bets[bet].nickname === props.players[props.socket.id].nickname : ``,
-        isCurrentBet: props.currentBet === bet,
-        playerName: props.bets[bet].nickname,
-        key: index,
-        cards: props.bets[bet].cards });
-    }),
+    h(
+      "div",
+      { "class": "block__overflow" },
+      Object.keys(props.bets).map((bet, index) => {
+        return h(PlayerBetDisplay, {
+          betAmount: props.bets[bet].betAmount,
+          isCurrentPlayer: props.players[props.socket.id] ? props.bets[bet].nickname === props.players[props.socket.id].nickname : ``,
+          isCurrentBet: props.currentBet === bet,
+          playerName: props.bets[bet].nickname,
+          key: index,
+          cards: props.bets[bet].cards });
+      })
+    ),
     h("div", { "class": "block block--height-24" }),
     h("div", { "class": "block block--height-8" })
   );

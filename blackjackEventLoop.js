@@ -93,6 +93,7 @@ const Game = {
 
   changeState(newState) {
     console.log(`Changing state`);
+    clearInterval(this.timer);
     this.state = Object.create(newState);
     this.state.init(this);
     this.gameDataChanged();

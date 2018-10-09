@@ -19,15 +19,17 @@ const GameTableScreen = function GameTableScreen(props ){
       <div class="block block--height-8">
       </div>
         <PlayerBetDisplay playerName='Dealer' key='Dealer' cards={props.dealerCards} />
-      {Object.keys(props.bets).map((bet,index) => {
-        return <PlayerBetDisplay 
-          betAmount={props.bets[bet].betAmount} 
-          isCurrentPlayer={props.players[props.socket.id] ? props.bets[bet].nickname === props.players[props.socket.id].nickname : ``}
-          isCurrentBet={props.currentBet === bet} 
-          playerName={props.bets[bet].nickname} 
-          key={index} 
-          cards={props.bets[bet].cards} />
-      })}
+        <div class="block__overflow">
+        {Object.keys(props.bets).map((bet,index) => {
+          return <PlayerBetDisplay 
+            betAmount={props.bets[bet].betAmount} 
+            isCurrentPlayer={props.players[props.socket.id] ? props.bets[bet].nickname === props.players[props.socket.id].nickname : ``}
+            isCurrentBet={props.currentBet === bet} 
+            playerName={props.bets[bet].nickname} 
+            key={index} 
+            cards={props.bets[bet].cards} />
+        })}
+        </div>
       <div class="block block--height-24">
       </div>
       <div class="block block--height-8">
