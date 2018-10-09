@@ -247,6 +247,8 @@
 .block__card_container {
   /* display: block; */
   display: flex;
+  flex-wrap: wrap;
+  /* to prevent cards from squishing due to nowrap */
   overflow: auto;
   position: relative;
   text-align: center;
