@@ -1,9 +1,12 @@
 const gettingPlayersState = require('./gettingPlayersState.js');
 
+const TIMER_COUNTDOWN = 5;
+
 const resolveState = {
   init(game) {
     this.name = 'resolveState';
     this.game = game;
+    this.game.countdown = TIMER_COUNTDOWN;
     this.game.addMessageToMessageLog(`[State]: Resolving remaining bets`);
     this.game.dealer.hand.cards.forEach(card => {
       card.turnFaceUp();
@@ -19,10 +22,18 @@ const resolveState = {
     remainingBets.forEach(bet => {
       this.resolveBet(bet);
     });
-    this.game.addMessageToMessageLog(`[State]: All bets resolved! Round over.`);
-
-    this.cleanUp();
-    this.game.changeState(gettingPlayersState);
+    this.game.timer = setInterval(() => {
+      if (this.game.bets.length === 0) {
+        this.game.changeState(gettingPlayersState);
+      }
+      if (this.game.countdown === 0) {
+        this.game.addMessageToMessageLog(`[State]: All bets resolved! Round over.`);
+        this.cleanUp();
+        this.game.changeState(gettingPlayersState);
+      }
+      this.game.countdown -= 1;
+      this.game.gameDataChanged();
+    }, 1000);
   },
   joinGame() {
   },
