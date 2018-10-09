@@ -239,12 +239,15 @@ class BlackjackTable extends Component {
         /> : ''}
         {(this.state.gameState === 'dealerNoBlackjackState' || this.state.gameState === 'gettingInsuranceBetsState') && (this.socket.id in this.state.players)? 
         <GameTableScreen
+          playerName={this.state.players[this.socket.id].nickname} 
+          playerChips={this.state.chipsInHand[this.socket.id]}
           bets={this.state.bets}
           players={this.state.players}
           socket={this.socket}
           currentBet={this.state.currentBet}
           dealerCards={this.state.dealerCards}
-
+          playHit={this.hit}
+          playStand={this.stand}
         /> : ''}
       </div>
     )

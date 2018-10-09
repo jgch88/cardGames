@@ -53,6 +53,10 @@
   height: 15%;
 }
 
+.block.block--height-20 {
+  height: 20%;
+}
+
 .block.block--height-22 {
   height: 22%;
 }
@@ -79,6 +83,10 @@
 
 .block.block--height-75 {
   height: 75%;
+}
+
+.block.block--height-80 {
+  height: 80%;
 }
 
 .block.block--overflow-y {
@@ -123,6 +131,10 @@
 .block__text {
   width: 66%;
   margin: auto;
+}
+
+.block__text--green_bg {
+  background-color: hsl(125,25%,70%);
 }
 
 .block__text--border {

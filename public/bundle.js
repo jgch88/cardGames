@@ -257,12 +257,15 @@ class BlackjackTable extends Component {
         bets: this.state.bets
       }) : '',
       (this.state.gameState === 'dealerNoBlackjackState' || this.state.gameState === 'gettingInsuranceBetsState') && this.socket.id in this.state.players ? h(GameTableScreen, {
+        playerName: this.state.players[this.socket.id].nickname,
+        playerChips: this.state.chipsInHand[this.socket.id],
         bets: this.state.bets,
         players: this.state.players,
         socket: this.socket,
         currentBet: this.state.currentBet,
-        dealerCards: this.state.dealerCards
-
+        dealerCards: this.state.dealerCards,
+        playHit: this.hit,
+        playStand: this.stand
       }) : ''
     );
 
@@ -1756,21 +1759,18 @@ const PlayerBetDisplay = require('./playerBetDisplay.js');
 
 const GameTableScreen = function GameTableScreen(props) {
 
-  /*
-  playHit() {
-   }
-   playStand() {
-   }
-  */
-
   return h(
     "div",
     { "class": "block" },
     h("div", { "class": "block block--height-8" }),
-    h(PlayerBetDisplay, { playerName: "Dealer", key: "Dealer", cards: props.dealerCards }),
     h(
       "div",
-      { "class": "block__overflow" },
+      { "class": "block block--height-30" },
+      h(PlayerBetDisplay, { playerName: "Dealer", key: "Dealer", cards: props.dealerCards })
+    ),
+    h(
+      "div",
+      { "class": "block block--height-30" },
       Object.keys(props.bets).map((bet, index) => {
         return h(PlayerBetDisplay, {
           betAmount: props.bets[bet].betAmount,
@@ -1781,8 +1781,66 @@ const GameTableScreen = function GameTableScreen(props) {
           cards: props.bets[bet].cards });
       })
     ),
-    h("div", { "class": "block block--height-24" }),
-    h("div", { "class": "block block--height-8" })
+    h(
+      "div",
+      { "class": "block block--height-24" },
+      h(
+        "div",
+        { "class": "block__input" },
+        h(
+          "button",
+          {
+            "class": "block__button",
+            onClick: () => {
+              this.props.playHit();
+            }
+          },
+          "Hit"
+        ),
+        h(
+          "button",
+          {
+            "class": "block__button",
+            onClick: () => {
+              this.props.playStand();
+            }
+          },
+          "Stand"
+        )
+      )
+    ),
+    h(
+      "div",
+      { "class": "block block--height-8 block--rows block--theme-dark" },
+      h(
+        "div",
+        { "class": "block__row--width-33" },
+        h(
+          "div",
+          { "class": "block__text" },
+          this.props.playerName
+        )
+      ),
+      h(
+        "div",
+        { "class": "block__row--width-34" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "Chips: ",
+          this.props.playerChips
+        )
+      ),
+      h(
+        "div",
+        { "class": "block__row--width-33" },
+        h(
+          "div",
+          { "class": "block__text" },
+          "Room: game0"
+        )
+      )
+    )
   );
 };
 
@@ -2025,7 +2083,7 @@ const PlayerBetDisplay = function PlayerBetDisplay(props) {
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     'div',
-    { 'class': 'block block--height-30' },
+    { 'class': props.isCurrentBet ? "block block__text--green_bg" : "block" },
     h(PlayerBetDisplayName, { name: props.playerName }),
     h(PlayerBetDisplayCards, { cards: props.cards })
   )
@@ -2054,7 +2112,7 @@ const Card = require('./cardContainer.js');
 const PlayerBetDisplayCards = function Deck(props) {
   return h(
     "div",
-    { "class": "block block--height-75" },
+    { "class": "block block--height-80" },
     h(
       "div",
       { "class": "block__card_container" },
@@ -2077,7 +2135,7 @@ const { h, render, Component } = preact;
 const PlayerBetDisplayName = function Deck(props) {
   return h(
     "div",
-    { "class": "block block--height-25" },
+    { "class": "block block--height-20" },
     props.name
   );
 };

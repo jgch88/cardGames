@@ -4,7 +4,7 @@ const Card = require('./cardContainer.js');
 
 const PlayerBetDisplayCards = function Deck(props) {
   return (
-    <div class="block block--height-75">
+    <div class="block block--height-80">
       <div class="block__card_container">
       {props.cards.map(card => {
         return <Card

@@ -12,7 +12,7 @@ const PlayerBetDisplay = function PlayerBetDisplay(props) {
   }
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return (
-    <div class="block block--height-30">
+    <div class={props.isCurrentBet ? "block block__text--green_bg" : "block"}>
       <PlayerBetDisplayName name={props.playerName} />
       <PlayerBetDisplayCards cards={props.cards} />
     </div>
