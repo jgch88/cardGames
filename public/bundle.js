@@ -1771,15 +1771,19 @@ const GameTableScreen = function GameTableScreen(props) {
     h(
       "div",
       { "class": "block block--height-30" },
-      Object.keys(props.bets).map((bet, index) => {
-        return h(PlayerBetDisplay, {
-          betAmount: props.bets[bet].betAmount,
-          isCurrentPlayer: props.players[props.socket.id] ? props.bets[bet].nickname === props.players[props.socket.id].nickname : ``,
-          isCurrentBet: props.currentBet === bet,
-          playerName: props.bets[bet].nickname,
-          key: index,
-          cards: props.bets[bet].cards });
-      })
+      h(
+        "div",
+        { "class": "block block--overflow-y" },
+        Object.keys(props.bets).map((bet, index) => {
+          return h(PlayerBetDisplay, {
+            betAmount: props.bets[bet].betAmount,
+            isCurrentPlayer: props.players[props.socket.id] ? props.bets[bet].nickname === props.players[props.socket.id].nickname : ``,
+            isCurrentBet: props.currentBet === bet,
+            playerName: props.bets[bet].nickname,
+            key: index,
+            cards: props.bets[bet].cards });
+        })
+      )
     ),
     h(
       "div",
@@ -2083,7 +2087,7 @@ const PlayerBetDisplay = function PlayerBetDisplay(props) {
   const playerNameText = props.cards.length > 0 ? props.playerName : "";
   return h(
     'div',
-    { 'class': props.isCurrentBet ? "block block__text--green_bg" : "block" },
+    { 'class': props.isCurrentBet ? "block block--height-100 block__text--green_bg" : "block block--height-100" },
     h(PlayerBetDisplayName, { name: props.playerName }),
     h(PlayerBetDisplayCards, { cards: props.cards })
   )
