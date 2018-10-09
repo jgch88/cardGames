@@ -245,7 +245,8 @@
 }
 
 .block__card_container {
-  display: block;
+  /* display: block; */
+  display: flex;
   overflow: auto;
   position: relative;
   text-align: center;
