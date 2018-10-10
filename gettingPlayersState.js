@@ -1,6 +1,6 @@
 const Player = require('./player.js');
 
-const TIMER_COUNTDOWN = 4;
+const TIMER_COUNTDOWN = 5;
 
 const gettingPlayersState = {
   init(game) {

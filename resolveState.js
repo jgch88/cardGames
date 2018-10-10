@@ -6,34 +6,36 @@ const resolveState = {
   init(game) {
     this.name = 'resolveState';
     this.game = game;
-    this.game.countdown = TIMER_COUNTDOWN;
-    this.game.addMessageToMessageLog(`[State]: Resolving remaining bets`);
-    this.game.dealer.hand.cards.forEach(card => {
-      card.turnFaceUp();
-    });
-    this.game.addMessageToMessageLog(`[Dealer]: Revealing face down card!`);
-    // players with unresolved bets
-    // this thing is duplicated in dealerNoBlackjackState on 'hit'
-    // -> can we extract method and put it in Player?
-    const remainingBets = this.game.bets.filter(bet => !bet.resolved);
-    if (remainingBets.length > 0) {
-      this.dealerPlays();
+    if (this.game.bets.length === 0) {
+      this.cleanUp();
+      this.game.changeState(gettingPlayersState);
+    } else {
+      this.game.countdown = TIMER_COUNTDOWN;
+      this.game.addMessageToMessageLog(`[State]: Resolving remaining bets`);
+      this.game.dealer.hand.cards.forEach(card => {
+        card.turnFaceUp();
+      });
+      this.game.addMessageToMessageLog(`[Dealer]: Revealing face down card!`);
+      // players with unresolved bets
+      // this thing is duplicated in dealerNoBlackjackState on 'hit'
+      // -> can we extract method and put it in Player?
+      const remainingBets = this.game.bets.filter(bet => !bet.resolved);
+      if (remainingBets.length > 0) {
+        this.dealerPlays();
+      }
+      remainingBets.forEach(bet => {
+        this.resolveBet(bet);
+      });
+      this.game.timer = setInterval(() => {
+        if (this.game.countdown === 0) {
+          this.game.addMessageToMessageLog(`[State]: All bets resolved! Round over.`);
+          this.cleanUp();
+          this.game.changeState(gettingPlayersState);
+        }
+        this.game.countdown -= 1;
+        this.game.gameDataChanged();
+      }, 1000);
     }
-    remainingBets.forEach(bet => {
-      this.resolveBet(bet);
-    });
-    this.game.timer = setInterval(() => {
-      if (this.game.bets.length === 0) {
-        this.game.changeState(gettingPlayersState);
-      }
-      if (this.game.countdown === 0) {
-        this.game.addMessageToMessageLog(`[State]: All bets resolved! Round over.`);
-        this.cleanUp();
-        this.game.changeState(gettingPlayersState);
-      }
-      this.game.countdown -= 1;
-      this.game.gameDataChanged();
-    }, 1000);
   },
   joinGame() {
   },
