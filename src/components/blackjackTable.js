@@ -242,6 +242,7 @@ class BlackjackTable extends Component {
           gameState={this.state.gameState}
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
+          countdown={this.state.countdown}
           bets={this.state.bets}
           players={this.state.players}
           socket={this.socket}

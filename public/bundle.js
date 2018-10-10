@@ -260,6 +260,7 @@ class BlackjackTable extends Component {
         gameState: this.state.gameState,
         playerName: this.state.players[this.socket.id].nickname,
         playerChips: this.state.chipsInHand[this.socket.id],
+        countdown: this.state.countdown,
         bets: this.state.bets,
         players: this.state.players,
         socket: this.socket,
@@ -1826,7 +1827,11 @@ const GameTableScreen = function GameTableScreen(props) {
           "Split"
         )
       )
-    ) : h("div", { "class": "block block--height-24" }),
+    ) : h(
+      "div",
+      { "class": "block block--height-24" },
+      props.currentBet ? `It is ${props.bets[props.currentBet].nickname}'s turn. Please wait...` : `Round over... next round in ${props.countdown}`
+    ),
     h(
       "div",
       { "class": "block block--height-8 block--rows block--theme-dark" },

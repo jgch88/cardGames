@@ -69,6 +69,11 @@ const GameTableScreen = function GameTableScreen(props) {
       </div>
       :
       <div class="block block--height-24">
+        {props.currentBet ?
+        `It is ${props.bets[props.currentBet].nickname}'s turn. Please wait...`
+        :
+        `Round over... next round in ${props.countdown}`
+        }
       </div>
       }
       <div class="block block--height-8 block--rows block--theme-dark">

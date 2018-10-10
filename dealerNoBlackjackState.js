@@ -45,11 +45,13 @@ const dealerNoBlackjackState = {
         this.game.addMessageToMessageLog(playerBurstsMessage);
         this.game.addMessageToMessageLog(this.game.currentBet.resolve('playerLoses', 1, this.game.dealer));
         this.game.currentBet = this.getNextBet();
+        this.game.gameDataChanged();
       } else if (this.game.currentBet.score === 21) {
         const playerBlackjackMessage = `[${this.game.currentBet.player.nickname}]: Blackjack!`;
         this.game.addMessageToMessageLog(playerBlackjackMessage);
         this.game.addMessageToMessageLog(this.game.currentBet.resolve('playerWins', 1, this.game.dealer));
         this.game.currentBet = this.getNextBet();
+        this.game.gameDataChanged();
       }
     } 
     if (move === 'stand') {
