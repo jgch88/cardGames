@@ -1955,17 +1955,20 @@ class GettingBetsStateScreen extends Component {
       h(
         "div",
         { "class": "block block--height-25" },
-        h("div", { "class": "block__text" }),
-        Object.keys(this.props.bets).map((bet, index) => {
-          return h(
-            "div",
-            null,
-            this.props.bets[bet].nickname,
-            " bet ",
-            this.props.bets[bet].betAmount,
-            " chips."
-          );
-        })
+        h(
+          "div",
+          { "class": "block block--overflow-y" },
+          Object.keys(this.props.bets).map((bet, index) => {
+            return h(
+              "div",
+              { "class": "block block--height-25" },
+              this.props.bets[bet].nickname,
+              " bet ",
+              this.props.bets[bet].betAmount,
+              " chips."
+            );
+          })
+        )
       ),
       h(
         "div",

@@ -60,13 +60,13 @@ class GettingBetsStateScreen extends Component {
           </div>
         </div>
         <div class="block block--height-25">
-          <div class="block__text">
+          <div class="block block--overflow-y">
+            {Object.keys(this.props.bets).map((bet, index) => {
+              return <div class="block block--height-25">
+                {this.props.bets[bet].nickname} bet {this.props.bets[bet].betAmount} chips.
+              </div>
+            })}
           </div>
-          {Object.keys(this.props.bets).map((bet, index) => {
-            return <div>
-              {this.props.bets[bet].nickname} bet {this.props.bets[bet].betAmount} chips.
-            </div>
-          })}
         </div>
         <div class="block block--height-8 block--rows block--theme-dark">
           <div class="block__row--width-33">
