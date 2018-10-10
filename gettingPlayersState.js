@@ -38,11 +38,14 @@ const gettingPlayersState = {
       throw `Please exchange at least 1 chip.`;
     }
 
+    if (this.game.players.length === 0) {
+      this._startTimer();
+    }
+
     const player = Object.create(Player);
     player.init(playerName, chips);
     game.players.push(player);
     // this.game.getPlayerChipsInHand();
-    this._startTimer();
 
     this.game.addMessageToMessageLog(`[${player.nickname}]: Joined with ${chips} chips`);
   },
