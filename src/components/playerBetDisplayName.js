@@ -3,10 +3,32 @@ const { h, render, Component } = preact;
 
 const PlayerBetDisplayName = function Deck(props) {
   return (
-    <div class="block block--height-20">
-      <div class={props.isCurrentPlayer ? "block__text--bold" : ""}>
-        {props.name}
-      </div>
+    <div>
+      {props.isCurrentPlayer ? 
+      <div class="block block--height-20 block--rows block__text--bold">
+        <div class="block__row--width-50">
+          {props.name}
+        </div>
+        {props.betAmount ?
+        <div class="block__row--width-50">
+          Your bet: {props.betAmount}
+        </div> :
+        <div class="block__row--width-50">
+        </div>
+        }
+      </div> :
+      <div class="block block--height-20 block--rows">
+        <div class="block__row--width-50">
+          {props.name}
+        </div>
+        {props.betAmount ?
+        <div class="block__row--width-50">
+          Their bet: {props.betAmount}
+        </div> :
+        <div class="block__row--width-50">
+        </div>
+        }
+      </div>}
     </div>
   )
 }

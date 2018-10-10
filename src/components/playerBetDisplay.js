@@ -15,6 +15,7 @@ const PlayerBetDisplay = function PlayerBetDisplay(props) {
     <div class={props.isCurrentBet ? "block block--height-100 block__text--green_bg" : "block block--height-100"}>
       <PlayerBetDisplayName 
         name={props.playerName} 
+        betAmount={props.betAmount}
         isCurrentPlayer={props.isCurrentPlayer} />
       <PlayerBetDisplayCards cards={props.cards} />
     </div>

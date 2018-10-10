@@ -2090,6 +2090,7 @@ const PlayerBetDisplay = function PlayerBetDisplay(props) {
     { 'class': props.isCurrentBet ? "block block--height-100 block__text--green_bg" : "block block--height-100" },
     h(PlayerBetDisplayName, {
       name: props.playerName,
+      betAmount: props.betAmount,
       isCurrentPlayer: props.isCurrentPlayer }),
     h(PlayerBetDisplayCards, { cards: props.cards })
   )
@@ -2141,11 +2142,35 @@ const { h, render, Component } = preact;
 const PlayerBetDisplayName = function Deck(props) {
   return h(
     "div",
-    { "class": "block block--height-20" },
-    h(
+    null,
+    props.isCurrentPlayer ? h(
       "div",
-      { "class": props.isCurrentPlayer ? "block__text--bold" : "" },
-      props.name
+      { "class": "block block--height-20 block--rows block__text--bold" },
+      h(
+        "div",
+        { "class": "block__row--width-50" },
+        props.name
+      ),
+      props.betAmount ? h(
+        "div",
+        { "class": "block__row--width-50" },
+        "Your bet: ",
+        props.betAmount
+      ) : h("div", { "class": "block__row--width-50" })
+    ) : h(
+      "div",
+      { "class": "block block--height-20 block--rows" },
+      h(
+        "div",
+        { "class": "block__row--width-50" },
+        props.name
+      ),
+      props.betAmount ? h(
+        "div",
+        { "class": "block__row--width-50" },
+        "Their bet: ",
+        props.betAmount
+      ) : h("div", { "class": "block__row--width-50" })
     )
   );
 };

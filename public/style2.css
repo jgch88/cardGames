@@ -125,6 +125,14 @@
   justify-content: center;
 }
 
+.block__row--width-50 {
+  width: 50%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .block__text {
   width: 66%;
   margin: auto;
