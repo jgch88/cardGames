@@ -2088,7 +2088,9 @@ const PlayerBetDisplay = function PlayerBetDisplay(props) {
   return h(
     'div',
     { 'class': props.isCurrentBet ? "block block--height-100 block__text--green_bg" : "block block--height-100" },
-    h(PlayerBetDisplayName, { name: props.playerName }),
+    h(PlayerBetDisplayName, {
+      name: props.playerName,
+      isCurrentPlayer: props.isCurrentPlayer }),
     h(PlayerBetDisplayCards, { cards: props.cards })
   )
   /*
@@ -2140,7 +2142,11 @@ const PlayerBetDisplayName = function Deck(props) {
   return h(
     "div",
     { "class": "block block--height-20" },
-    props.name
+    h(
+      "div",
+      { "class": props.isCurrentPlayer ? "block__text--bold" : "" },
+      props.name
+    )
   );
 };
 

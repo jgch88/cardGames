@@ -4,7 +4,9 @@ const { h, render, Component } = preact;
 const PlayerBetDisplayName = function Deck(props) {
   return (
     <div class="block block--height-20">
-      {props.name}
+      <div class={props.isCurrentPlayer ? "block__text--bold" : ""}>
+        {props.name}
+      </div>
     </div>
   )
 }

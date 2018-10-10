@@ -134,6 +134,10 @@
   background-color: hsl(125,25%,86%);
 }
 
+.block__text--bold {
+  font-weight: bold;
+}
+
 .block__text--border {
   border: 0.1rem solid hsl(125,25%,20%);
 }
