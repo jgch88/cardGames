@@ -264,41 +264,19 @@ class BlackjackTable extends Component {
         socket: this.socket,
         currentBet: this.state.currentBet,
         dealerCards: this.state.dealerCards,
+        isPlayersTurn: this.isPlayersTurn(),
+        playerCanSplit: this.playerCanSplit(),
         playHit: this.hit,
-        playStand: this.stand
-      }) : ''
+        playStand: this.stand,
+        playSplit: this.split
+      }) : '',
+      h(Snack, { message: this.state.errorMessage })
     );
 
     /*
       <div class="app">
         <div class="block">
-        <div class="block block--height-4">
-          <PlayerStatus playerName={this.state.players[this.socket.id] ? this.state.players[this.socket.id].nickname : this.socket.id} gameState={this.state} socketId={this.socket.id}/>
-        </div>
-        <div class="block block--height-50">
-          <Deck playerName='Dealer' key='Dealer' cards={this.state.dealerCards} />
-          <div class="block block--overflow" id="playerHands">
-          {Object.keys(this.state.bets).map((bet, index) => {
-            return <Deck 
-              betAmount={this.state.bets[bet].betAmount} 
-              isCurrentPlayer={this.state.players[this.socket.id] ? this.state.bets[bet].nickname === this.state.players[this.socket.id].nickname : ``}
-              isCurrentBet={this.state.currentBet === bet} 
-              playerName={this.state.bets[bet].nickname} 
-              key={index} 
-              cards={this.state.bets[bet].cards} />
-          })}
-          </div>
-        </div>
           <div class="block block--rows block--height-8 actions">
-            {this.state.gameState === 'gettingPlayersState' && !(this.playerHasJoined()) ? 
-            <Button text={"Join Game"} id={"joinGame"} clickHandler={this.joinGame}/> : ''}
-            {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.chipsInHand) ? 
-            <span><Button id="changeName" text={"Change name"} clickHandler={this.changeNickname}/><Button id="goToBettingState" text={"Next"} clickHandler={this.goToBettingState}/></span> : ''}
-            {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() ? 
-            <Button id="placeBet" text={"Place Bet"} clickHandler={this.placeBet}/> : ''}
-            {this.state.gameState === 'gettingBetsState' && this.playerHasJoined() && this.playerHasBet() ? 
-            <Button id="startRound" text={"Start Round"} clickHandler={this.goToCheckDealerForNaturalsState}/> : ''}
-            <div>
             {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
               <span><Button id="playHit" text={"Hit"} clickHandler={this.hit}/>
               <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
@@ -1785,7 +1763,7 @@ const GameTableScreen = function GameTableScreen(props) {
         })
       )
     ),
-    h(
+    props.isPlayersTurn ? h(
       "div",
       { "class": "block block--height-24" },
       h(
@@ -1810,9 +1788,19 @@ const GameTableScreen = function GameTableScreen(props) {
             }
           },
           "Stand"
+        ),
+        props.playerCanSplit && h(
+          "button",
+          {
+            "class": "block__button",
+            onClick: () => {
+              this.props.playSplit();
+            }
+          },
+          "Split"
         )
       )
-    ),
+    ) : h("div", { "class": "block block--height-24" }),
     h(
       "div",
       { "class": "block block--height-8 block--rows block--theme-dark" },

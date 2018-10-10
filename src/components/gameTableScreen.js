@@ -24,6 +24,7 @@ const GameTableScreen = function GameTableScreen(props) {
       })}
         </div>
       </div>
+      {props.isPlayersTurn ?
       <div class="block block--height-24">
         <div class="block__input">
           <button 
@@ -38,8 +39,19 @@ const GameTableScreen = function GameTableScreen(props) {
           >
           Stand
           </button>
+          {props.playerCanSplit &&
+          <button 
+            class="block__button"
+            onClick={() => {this.props.playSplit()}}
+          >
+          Split
+          </button>
+          }
         </div>
       </div>
+      :
+      <div class="block block--height-24">
+      </div>}
       <div class="block block--height-8 block--rows block--theme-dark">
         <div class="block__row--width-33">
           <div class="block__text">
