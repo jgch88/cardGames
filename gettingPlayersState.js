@@ -8,6 +8,12 @@ const gettingPlayersState = {
     this.game.addMessageToMessageLog(`[State]: Getting players`);
     this.name = 'gettingPlayersState';
     this.game.countdown = TIMER_COUNTDOWN;
+
+    if (this.game.players.length > 0) {
+      this._startTimer();
+    }
+  },
+  _startTimer() {
     this.game.timer = setInterval(() => {
       this.game.countdown -= 1;
       this.game.gameDataChanged();
@@ -36,7 +42,7 @@ const gettingPlayersState = {
     player.init(playerName, chips);
     game.players.push(player);
     // this.game.getPlayerChipsInHand();
-
+    this._startTimer();
 
     this.game.addMessageToMessageLog(`[${player.nickname}]: Joined with ${chips} chips`);
   },
