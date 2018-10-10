@@ -50,6 +50,8 @@ const gettingInsuranceBetsState = {
   placeInsuranceBet(playerName, amount, game) {
     const player = this.game.players.find(player => player.name === playerName);
     console.log(`[${playerName}]: Placed insurance bet ${amount} chips`);
+    // this is only returning one bet? the first bet, not all bets?
+    // not clear on whether we should allow player to place multiple insurance bets for each bet
     const bet = this.game.bets.find(bet => bet.player.name === playerName);
     if (!bet) {
       throw `${playerName} did not place a bet!`;
@@ -82,7 +84,8 @@ const gettingInsuranceBetsState = {
     });
     */
 
-    const timerDuration = this.game.timer;
+    // const timerDuration = this.game.timer;
+    const timerDuration = 10000;
     console.log(`Waiting ${timerDuration}ms for insurance bets to be placed.`);
     const timerPromise = new Promise((resolve) => {
       setTimeout(() => {

@@ -239,6 +239,7 @@ class BlackjackTable extends Component {
         /> : ''}
         {(this.state.gameState === 'dealerNoBlackjackState' || this.state.gameState === 'gettingInsuranceBetsState' || this.state.gameState === 'resolveState') && (this.socket.id in this.state.players)? 
         <GameTableScreen
+          gameState={this.state.gameState}
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
           bets={this.state.bets}
@@ -251,6 +252,8 @@ class BlackjackTable extends Component {
           playHit={this.hit}
           playStand={this.stand}
           playSplit={this.split}
+          placeInsuranceBet={this.placeInsuranceBet}
+          dontPlaceInsuranceBet={this.dontPlaceInsuranceBet}
         /> : ''}
         <Snack message={this.state.errorMessage} />
       </div>
@@ -260,11 +263,6 @@ class BlackjackTable extends Component {
       <div class="app">
         <div class="block">
           <div class="block block--rows block--height-8 actions">
-            {this.state.gameState === 'dealerNoBlackjackState' && this.isPlayersTurn() ? 
-              <span><Button id="playHit" text={"Hit"} clickHandler={this.hit}/>
-              <Button id="playStand" text={"Stand"} clickHandler={this.stand}/></span> : ''}
-            {this.playerCanSplit() ?
-              <Button id="playSplit" text={"Split"} clickHandler={this.split}/> : ''}
             {this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ?
               <span><Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
               <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}

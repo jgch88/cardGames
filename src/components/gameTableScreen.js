@@ -24,6 +24,24 @@ const GameTableScreen = function GameTableScreen(props) {
       })}
         </div>
       </div>
+      {props.gameState === 'gettingInsuranceBetsState' &&
+      <div class="block block--height-24">
+        <div class="block__input">
+          <button 
+            class="block__button"
+            onClick={() => {this.props.placeInsuranceBet()}}
+          >
+          Buy Insurance
+          </button>
+          <button 
+            class="block__button"
+            onClick={() => {this.props.dontPlaceInsuranceBet()}}
+          >
+          Don't Buy Insurance
+          </button>
+        </div>
+      </div>
+      }
       {props.isPlayersTurn ?
       <div class="block block--height-24">
         <div class="block__input">
@@ -51,7 +69,8 @@ const GameTableScreen = function GameTableScreen(props) {
       </div>
       :
       <div class="block block--height-24">
-      </div>}
+      </div>
+      }
       <div class="block block--height-8 block--rows block--theme-dark">
         <div class="block__row--width-33">
           <div class="block__text">
