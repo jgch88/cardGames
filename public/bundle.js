@@ -1960,10 +1960,10 @@ class GettingBetsStateScreen extends Component {
           return h(
             "div",
             null,
-            "Bet ",
-            index + 1,
-            ": ",
-            this.props.bets[bet].betAmount
+            this.props.bets[bet].nickname,
+            " bet ",
+            this.props.bets[bet].betAmount,
+            " chips."
           );
         })
       ),
