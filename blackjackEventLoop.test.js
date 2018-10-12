@@ -1175,7 +1175,10 @@ describe('feature: players can place insurance bets', () => {
 
     console.log(`checking`);
     expect(player.chips).toBe(90);
-    expect(game.state.name).toBe(`gettingPlayersState`);
+
+    jest.runOnlyPendingTimers();
+    await Promise.resolve().then().then();
+    expect(game.state.name).toBe(`resolveState`);
   });
 
   test(`player places insurance bet, dealer does not have blackjack`, async () => {
