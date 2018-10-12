@@ -44,7 +44,7 @@ class StartScreen extends Component {
         </div>
         <div class="block block--height-30">
           <div class="block__input">
-            <button class="block__button" onClick={() => this.props.joinAndChangeNickname(this.state.nickname)}>
+            <button id="joinGame" class="block__button" onClick={() => this.props.joinAndChangeNickname(this.state.nickname)}>
               I want to play!
             </button>
           </div>

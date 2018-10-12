@@ -2052,7 +2052,7 @@ const GettingPlayersStateScreen = function GettingPlayersStateScreen(props) {
         { "class": "block__row--width-34" },
         h(
           "div",
-          { "class": "block__text" },
+          { id: "chipsInHand", "class": "block__text" },
           "Chips: ",
           this.props.playerChips
         )
@@ -2313,7 +2313,7 @@ class StartScreen extends Component {
           { "class": "block__input" },
           h(
             "button",
-            { "class": "block__button", onClick: () => this.props.joinAndChangeNickname(this.state.nickname) },
+            { id: "joinGame", "class": "block__button", onClick: () => this.props.joinAndChangeNickname(this.state.nickname) },
             "I want to play!"
           )
         )

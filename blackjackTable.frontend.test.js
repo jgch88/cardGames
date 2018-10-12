@@ -66,7 +66,8 @@ test('loads blackjack page', async () => {
 test('player can join the game with 1000 chips', async () => {
   await initServer();
   await pages[0].goto(APP);
-  dialogValue = "1000"; // string value expected by puppeteer
+  // dialogValue = "1000"; // string value expected by puppeteer
+  // player no longer gets to choose how many chips he starts with.
   await pages[0].$eval('#joinGame', el => el.click());
   const chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
   expect(chipsInHand).toBe('Chips: 1000');

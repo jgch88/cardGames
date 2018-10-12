@@ -23,7 +23,7 @@ const GettingPlayersStateScreen = function GettingPlayersStateScreen(props) {
           </div>
         </div>
         <div class="block__row--width-34">
-          <div class="block__text">
+          <div id="chipsInHand" class="block__text">
             Chips: {this.props.playerChips}
           </div>
         </div>
