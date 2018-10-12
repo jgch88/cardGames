@@ -372,16 +372,21 @@ describe('feature: players splitting hands', () => {
     await pages[0].waitForSelector('#joinGame');
     await pages[0].$eval('#joinGame', el => el.click());
 
-    await pages[0].$eval('#goToBettingState', el => el.click());
-    dialogValue = "10"
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 5100);
+    });
+
     await pages[0].$eval('#placeBet', el => el.click());
 
-    await pages[0].$eval('#startRound', el => el.click());
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 5100);
+    });
+
     await expect(pages[0].waitForSelector('#playSplit', {timeout:200})).rejects.toThrow('timeout');
     killServer();
-  });
+  }, 15000);
 
-  test(`bets visually split into two once split button is pressed`, async () => {
+  test.only(`bets visually split into two once split button is pressed`, async () => {
     await initServer(`playerSplits`);
     await pages[0].goto(APP);
 
