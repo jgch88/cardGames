@@ -472,25 +472,27 @@ describe('feature: players splitting hands', () => {
 
 describe('feature: players can place insurance bets', () => {
 
-  test.only(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
+  test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
     await pages[0].goto(APP);
 
-    dialogValue = "100"
     await pages[0].waitForSelector('#joinGame');
     await pages[0].$eval('#joinGame', el => el.click());
 
-    await pages[0].$eval('#goToBettingState', el => el.click());
-    dialogValue = "10"
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 5100);
+    });
+
     await pages[0].$eval('#placeBet', el => el.click());
 
-    await pages[0].$eval('#startRound', el => el.click());
     await new Promise((resolve, reject) => {
-      setTimeout(resolve, 200);
-    })
-    const gameState = await pages[0].$eval('.gameStateStatus', el => el.innerHTML);
-    expect(gameState).toContain('Getting Insurance Bets')
+      setTimeout(resolve, 5100);
+    });
+
     dialogValue = "5"
+    let messages = await pages[0].$eval('#messageLog', el => el.innerHTML);
+    expect(messages).toMatch(/Buy insurance/);
+
     await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
     await pages[0].$eval('#placeInsuranceBet', el => el.click());
     let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
@@ -506,12 +508,12 @@ describe('feature: players can place insurance bets', () => {
     })
     */
 
-    expect(chipsInHand).toBe('Chips: 100');
+    expect(chipsInHand).toBe('Chips: 1000');
 
     killServer();
-  },6000);
+  }, 15000);
 
-  test(`insurance buttons appear when dealer gets first card ace, no other buttons`, async () => {
+  test.only(`insurance buttons appear when dealer gets first card ace, no other buttons`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
     await pages[0].goto(APP);
 
