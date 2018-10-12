@@ -12,7 +12,7 @@ const GameTableScreen = function GameTableScreen(props) {
         <PlayerBetDisplay playerName='Dealer' key='Dealer' cards={props.dealerCards} />
       </div>
       <div class="block block--height-30">
-        <div class="block block--overflow-y">
+        <div id="playerHands" class="block block--overflow-y">
       {Object.keys(props.bets).map((bet,index) => {
         return <PlayerBetDisplay 
           betAmount={props.bets[bet].betAmount} 

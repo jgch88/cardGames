@@ -386,19 +386,23 @@ describe('feature: players splitting hands', () => {
     killServer();
   }, 15000);
 
-  test.only(`bets visually split into two once split button is pressed`, async () => {
+  test(`bets visually split into two once split button is pressed`, async () => {
     await initServer(`playerSplits`);
     await pages[0].goto(APP);
 
-    dialogValue = "100"
     await pages[0].waitForSelector('#joinGame');
     await pages[0].$eval('#joinGame', el => el.click());
 
-    await pages[0].$eval('#goToBettingState', el => el.click());
-    dialogValue = "10"
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 5100);
+    });
+
     await pages[0].$eval('#placeBet', el => el.click());
 
-    await pages[0].$eval('#startRound', el => el.click());
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 5100);
+    });
+
     await pages[0]
       .waitForSelector('#playSplit', {timeout:200})
       .then(async () =>  {
@@ -408,9 +412,9 @@ describe('feature: players splitting hands', () => {
     const numberOfBets = await pages[0].$eval('#playerHands', el => el.childElementCount);
     expect(numberOfBets).toBe(2);
     killServer();
-  });
+  }, 15000);
 
-  test(`when player splits with two aces, he automatically gets one card for each hand and stands`, async () => {
+  test.only(`when player splits with two aces, he automatically gets one card for each hand and stands`, async () => {
     await initServer(`playerSplitsAces`);
     await pages[0].goto(APP);
 

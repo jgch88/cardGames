@@ -1750,7 +1750,7 @@ const GameTableScreen = function GameTableScreen(props) {
       { "class": "block block--height-30" },
       h(
         "div",
-        { "class": "block block--overflow-y" },
+        { id: "playerHands", "class": "block block--overflow-y" },
         Object.keys(props.bets).map((bet, index) => {
           return h(PlayerBetDisplay, {
             betAmount: props.bets[bet].betAmount,
