@@ -1264,7 +1264,9 @@ describe('feature: players can place insurance bets', () => {
 
     console.log(`checking`);
     expect(player.chips).toBe(90);
+    jest.runOnlyPendingTimers();
     await Promise.resolve().then().then();
-    expect(game.state.name).toBe(`gettingPlayersState`);
+    expect(game.state.name).toBe(`resolveState`);
+    expect(player.chips).toBe(90);
   });
 });
