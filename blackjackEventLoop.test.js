@@ -1088,7 +1088,6 @@ describe('feature: players splitting hands', () => {
     expect(() => {
       game.play('player1', 'stand');
     }).toThrow(); // will either throw not player's turn, or throw waiting for players to join
-
     const player = game.players.find(player => player.name === 'player1');
     expect(player.chips).toBe(80);
   });

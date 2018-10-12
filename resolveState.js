@@ -46,6 +46,7 @@ const resolveState = {
   placeBet() {
   },
   play() {
+    throw `Waiting for the next round. Please be patient.`;
   },
   dealerPlays() {
     const dealer = this.game.dealer;
