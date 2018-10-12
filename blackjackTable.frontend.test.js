@@ -77,38 +77,64 @@ test('player can join the game with 1000 chips', async () => {
 test('dealer has blackjack, player no blackjack', async () => {
   await initServer(`dealerHasBlackjackDeck`);
   await pages[0].goto(APP);
-  dialogValue = "100"
   await pages[0].$eval('#joinGame', el => el.click());
   let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
-  expect(chipsInHand).toBe('Chips: 100');
-  await pages[0].$eval('#goToBettingState', el => el.click());
-  dialogValue = "10"
+  expect(chipsInHand).toBe('Chips: 1000');
+
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 6000);
+  });
+
+  // place bet with slider instead of dialog
+  await pages[0].$eval('#betSlider', el => {
+    el.value = 20
+    // needed to manually trigger the 'onChange' event
+    el.dispatchEvent(new Event('change'));
+  });
+  let betSliderValue = await pages[0].$eval('#betSliderValue', el => el.innerHTML);
+  expect(betSliderValue).toMatch(/20/);
+
   await pages[0].$eval('#placeBet', el => el.click());
   
   chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
-  expect(chipsInHand).toBe('Chips: 90');
-  await pages[0].$eval('#startRound', el => el.click());
-  await new Promise((resolve, reject) => {
-    // need to add this because of insurance bet feature
-    setTimeout(resolve, INSURANCE_PAUSE);
-  });
-  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
-  expect(messageLog).toContain('[Dealer]: Has a Blackjack');
-  killServer();
-}, 6000);
+  expect(chipsInHand).toBe('Chips: 980');
 
-test('player stands, game resolves', async () => {
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 6000);
+  });
+  // check round over message doesn't show
+  let messages = await pages[0].$eval('#messageLog', el => el.innerHTML);
+  expect(messages).toMatch(/Buy insurance/);
+  // don't buy insurance
+  await pages[0].$eval('#dontPlaceInsuranceBet', el => el.click());
+  // check round over message shows after dealer card opens
+  messages = await pages[0].$eval('#messageLog', el => el.innerHTML);
+  expect(messages).toMatch(/Round over/);
+  chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
+  expect(chipsInHand).toBe('Chips: 980');
+  killServer();
+}, 15000);
+
+test.only('player stands, game resolves', async () => {
   // non deterministic
   await initServer();
   await pages[0].goto(APP);
-  dialogValue = "100"
   await pages[0].$eval('#joinGame', el => el.click());
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 6000);
+  });
   const chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
-  expect(chipsInHand).toBe('Chips: 100');
-  await pages[0].$eval('#goToBettingState', el => el.click());
-  dialogValue = "10"
+  expect(chipsInHand).toBe('Chips: 1000');
+  // place bet with slider instead of dialog
+  let betSliderValue = await pages[0].$eval('#betSliderValue', el => el.innerHTML);
+  expect(betSliderValue).toMatch(/10/);
+
   await pages[0].$eval('#placeBet', el => el.click());
-  await pages[0].$eval('#startRound', el => el.click());
+
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 5000);
+  });
+
   try {
     // if dealer gets Ace, don't buy insurance
     await pages[0].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
@@ -118,6 +144,7 @@ test('player stands, game resolves', async () => {
   } catch(e) {
     console.log(e);
   }
+
   await pages[0]
     .waitForSelector('#playStand', {timeout:200})
     .then(async () =>  {
@@ -126,10 +153,10 @@ test('player stands, game resolves', async () => {
     .catch((e) => {
       console.log(e)
     });
-  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
-  expect(messageLog).toContain('All bets resolved!');
+  let messages = await pages[0].$eval('#messageLog', el => el.innerHTML);
+  expect(messages).toMatch(/Round over/);
   killServer();
-}, 7000);
+}, 15000);
 
 test('two players join, both players stand, game resolves', async () => {
   await initServer();

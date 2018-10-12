@@ -28,12 +28,14 @@ const GameTableScreen = function GameTableScreen(props) {
       <div class="block block--height-24">
         <div class="block__input">
           <button 
+            id="placeInsuranceBet"
             class="block__button"
             onClick={() => {this.props.placeInsuranceBet()}}
           >
           Buy Insurance
           </button>
           <button 
+            id="dontPlaceInsuranceBet"
             class="block__button"
             onClick={() => {this.props.dontPlaceInsuranceBet()}}
           >
@@ -46,12 +48,14 @@ const GameTableScreen = function GameTableScreen(props) {
       <div class="block block--height-24">
         <div class="block__input">
           <button 
+            id="playHit"
             class="block__button"
             onClick={() => {this.props.playHit()}}
           >
           Hit
           </button>
           <button 
+            id="playStand"
             class="block__button"
             onClick={() => {this.props.playStand()}}
           >
@@ -59,6 +63,7 @@ const GameTableScreen = function GameTableScreen(props) {
           </button>
           {props.playerCanSplit &&
           <button 
+            id="playSplit"
             class="block__button"
             onClick={() => {this.props.playSplit()}}
           >
@@ -68,10 +73,14 @@ const GameTableScreen = function GameTableScreen(props) {
         </div>
       </div>
       :
-      <div class="block block--height-24">
-        {props.currentBet ?
+      <div id="messageLog" class="block block--height-24">
+        {props.gameState === 'gettingInsuranceBetsState' &&
+        `Dealer has an Ace. Buy insurance?`
+        }
+        {props.currentBet && props.gameState !== 'gettingInsuranceBetsState' &&
         `It is ${props.bets[props.currentBet].nickname}'s turn. Please wait...`
-        :
+        }
+        {props.countdown > 0 &&
         `Round over... next round in ${props.countdown}`
         }
       </div>
@@ -83,7 +92,7 @@ const GameTableScreen = function GameTableScreen(props) {
           </div>
         </div>
         <div class="block__row--width-34">
-          <div class="block__text">
+          <div id="chipsInHand" class="block__text">
             Chips: {this.props.playerChips}
           </div>
         </div>

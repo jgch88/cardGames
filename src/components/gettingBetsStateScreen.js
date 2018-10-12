@@ -32,11 +32,12 @@ class GettingBetsStateScreen extends Component {
           </div>
         </div>
         <div class="block block--height-15">
-          <div class="block__text">
+          <div id="betSliderValue" class="block__text">
             Place your bet: {this.state.betSlider}
           </div>
           <div class="block__input">
             <input 
+              id="betSlider"
               class="block__slider"
               type="range"
               onChange={this.handleBetChange}
@@ -52,6 +53,7 @@ class GettingBetsStateScreen extends Component {
         <div class="block block--height-12">
           <div class="block__text">
             <button 
+              id="placeBet"
               class="block__button"
               onClick={() => this.props.placeBet(Number(this.state.betSlider))}
             >
@@ -75,7 +77,10 @@ class GettingBetsStateScreen extends Component {
             </div>
           </div>
           <div class="block__row--width-34">
-            <div class="block__text">
+            <div 
+              id="chipsInHand"
+              class="block__text"
+            >
               Chips: {this.props.playerChips}
             </div>
           </div>

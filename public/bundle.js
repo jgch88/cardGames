@@ -1771,6 +1771,7 @@ const GameTableScreen = function GameTableScreen(props) {
         h(
           "button",
           {
+            id: "placeInsuranceBet",
             "class": "block__button",
             onClick: () => {
               this.props.placeInsuranceBet();
@@ -1781,6 +1782,7 @@ const GameTableScreen = function GameTableScreen(props) {
         h(
           "button",
           {
+            id: "dontPlaceInsuranceBet",
             "class": "block__button",
             onClick: () => {
               this.props.dontPlaceInsuranceBet();
@@ -1799,6 +1801,7 @@ const GameTableScreen = function GameTableScreen(props) {
         h(
           "button",
           {
+            id: "playHit",
             "class": "block__button",
             onClick: () => {
               this.props.playHit();
@@ -1809,6 +1812,7 @@ const GameTableScreen = function GameTableScreen(props) {
         h(
           "button",
           {
+            id: "playStand",
             "class": "block__button",
             onClick: () => {
               this.props.playStand();
@@ -1819,6 +1823,7 @@ const GameTableScreen = function GameTableScreen(props) {
         props.playerCanSplit && h(
           "button",
           {
+            id: "playSplit",
             "class": "block__button",
             onClick: () => {
               this.props.playSplit();
@@ -1829,8 +1834,10 @@ const GameTableScreen = function GameTableScreen(props) {
       )
     ) : h(
       "div",
-      { "class": "block block--height-24" },
-      props.currentBet ? `It is ${props.bets[props.currentBet].nickname}'s turn. Please wait...` : `Round over... next round in ${props.countdown}`
+      { id: "messageLog", "class": "block block--height-24" },
+      props.gameState === 'gettingInsuranceBetsState' && `Dealer has an Ace. Buy insurance?`,
+      props.currentBet && props.gameState !== 'gettingInsuranceBetsState' && `It is ${props.bets[props.currentBet].nickname}'s turn. Please wait...`,
+      props.countdown > 0 && `Round over... next round in ${props.countdown}`
     ),
     h(
       "div",
@@ -1849,7 +1856,7 @@ const GameTableScreen = function GameTableScreen(props) {
         { "class": "block__row--width-34" },
         h(
           "div",
-          { "class": "block__text" },
+          { id: "chipsInHand", "class": "block__text" },
           "Chips: ",
           this.props.playerChips
         )
@@ -1917,7 +1924,7 @@ class GettingBetsStateScreen extends Component {
         { "class": "block block--height-15" },
         h(
           "div",
-          { "class": "block__text" },
+          { id: "betSliderValue", "class": "block__text" },
           "Place your bet: ",
           this.state.betSlider
         ),
@@ -1925,6 +1932,7 @@ class GettingBetsStateScreen extends Component {
           "div",
           { "class": "block__input" },
           h("input", {
+            id: "betSlider",
             "class": "block__slider",
             type: "range",
             onChange: this.handleBetChange,
@@ -1945,6 +1953,7 @@ class GettingBetsStateScreen extends Component {
           h(
             "button",
             {
+              id: "placeBet",
               "class": "block__button",
               onClick: () => this.props.placeBet(Number(this.state.betSlider))
             },
@@ -1987,7 +1996,10 @@ class GettingBetsStateScreen extends Component {
           { "class": "block__row--width-34" },
           h(
             "div",
-            { "class": "block__text" },
+            {
+              id: "chipsInHand",
+              "class": "block__text"
+            },
             "Chips: ",
             this.props.playerChips
           )
