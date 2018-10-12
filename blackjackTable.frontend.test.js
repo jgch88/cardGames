@@ -115,7 +115,7 @@ test('dealer has blackjack, player no blackjack', async () => {
   killServer();
 }, 15000);
 
-test.only('player stands, game resolves', async () => {
+test('player stands, game resolves', async () => {
   // non deterministic
   await initServer();
   await pages[0].goto(APP);
@@ -163,24 +163,30 @@ test('two players join, both players stand, game resolves', async () => {
   await pages[0].goto(APP);
   await pages[1].goto(APP);
 
-  dialogValue = "100"
   await pages[0].waitForSelector('#joinGame');
   await pages[0].$eval('#joinGame', el => el.click());
-  dialogValue = "200"
   await pages[1].waitForSelector('#joinGame');
   await pages[1].$eval('#joinGame', el => el.click());
   let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
-  expect(chipsInHand).toBe('Chips: 100');
+  expect(chipsInHand).toBe('Chips: 1000');
   chipsInHand = await pages[1].$eval('#chipsInHand', el => el.innerHTML);
-  expect(chipsInHand).toBe('Chips: 200');
+  expect(chipsInHand).toBe('Chips: 1000');
 
-  await pages[0].$eval('#goToBettingState', el => el.click());
-  dialogValue = "10"
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 5000);
+  });
+
   await pages[0].$eval('#placeBet', el => el.click());
-  dialogValue = "20"
+  await pages[1].$eval('#betSlider', el => {
+    el.value = 20
+    // needed to manually trigger the 'onChange' event
+    el.dispatchEvent(new Event('change'));
+  });
   await pages[1].$eval('#placeBet', el => el.click());
 
-  await pages[0].$eval('#startRound', el => el.click());
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 5000);
+  });
   // make them press "no insurance" if possible
   try {
     // if dealer gets Ace, don't buy insurance
@@ -207,10 +213,10 @@ test('two players join, both players stand, game resolves', async () => {
     .catch((e) => {
       console.log(e)
     });
-  const messageLog = await pages[0].$eval('#messageLog', el => el.innerHTML);
-  expect(messageLog).toContain('All bets resolved!');
+  let messages = await pages[0].$eval('#messageLog', el => el.innerHTML);
+  expect(messages).toMatch(/Round over/);
   killServer();
-}, 7000);
+}, 15000);
 
 
 test(`dealer bursts after hitting, player doesn't burst`, async () => {
