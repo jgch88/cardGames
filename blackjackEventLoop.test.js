@@ -1236,7 +1236,7 @@ describe('feature: players can place insurance bets', () => {
     console.log(`checking`);
     expect(player.chips).toBe(90);
     await Promise.resolve().then().then();
-    expect(game.state.name).toBe(`gettingPlayersState`);
+    expect(game.state.name).toBe(`resolveState`);
   });
 
   test(`player makes invalid insurance bets before skipping bets`, async () => {
