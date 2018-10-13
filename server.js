@@ -61,10 +61,12 @@ io.on('connection', (socket) => {
     
     if (games.find(game => game.roomName === roomName)) {
       changeCurrentGame(roomName);
+      console.log(`${roomName} found, joining room instead of creating room`, roomName);
     } else {
       let newGame = Object.create(BlackjackGame);
       newGame.init(io, roomName, TIMER);
       games.push(newGame);
+      console.log(`${roomName} not found, creating room`)
       changeCurrentGame(roomName);
     }
     currentGame.gameDataChanged();

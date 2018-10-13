@@ -37,35 +37,6 @@ class BlackjackTable extends Component {
   componentDidMount() {
     this.socket.emit('newSocketReady');
     console.log('ready');
-    console.log(this.state.chipsInHand);
-    this.socket.on('render', ({ dealerCards, players }) => {
-      console.log(`got socket stuff`);
-      console.log(`got players ${JSON.stringify(players)}`);
-      this.setState({
-        dealerCards,
-        players,
-      });
-    });
-    this.socket.on('message', ({ messages }) => {
-      this.setState({
-        messages,
-      })
-    });
-    this.socket.on('currentChipsInHand', ({chipsInHand}) => {
-      // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
-      // console.log(newChipsInHand);
-      // build new state in blackjackEventLoop.
-      this.setState({
-        chipsInHand,
-      })
-    });
-    this.socket.on('currentBet', (betId) => {
-      this.setState({
-        currentBet: betId,
-      })
-      console.log(`betId`, betId);
-    });
-    // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
     this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts, countdown, roomName }) => {
       this.setState({
         gameState,
@@ -166,11 +137,11 @@ class BlackjackTable extends Component {
 
     };
     this.createRoom = () => {
-      const roomName = window.prompt("Which room would you like to create?", 123);
+      const roomName = window.prompt("Which room would you like to create?", `Game1`);
       this.socket.emit('createRoom', roomName);
     };
     this.joinRoom = () => {
-      const roomName = window.prompt("Which room would you like to join?", 123);
+      const roomName = window.prompt("Which room would you like to join?", `Game0`);
       this.socket.emit('joinRoom', roomName);
     };
   }
@@ -216,6 +187,7 @@ class BlackjackTable extends Component {
           playerChips={this.state.chipsInHand[this.socket.id]}
           countdown={this.state.countdown}
           roomName={this.state.roomName}
+          createRoom={this.createRoom}
         /> : ''}
         {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 

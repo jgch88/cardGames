@@ -256,6 +256,12 @@
   border:none;
 }
 
+.block__button--secondary {
+  background-color: hsl(125,25%,86%);
+  border: 0.1rem solid hsl(125,25%,86%);
+  color: #888;
+}
+
 .block__card_container {
   /* display: block; */
   display: flex;

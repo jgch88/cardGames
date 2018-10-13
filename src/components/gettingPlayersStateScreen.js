@@ -11,7 +11,19 @@ const GettingPlayersStateScreen = function GettingPlayersStateScreen(props) {
       </div>
       <div class="block block--height-40">
         <div class="block__text">
+          You are in room <strong>{this.props.roomName}</strong>.
+        </div>
+        <div class="block__text">
           Waiting for other players to join...
+        </div>
+        <div class="block__text">
+          <button 
+            id="joinRoom"
+            class="block__button block__button--secondary"
+            onClick={() => this.props.createRoom()}
+          >
+          Join another room
+          </button>
         </div>
       </div>
       <div class="block block--height-22">
