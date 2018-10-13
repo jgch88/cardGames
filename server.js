@@ -18,7 +18,7 @@ const PORT = argv.port || 4000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 const TIMER = argv.timer || 15000;
-let defaultRoomName = 'game0';
+let defaultRoomName = 'Game0';
 let game = Object.create(BlackjackGame);
 game.init(io, defaultRoomName, TIMER);
 if (decks[argv.deck]) {

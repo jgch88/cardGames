@@ -17,6 +17,7 @@ class MinifiedStateGenerator {
     currentState.bets = this.renderBets(); 
     currentState.currentBet = this.getCurrentBetId();
     currentState.countdown = this.getCountdown();
+    currentState.roomName = this.game.roomName;
     return currentState;
   }
 

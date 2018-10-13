@@ -28,6 +28,7 @@ class BlackjackTable extends Component {
       currentBet: '',
       mySocketId: '',
       countdown: '',
+      roomName: '',
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -58,30 +59,14 @@ class BlackjackTable extends Component {
         chipsInHand,
       })
     });
-    this.socket.on('betAmounts', (betAmounts) => {
-      this.setState({
-        betAmounts,
-      })
-      console.log(betAmounts);
-    });
     this.socket.on('currentBet', (betId) => {
       this.setState({
         currentBet: betId,
       })
       console.log(`betId`, betId);
     });
-    this.socket.on('currentInsuranceBet', ({insuranceBetAmounts}) => {
-      this.setState({
-        insuranceBetAmounts,
-      })
-    });
-    this.socket.on('gameState', ({ gameState }) => {
-      this.setState({
-        gameState,
-      })
-    });
     // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts, countdown }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts, countdown, roomName }) => {
       this.setState({
         gameState,
         messages,
@@ -93,6 +78,7 @@ class BlackjackTable extends Component {
         currentBet,
         insuranceBetAmounts,
         countdown,
+        roomName,
       });
       this.setState({
         mySocketId: this.socket.id,
@@ -108,6 +94,7 @@ class BlackjackTable extends Component {
         currentBet,
         insuranceBetAmounts,
         countdown,
+        roomName,
       });
     });
     this.socket.on('emitError', (message) => {
@@ -228,6 +215,7 @@ class BlackjackTable extends Component {
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
           countdown={this.state.countdown}
+          roomName={this.state.roomName}
         /> : ''}
         {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 
@@ -236,6 +224,7 @@ class BlackjackTable extends Component {
           placeBet={this.placeBet}
           countdown={this.state.countdown}
           bets={this.state.bets}
+          roomName={this.state.roomName}
         /> : ''}
         {(this.state.gameState === 'dealerNoBlackjackState' || this.state.gameState === 'gettingInsuranceBetsState' || this.state.gameState === 'resolveState') && (this.socket.id in this.state.players)? 
         <GameTableScreen
@@ -255,6 +244,7 @@ class BlackjackTable extends Component {
           playSplit={this.split}
           placeInsuranceBet={this.placeInsuranceBet}
           dontPlaceInsuranceBet={this.dontPlaceInsuranceBet}
+          roomName={this.state.roomName}
         /> : ''}
         <Snack message={this.state.errorMessage} />
       </div>

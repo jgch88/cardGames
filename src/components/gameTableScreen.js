@@ -98,7 +98,7 @@ const GameTableScreen = function GameTableScreen(props) {
         </div>
         <div class="block__row--width-33">
           <div class="block__text">
-            Room: game0
+            Room: {this.props.roomName}
           </div>
         </div>
       </div>
