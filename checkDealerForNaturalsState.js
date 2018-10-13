@@ -6,7 +6,7 @@ const checkDealerForNaturalsState = {
   init(game) {
     const greeting = `[State]: Dealing cards. Checking if dealer has natural.`;
     this.game = game;
-    this.game.sendMessageLogMessages(greeting);
+    this.game.addMessageToMessageLog(greeting);
     this.name = 'checkDealerForNaturalsState';
     // major bug where i didn't consider that we deal cards
     // only to Bets not Players!
@@ -22,7 +22,7 @@ const checkDealerForNaturalsState = {
     game.bets.forEach((bet) => {
       bet.hand.cards[1].turnFaceUp();
     });
-    game.render();
+    // game.observer.render();
 
     if (this.dealerHasFirstCardAce()) {
       this.game.changeState(gettingInsuranceBetsState);
@@ -57,7 +57,7 @@ const checkDealerForNaturalsState = {
   dealerHasFirstCardAce() {
     const dealer = this.game.dealer;
     if (dealer.hand.cards[0].value === 1) {
-      this.game.sendMessageLogMessages(`[Dealer]: First card Ace.`);
+      this.game.addMessageToMessageLog(`[Dealer]: First card Ace.`);
       return true;
     }
     return false;
@@ -66,10 +66,10 @@ const checkDealerForNaturalsState = {
   checkIfDealerHasBlackjack() {
     const dealer = this.game.dealer;
     if ([10, 11, 12, 13].indexOf(dealer.hand.cards[0].value) !== -1) {
-      this.game.sendMessageLogMessages(`[Dealer]: Has a 10 card.`);
+      this.game.addMessageToMessageLog(`[Dealer]: Has a 10 card.`);
       if (dealer.score === 21) {
         dealer.hand.cards[1].turnFaceUp();
-        this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
+        this.game.addMessageToMessageLog(`[Dealer]: Has a Blackjack!`);
         this.game.changeState(dealerHasBlackjackState);
       } else {
         this.game.changeState(dealerNoBlackjackState);

@@ -9,11 +9,11 @@ const dealerNoBlackjackState = {
     const greeting = `[State]: Dealer has no blackjack. Checking if players have blackjack.`;
     this.name = 'dealerNoBlackjackState';
     this.game = game;
-    this.game.sendMessageLogMessages(greeting);
+    this.game.addMessageToMessageLog(greeting);
     this.checkIfPlayersHaveBlackjack();
     // set CurrentPlayer
     this.game.currentBet = this.getNextBet();
-    this.game.emitCurrentState();
+    this.game.gameDataChanged();
   },
   joinGame() {
   },
@@ -34,31 +34,30 @@ const dealerNoBlackjackState = {
     }
 
     const moveMessage = `[${this.game.currentBet.player.nickname}]: '${move}'`;
-    this.game.sendMessageLogMessages(moveMessage);
+    this.game.addMessageToMessageLog(moveMessage);
 
     if (move === 'hit') {
       this.game.deck.transferTopCard(this.game.currentBet.hand);
       this.game.currentBet.hand.cards[this.game.currentBet.hand.cards.length - 1].turnFaceUp();
-      this.game.render();
+      this.game.gameDataChanged();
       if (this.game.currentBet.score > 21) {
         const playerBurstsMessage = `[${this.game.currentBet.player.nickname}]: bursts (${this.game.currentBet.score}).`;
-        this.game.sendMessageLogMessages(playerBurstsMessage);
-        this.game.sendMessageLogMessages(this.game.currentBet.resolve('playerLoses', 1, this.game.dealer));
-        this.game.emitCurrentChipsInHand();
+        this.game.addMessageToMessageLog(playerBurstsMessage);
+        this.game.addMessageToMessageLog(this.game.currentBet.resolve('playerLoses', 1, this.game.dealer));
         this.game.currentBet = this.getNextBet();
+        this.game.gameDataChanged();
       } else if (this.game.currentBet.score === 21) {
         const playerBlackjackMessage = `[${this.game.currentBet.player.nickname}]: Blackjack!`;
-        this.game.sendMessageLogMessages(playerBlackjackMessage);
-        this.game.sendMessageLogMessages(this.game.currentBet.resolve('playerWins', 1, this.game.dealer));
-        this.game.emitCurrentChipsInHand();
+        this.game.addMessageToMessageLog(playerBlackjackMessage);
+        this.game.addMessageToMessageLog(this.game.currentBet.resolve('playerWins', 1, this.game.dealer));
         this.game.currentBet = this.getNextBet();
+        this.game.gameDataChanged();
       }
     } 
     if (move === 'stand') {
       this.game.currentBet.stand = true;
-      this.game.render();
-      this.game.emitCurrentChipsInHand();
       this.game.currentBet = this.getNextBet();
+      this.game.gameDataChanged();
     }
     if (move === 'split') {
       if (this.game.currentBet.hand.cards[0].value !== this.game.currentBet.hand.cards[1].value) {
@@ -71,7 +70,7 @@ const dealerNoBlackjackState = {
       const splitBet = player.placeBet(this.game.currentBet.betAmount);
       this.game.bets.splice(this.game.bets.indexOf(this.game.currentBet) + 1, 0, splitBet);
       this.game.currentBet.hand.transferTopCard(splitBet.hand);
-      this.game.emitCurrentState();
+      this.game.gameDataChanged();
       if (splitBet.hand.cards[0].value === 1) {
         // for split aces, dealer gives each hand one card and only one card.
         // cannot get "blackjack" for 1.5x payout through splits
@@ -84,7 +83,12 @@ const dealerNoBlackjackState = {
       }
     }
 
-    this.game.emitCurrentBet();
+    this.game.gameDataChanged();
+    // this part needs a state transition so taht
+    // players can see what dealer got before
+    // the table gets wiped out.
+    // transition to "waiting for players" with timer
+    // or something..
   },
   checkIfPlayersHaveBlackjack() {
     // checkIfBetsHaveBlackjack
@@ -92,18 +96,17 @@ const dealerNoBlackjackState = {
       if (bet.score === 21) {
 
         const playerBlackjackMessage = `[${bet.player.nickname}]: Blackjack!`;
-        this.game.sendMessageLogMessages(playerBlackjackMessage);
-        this.game.sendMessageLogMessages(bet.resolve('playerWins', 1.5, this.game.dealer));
+        this.game.addMessageToMessageLog(playerBlackjackMessage);
+        this.game.addMessageToMessageLog(bet.resolve('playerWins', 1.5, this.game.dealer));
       } else {
-        this.game.sendMessageLogMessages(`[${bet.player.nickname}]: No Blackjack.`);
+        this.game.addMessageToMessageLog(`[${bet.player.nickname}]: No Blackjack.`);
       }
     })
-    this.game.emitCurrentState(); // update chips
   },
   getNextBet() {
     // don't let those players who have already got a Blackjack play
     const remainingBets = this.game.bets.filter(bet => !(bet.resolved || bet.stand));
-    console.log(remainingBets);
+    //console.log(remainingBets);
     // console.log(`Remaining players: ${remainingBets}`); // this helped me figure out players.resolve needed to be reset in cleanUp()
     // what if there's no first player??
     // change state to resolve!
@@ -112,7 +115,7 @@ const dealerNoBlackjackState = {
       this.game.changeState(resolveState);
       return null;
     } else {
-      this.game.sendMessageLogMessages(`[${remainingBets[0].player.nickname}]: stand/hit?`);
+      this.game.addMessageToMessageLog(`[${remainingBets[0].player.nickname}]: stand/hit?`);
       return remainingBets[0];
     }
   }

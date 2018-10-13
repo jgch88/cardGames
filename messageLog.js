@@ -7,6 +7,7 @@ const MessageLog = {
     this.messages = [];
   },
   addMessage(message) {
+  // should notify observer
     if (this.messages.length === this.maxMessages) {
       this.messages.shift();
       this.messages.push(message);

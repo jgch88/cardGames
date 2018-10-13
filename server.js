@@ -11,14 +11,14 @@ console.log(decks[argv.deck]);
 
 const gettingPlayersState = require('./gettingPlayersState.js');
 const gettingBetsState = require('./gettingBetsState.js');
-const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
+// const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 const resolveState = require('./resolveState.js');
 
 const PORT = argv.port || 4000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 const TIMER = argv.timer || 15000;
-let defaultRoomName = 'game0';
+let defaultRoomName = 'Game0';
 let game = Object.create(BlackjackGame);
 game.init(io, defaultRoomName, TIMER);
 if (decks[argv.deck]) {
@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
 
   // called when react client invokes componentDidMount
   socket.on('newSocketReady', () => {
-    currentGame.emitCurrentState();
+    currentGame.gameDataChanged();
   })
 
   socket.on('createRoom', (roomName) => {
@@ -61,19 +61,21 @@ io.on('connection', (socket) => {
     
     if (games.find(game => game.roomName === roomName)) {
       changeCurrentGame(roomName);
+      console.log(`${roomName} found, joining room instead of creating room`, roomName);
     } else {
       let newGame = Object.create(BlackjackGame);
       newGame.init(io, roomName, TIMER);
       games.push(newGame);
+      console.log(`${roomName} not found, creating room`)
       changeCurrentGame(roomName);
     }
-    currentGame.emitCurrentState();
+    currentGame.gameDataChanged();
   })
   
   socket.on('joinRoom', (roomName) => {
     try {
       changeCurrentGame(roomName);
-      currentGame.emitCurrentState();
+      currentGame.gameDataChanged();
       console.log('joining room', roomName);
     } catch(e) {
       console.log(`No such room`);
@@ -86,7 +88,7 @@ io.on('connection', (socket) => {
   })
   
   socket.on('disconnect', (reason) => {
-    currentGame.sendMessageLogMessages(`[${socket.id}] Disconnected: ${reason}`);
+    currentGame.addMessageToMessageLog(`[${socket.id}] Disconnected: ${reason}`);
     if (currentGame.state.name === 'dealerNoBlackjackState' && currentGame.currentBet.player.name === socket.id) {
       currentGame.currentBet.resolve('playerLoses', 1, currentGame.dealer);
       currentGame.currentBet = currentGame.state.getNextBet();
@@ -108,14 +110,13 @@ io.on('connection', (socket) => {
       console.log(`All players disconnected`);
       currentGame.changeState(resolveState);
     }
-    currentGame.emitCurrentState();
+    currentGame.gameDataChanged();
   });
 
   socket.on('joinGame', (chips) => {
     try {
       currentGame.joinGame(`${socket.id}`, chips.chips);
       console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
-      currentGame.emitCurrentState();
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -126,7 +127,6 @@ io.on('connection', (socket) => {
   socket.on('placeBet', (chips) => {
     try {
       currentGame.placeBet(`${socket.id}`, chips.chips);
-      currentGame.emitCurrentState();
     } catch(e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -137,7 +137,6 @@ io.on('connection', (socket) => {
   socket.on('placeInsuranceBet', (chips) => {
     try {
       currentGame.placeInsuranceBet(`${socket.id}`, chips.chips);
-      currentGame.emitCurrentState();
     } catch(e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -160,7 +159,6 @@ io.on('connection', (socket) => {
     try {
       console.log(`changing nickname to ${nickname}`);
       currentGame.changeNickname(socket.id, nickname);
-      currentGame.emitCurrentState();
     } catch (e) {
       const errorString = `[Error]: ${e}`;
       socket.emit('emitError', errorString);
@@ -173,7 +171,6 @@ io.on('connection', (socket) => {
     try {
       currentGame.joinGame(`${socket.id}`, chips.chips);
       console.log(`[Game players]: ${currentGame.players.map(player => player.name)}`);
-      currentGame.emitCurrentState();
       fn(`joined, changing nickname`);
     } catch (e) {
       const errorString = `[Error]: ${e}`;
@@ -183,6 +180,7 @@ io.on('connection', (socket) => {
 
   })
 
+  /*
   socket.on('changeState', (newState) => {
     if (newState === 'gettingBetsState') {
       if (currentGame.state.name === 'gettingPlayersState') {
@@ -198,6 +196,7 @@ io.on('connection', (socket) => {
       }
     }
   })
+  */
 
 })
 

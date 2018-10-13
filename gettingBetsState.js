@@ -1,10 +1,26 @@
 const Bet = require('./bet.js');
+//const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
+
+const TIMER_COUNTDOWN = 5;
 
 const gettingBetsState = {
   init(game) {
     this.game = game;
-    this.game.sendMessageLogMessages(`[State]: Getting bets`);
+    this.game.addMessageToMessageLog(`[State]: Getting bets`);
     this.name = 'gettingBetsState';
+    this.game.countdown = TIMER_COUNTDOWN;
+    this.game.timer = setInterval(() => {
+      this.game.countdown -= 1;
+      this.game.gameDataChanged();
+      if (this.game.countdown === 0) {
+        if (this.game.players.length !== 0) {
+          this.game.changeState(require('./checkDealerForNaturalsState.js'));
+        } else {
+          this.game.countdown = TIMER_COUNTDOWN;
+          this.game.gameDataChanged();
+        }
+      }
+    }, 1000)
   },
   joinGame() {
     throw `Betting has started! Join the next round`;
@@ -32,10 +48,10 @@ const gettingBetsState = {
     const bet = player.placeBet(betAmount);
     this.game.bets.push(bet);
 
-    this.game.sendMessageLogMessages(`[${player.nickname}]: Bet ${betAmount} chips`);
+    this.game.addMessageToMessageLog(`[${player.nickname}]: Bet ${betAmount} chips`);
    
-    this.game.getPlayerChipsInHand();
-    this.game.getPlayerBetAmounts();
+    // this.game.getPlayerChipsInHand();
+    // this.game.getPlayerBetAmounts();
     
     // this method is doing too much?
     // 1. checking if player can bet

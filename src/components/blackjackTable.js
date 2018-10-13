@@ -10,6 +10,8 @@ const BetStatus = require('./betStatus.js');
 const Snack = require('./snack.js');
 const StartScreen = require('./startScreen.js');
 const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
+const GettingPlayersStateScreen = require('./gettingPlayersStateScreen.js');
+const GameTableScreen = require('./gameTableScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -25,6 +27,8 @@ class BlackjackTable extends Component {
       bets: {},
       currentBet: '',
       mySocketId: '',
+      countdown: '',
+      roomName: '',
     };
     this.socket = props.io;
     console.log(`socket embedded`);
@@ -33,52 +37,7 @@ class BlackjackTable extends Component {
   componentDidMount() {
     this.socket.emit('newSocketReady');
     console.log('ready');
-    console.log(this.state.chipsInHand);
-    this.socket.on('render', ({ dealerCards, players }) => {
-      console.log(`got socket stuff`);
-      console.log(`got players ${JSON.stringify(players)}`);
-      this.setState({
-        dealerCards,
-        players,
-      });
-    });
-    this.socket.on('message', ({ messages }) => {
-      this.setState({
-        messages,
-      })
-    });
-    this.socket.on('currentChipsInHand', ({chipsInHand}) => {
-      // const newChipsInHand = Object.assign(this.state.chipsInHand, chipsInHand);
-      // console.log(newChipsInHand);
-      // build new state in blackjackEventLoop.
-      this.setState({
-        chipsInHand,
-      })
-    });
-    this.socket.on('betAmounts', (betAmounts) => {
-      this.setState({
-        betAmounts,
-      })
-      console.log(betAmounts);
-    });
-    this.socket.on('currentBet', (betId) => {
-      this.setState({
-        currentBet: betId,
-      })
-      console.log(`betId`, betId);
-    });
-    this.socket.on('currentInsuranceBet', ({insuranceBetAmounts}) => {
-      this.setState({
-        insuranceBetAmounts,
-      })
-    });
-    this.socket.on('gameState', ({ gameState }) => {
-      this.setState({
-        gameState,
-      })
-    });
-    // this.socket.on('lastEmittedState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand }) => {
-    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts }) => {
+    this.socket.on('currentState', ({ dealerCards, players, messages, gameState, betAmounts, chipsInHand, bets, currentBet, insuranceBetAmounts, countdown, roomName }) => {
       this.setState({
         gameState,
         messages,
@@ -89,6 +48,8 @@ class BlackjackTable extends Component {
         bets,
         currentBet,
         insuranceBetAmounts,
+        countdown,
+        roomName,
       });
       this.setState({
         mySocketId: this.socket.id,
@@ -103,6 +64,8 @@ class BlackjackTable extends Component {
         bets,
         currentBet,
         insuranceBetAmounts,
+        countdown,
+        roomName,
       });
     });
     this.socket.on('emitError', (message) => {
@@ -122,8 +85,8 @@ class BlackjackTable extends Component {
       snack.className = "show";
       setTimeout(() => {snack.className = snack.className.replace("show", "")}, 4000);
     };
-    this.placeBet = () => {
-      const chips = window.prompt("How much would you like to bet?", 10);
+    this.placeBet = (chips) => {
+      // const chips = window.prompt("How much would you like to bet?", 10);
       this.socket.emit('placeBet', {chips: Number(chips)});
     };
     this.placeInsuranceBet = () => {
@@ -174,11 +137,11 @@ class BlackjackTable extends Component {
 
     };
     this.createRoom = () => {
-      const roomName = window.prompt("Which room would you like to create?", 123);
+      const roomName = window.prompt("Which room would you like to create?", `Game1`);
       this.socket.emit('createRoom', roomName);
     };
     this.joinRoom = () => {
-      const roomName = window.prompt("Which room would you like to join?", 123);
+      const roomName = window.prompt("Which room would you like to join?", `Game0`);
       this.socket.emit('joinRoom', roomName);
     };
   }
@@ -214,22 +177,75 @@ class BlackjackTable extends Component {
   }
 
   render() {
-    // const pchipsInHand = this.state.chipsInHand[this.socket.id]
-    /*
     return (
       <div>
         {this.state.gameState === 'gettingPlayersState' && !(this.socket.id in this.state.players)? 
         <StartScreen playerNickname={this.state.mySocketId} joinAndChangeNickname={this.joinAndChangeNickname}/> : ''}
         {this.state.gameState === 'gettingPlayersState' && (this.socket.id in this.state.players)? 
+        <GettingPlayersStateScreen 
+          playerName={this.state.players[this.socket.id].nickname} 
+          playerChips={this.state.chipsInHand[this.socket.id]}
+          countdown={this.state.countdown}
+          roomName={this.state.roomName}
+          createRoom={this.createRoom}
+        /> : ''}
+        {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 
           playerName={this.state.players[this.socket.id].nickname} 
           playerChips={this.state.chipsInHand[this.socket.id]}
           placeBet={this.placeBet}
+          countdown={this.state.countdown}
+          bets={this.state.bets}
+          roomName={this.state.roomName}
         /> : ''}
+        {(this.state.gameState === 'dealerNoBlackjackState' || this.state.gameState === 'gettingInsuranceBetsState' || this.state.gameState === 'resolveState') && (this.socket.id in this.state.players)? 
+        <GameTableScreen
+          gameState={this.state.gameState}
+          playerName={this.state.players[this.socket.id].nickname} 
+          playerChips={this.state.chipsInHand[this.socket.id]}
+          countdown={this.state.countdown}
+          bets={this.state.bets}
+          players={this.state.players}
+          socket={this.socket}
+          currentBet={this.state.currentBet}
+          dealerCards={this.state.dealerCards}
+          isPlayersTurn={this.isPlayersTurn()}
+          playerCanSplit={this.playerCanSplit()}
+          playHit={this.hit}
+          playStand={this.stand}
+          playSplit={this.split}
+          placeInsuranceBet={this.placeInsuranceBet}
+          dontPlaceInsuranceBet={this.dontPlaceInsuranceBet}
+          roomName={this.state.roomName}
+        /> : ''}
+        <Snack message={this.state.errorMessage} />
       </div>
     )
-    */
     
+    /*
+      <div class="app">
+        <div class="block">
+          <div class="block block--rows block--height-8 actions">
+            {this.state.gameState === 'gettingInsuranceBetsState' && !this.playerHasBetInsurance() ?
+              <span><Button id="placeInsuranceBet" text={"Insurance"} clickHandler={this.placeInsuranceBet}/>
+              <Button id="dontPlaceInsuranceBet" text={"No Insurance"} clickHandler={this.dontPlaceInsuranceBet}/></span> : ''}
+            </div>
+          </div>
+        <div class="block block--height-4">MessageLog</div>
+        <div class="block block--height-22">
+          <MessageLog messages={this.state.messages} />
+        </div>
+        <div class="block block--height-4">
+          <GameStateStatus gameState={this.state.gameState}/>
+        </div>
+      </div>
+      <Snack message={this.state.errorMessage} />
+      </div>
+        :''}
+    */
+
+    
+    /*
     return (
       <div class="app">
         <div class="block">
@@ -285,6 +301,7 @@ class BlackjackTable extends Component {
       <Snack message={this.state.errorMessage} />
       </div>
     );
+    */
     
   }
 }

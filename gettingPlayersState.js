@@ -1,11 +1,31 @@
 const Player = require('./player.js');
-const gettingBetsState = require('./gettingBetsState.js');
+
+const TIMER_COUNTDOWN = 5;
 
 const gettingPlayersState = {
   init(game) {
     this.game = game;
-    this.game.sendMessageLogMessages(`[State]: Getting players`);
+    this.game.addMessageToMessageLog(`[State]: Getting players`);
     this.name = 'gettingPlayersState';
+    this.game.countdown = TIMER_COUNTDOWN;
+
+    if (this.game.players.length > 0) {
+      this._startTimer();
+    }
+  },
+  _startTimer() {
+    this.game.timer = setInterval(() => {
+      this.game.countdown -= 1;
+      this.game.gameDataChanged();
+      if (this.game.countdown === 0) {
+        if (this.game.players.length !== 0) {
+          this.game.changeState(require('./gettingBetsState.js'));
+        } else {
+          this.game.countdown = TIMER_COUNTDOWN;
+          this.game.gameDataChanged();
+        }
+      }
+    }, 1000)
   },
   joinGame(playerName, chips, game) {
     // maybe playerName will be playerId because of socket.io
@@ -18,13 +38,16 @@ const gettingPlayersState = {
       throw `Please exchange at least 1 chip.`;
     }
 
+    if (this.game.players.length === 0) {
+      this._startTimer();
+    }
+
     const player = Object.create(Player);
     player.init(playerName, chips);
     game.players.push(player);
-    this.game.getPlayerChipsInHand();
+    // this.game.getPlayerChipsInHand();
 
-
-    this.game.sendMessageLogMessages(`[${player.nickname}]: Joined with ${chips} chips`);
+    this.game.addMessageToMessageLog(`[${player.nickname}]: Joined with ${chips} chips`);
   },
   leaveGame() {
   },
@@ -32,6 +55,7 @@ const gettingPlayersState = {
     const player = game.players.find(player => player.name === playerName);
     if (player) {
       player.setNickname(nickname);
+      this.game.addMessageToMessageLog(`[${playerName}]: Changed nickname to ${nickname}`);
     } else {
       throw `Player not found`;
     }

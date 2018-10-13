@@ -23,7 +23,7 @@ class GettingBetsStateScreen extends Component {
       <div class="block">
         <div class="block block--height-30">
           <div class="block__timer">
-            120
+            {this.props.countdown}
           </div>
         </div>
         <div class="block block--height-10">
@@ -32,11 +32,12 @@ class GettingBetsStateScreen extends Component {
           </div>
         </div>
         <div class="block block--height-15">
-          <div class="block__text">
-            Place your bet
+          <div id="betSliderValue" class="block__text">
+            Place your bet: {this.state.betSlider}
           </div>
           <div class="block__input">
             <input 
+              id="betSlider"
               class="block__slider"
               type="range"
               onChange={this.handleBetChange}
@@ -49,19 +50,24 @@ class GettingBetsStateScreen extends Component {
             </input>
           </div>
         </div>
-        <div class="block block--height-25">
-          <div class="block__text block__text--border">
-            Chips: {this.state.betSlider}
-          </div>
-        </div>
         <div class="block block--height-12">
           <div class="block__text">
             <button 
+              id="placeBet"
               class="block__button"
               onClick={() => this.props.placeBet(Number(this.state.betSlider))}
             >
             Place Bet
             </button>
+          </div>
+        </div>
+        <div class="block block--height-25">
+          <div class="block block--overflow-y">
+            {Object.keys(this.props.bets).map((bet, index) => {
+              return <div class="block block--height-25">
+                {this.props.bets[bet].nickname} bet {this.props.bets[bet].betAmount} chips.
+              </div>
+            })}
           </div>
         </div>
         <div class="block block--height-8 block--rows block--theme-dark">
@@ -71,13 +77,16 @@ class GettingBetsStateScreen extends Component {
             </div>
           </div>
           <div class="block__row--width-34">
-            <div class="block__text">
+            <div 
+              id="chipsInHand"
+              class="block__text"
+            >
               Chips: {this.props.playerChips}
             </div>
           </div>
           <div class="block__row--width-33">
             <div class="block__text">
-              Room: game0
+              Room: {this.props.roomName}
             </div>
           </div>
         </div>

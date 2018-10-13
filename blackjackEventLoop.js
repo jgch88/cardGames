@@ -4,216 +4,157 @@ const gettingBetsState = require('./gettingBetsState.js');
 const gettingPlayersState = require('./gettingPlayersState.js');
 const MessageLog = require('./messageLog.js');
 
+const MinifiedStateGenerator = require('./minifiedStateGenerator.js');
+const emitterObserver = require('./emitterObserver.js');
+
+// Game module
+// Single responsibility
+// To initialise a game and expose its API for state changes within the game
+// Allows players to do "actions" on the game "such as join room/create room/play move"
+//
+// Act as an "Observable/Subject" that observers can register and see Minified State updates
+const defaultTimerDuration = 30000;
+const maxMessages = 12;
+
 const Game = {
+  // Game should really be GameState, like TCPState
+
+  //init(roomName)
   init(io, roomName, timer) {
+    this._observers = [];
+    this.roomName = roomName;
+    this.registerIO(io);
+    this.setTimerDuration(timer);
+    this.countdown;
+
+    this._minifyStateHelper();
+    this._setupGameTable();
+
+    // make an abstract factory for states and
+    // store them all in an object for easy referencing?
+    this.state = Object.create(gettingPlayersState);
+    this.EmitterObserver = new emitterObserver(this); // this should be "on" parent class, not within the game?
+    this.state.init(this);
+    this.addMessageToMessageLog(`Game initialised`);
+  },
+
+  _minifyStateHelper() {
+    this._minifyStateHelper = new MinifiedStateGenerator(this);
+  },
+
+  gameDataChanged() {
+    // ALL data mutations should call this method
+    this._notifyObservers(this._minifyStateHelper._getMinifiedState());
+  },
+
+  _setupGameTable() {
+    this._loadMessageLog();
+    this._loadData();
+    this._loadDeck();
+    this._loadDealer();
+  },
+
+  _loadData() {
+    this.players = [];
+    this.bets = [];
+    this.insuranceBets = [];
+    this.currentBet = null;
+  },
+
+  _loadDeck() {
     const deck = Object.create(Deck);
     deck.init();
     deck.createStandardDeck();
     deck.shuffle();
     this.deck = deck;
+  },
 
-    this.roomName = roomName;
-    this.timer = timer;
+  _loadMessageLog() {
+    const messageLog = Object.create(MessageLog);
+    messageLog.init(maxMessages);
+    this.messageLog = messageLog;
+  },
 
+  _loadDealer() {
 		const dealer = Object.create(Player);
 		dealer.init("Dealer", 10000);
     this.dealer = dealer; // separated from players because dealer doesn't bet, and i had to kept slicing the player array to find the dealer
-    this.players = []; // array instead of object because order is preserved and access to map/filter/find
-    this.bets = []; // restructure the game to decouple bets from players -> just directly resolve bets.
-    this.insuranceBets = [];
-
-    // inject the server's io object
-    // (different from individual sockets!)
-    // so the game has access to broadcast events
-    this.io = io;
-
-    this.currentBet = null;
-
-    const messageLog = Object.create(MessageLog);
-    const maxMessages = 12;
-    messageLog.init(maxMessages);
-    this.messageLog = messageLog;
-    this.sendMessageLogMessages(`Game initialised`);
-
-    this.state = Object.create(gettingPlayersState);
-    this.state.init(this);
-
   },
+
+  setTimerDuration(duration) {
+    if (duration > 0) {
+      this.timer = duration;
+    }
+  },
+
+  registerIO(io) {
+    this.io = io;
+  },
+
   changeState(newState) {
     console.log(`Changing state`);
+    clearInterval(this.timer);
     this.state = Object.create(newState);
     this.state.init(this);
-    this.sendGameState(this.state.name);
+    this.gameDataChanged();
   },
-  // gettingPlayers
+
   joinGame(playerName, chips) {
     this.state.joinGame(playerName, chips, this);
   },
+
   changeNickname(playerName, nickname) {
     this.state.changeNickname(playerName, nickname, this);
   },
-  /*
-  leaveGame(playerName) {
-    try {
-      this.state.leaveGame(playerName, this);
-    } catch(e) {
-      console.log(`[Error]: ${e}`);
-    }
-  },
-  */
-  // gettingBets
+
   placeBet(playerName, amount) {
     this.state.placeBet(playerName, amount, this);
   },
-  // gettingPlays
+
   play(playerName, move) {
     this.state.play(playerName, move, this);
   },
+  
   placeInsuranceBet(playerName, amount) {
     this.state.placeInsuranceBet(playerName, amount, this);
   },
-  // helper methods
-  render() {
-    // show the status of the game.
-    console.log(`******`)
-    console.log(`Dealer`);
-    this.dealer.hand.cards.forEach(card => {
-      console.log(`   ${card.readFace()}`);
-    });
-    this.bets.forEach((bet) => {
-      console.log(`${bet.player.name}`);
-      bet.hand.cards.forEach((card) => {
-        console.log(`   ${card.readFace()}`);
-      })
-    });
-    console.log(`******`);
 
-    // this.io.to(this.roomName).emit('render', this.renderCards());
-    this.emitCurrentState();
-  },
-  renderBets() {
-    // state => bets: { idno: cards, player.nickname }
-    const bets = {};
-
-    this.bets.forEach((bet) => {
-      bets[bet.id] = {
-        betAmount: bet.betAmount,
-        cards: [],
-        nickname: bet.player.nickname
-      };
-      bet.hand.cards.forEach((card) => {
-        bets[bet.id].cards.push(card);
-      });
-    });
-
-    return bets;
-  },
-  renderPlayers() {
-    const players = {};
-    this.players.forEach((player) => {
-      players[player.name] = {
-        nickname: player.nickname
-      }
-    });
-    return players;
-  },
-  renderDealerCards() {
-    const blankCard = {
-      value: 0,
-      suit: "-",
-      isFaceDown: true,
-    };
-    const dealerCards = [];
-    this.dealer.hand.cards.forEach(card => {
-      if (card.isFaceDown) {
-        dealerCards.push(blankCard);
-      } else {
-        dealerCards.push(card);
-      }
-    });
-    return dealerCards;
-  },
-  getMessageLogMessages() {
-    return {messages: this.messageLog.messages}
-  },
-  sendMessageLogMessages(message) {
-    // the front end "console.log" api, last x no of console messages
+  addMessageToMessageLog(message) {
+    // 'global' gameData mutator
     console.log(message);
     this.messageLog.addMessage(message);
-    this.io.to(this.roomName).emit('message', this.getMessageLogMessages());
+    this.gameDataChanged();
   },
-  sendGameState(gameState) {
-    this.io.to(this.roomName).emit('gameState',{ gameState });
-  },
-  emitCurrentState() {
-    // minified state
-    // build the "lastEmittedState" here!
-    const currentState = {};
-    // call all the various state methods here.
-    currentState.chipsInHand = this.getPlayerChipsInHand();
-    currentState.betAmounts = this.getPlayerBetAmounts();
-    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
-    currentState.messages = this.getMessageLogMessages().messages;
-    currentState.players = this.renderPlayers();
-    currentState.dealerCards = this.renderDealerCards();
-    currentState.gameState = this.state.name;
-    currentState.bets = this.renderBets(); 
-    // use logic to change background colour of current bets
-    currentState.currentBet = this.getCurrentBetId();
 
-    this.io.to(this.roomName).emit('currentState', currentState);
-    // console.log(currentState);
-    return currentState;
+  _getMinifiedState() {
+    return this._minifyStateHelper._getMinifiedState();
   },
-  getCurrentBetId() {
-    return this.currentBet ? this.currentBet.id : '';
 
+  /* observer stuff, figure a way to compose it with classes / oloo later */
+  registerObserver(observer) {
+    this._observers.push(observer);
   },
-  emitCurrentChipsInHand() {
-    let chipsInHand = {};
-    chipsInHand.chipsInHand = this.getPlayerChipsInHand();
 
-    this.io.to(this.roomName).emit('currentChipsInHand', chipsInHand);
-
-  },
-  emitInsuranceBets() {
-    let currentState = {};
-    currentState.insuranceBetAmounts = this.getPlayerInsuranceBetAmounts();
-    this.io.to(this.roomName).emit('currentInsuranceBets', currentState);
-  },
-  emitCurrentBet() {
-    this.io.to(this.roomName).emit('currentBet', this.getCurrentBetId());
-  },
-  // almost like redux "reducers?" like reducing state?
-  getPlayerChipsInHand() {
-    // this is me designing the backend API for frontend to use!!
-    // create current minified state
-    // from players{}
-    let chipsInHand = {};
-    this.players.map(player => {chipsInHand[player.name] = player.chips});
-    // this.io.to(this.roomName).emit('chipsInHand', chipsInHand);
-    return chipsInHand;
-  },
-  getPlayerBetAmounts() {
-    // get current minified state of 
-    // playerBets
-    let betAmounts = {};
-    this.bets.map(bet => {
-      betAmounts[bet.player.name] = bet.betAmount;
-    });
-    // this.io.to(this.roomName).emit('betAmounts', betAmounts);
-    return betAmounts;
-  },
-  getPlayerInsuranceBetAmounts() {
-    let insuranceBetAmounts = {};
-    this.insuranceBets.map(insuranceBet => {
-      if (insuranceBet.promiseIsResolved) {
-        insuranceBetAmounts[insuranceBet.player.name] = insuranceBet.amount;
-      }
-    });
-    return insuranceBetAmounts;
+  _notifyObservers(data) {
+    this._observers.forEach(observer => {
+      observer.update(data);
+    })
   },
 };
+
+/*
+Game._observers = [];
+Game.registerObserver = function(observer) {
+  this._observers.push(observer);
+}
+
+Game._notifyObservers = function(data) {
+  this._observers.forEach(observer => {
+    observer.update(data);
+  })
+}
+*/
+
 
 module.exports = Game;
 

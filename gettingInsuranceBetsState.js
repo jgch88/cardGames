@@ -7,7 +7,7 @@ const gettingInsuranceBetsState = {
     // after getting all insurance bet decisions
     const greeting = `[State]: Getting insurance bets`;
     this.game = game;
-    this.game.sendMessageLogMessages(greeting);
+    this.game.addMessageToMessageLog(greeting);
     this.name = 'gettingInsuranceBetsState';
     console.log(`waiting for insurance bets`);
     // this insuranceBets property is created here and resolves within this state
@@ -50,6 +50,8 @@ const gettingInsuranceBetsState = {
   placeInsuranceBet(playerName, amount, game) {
     const player = this.game.players.find(player => player.name === playerName);
     console.log(`[${playerName}]: Placed insurance bet ${amount} chips`);
+    // this is only returning one bet? the first bet, not all bets?
+    // not clear on whether we should allow player to place multiple insurance bets for each bet
     const bet = this.game.bets.find(bet => bet.player.name === playerName);
     if (!bet) {
       throw `${playerName} did not place a bet!`;
@@ -68,12 +70,10 @@ const gettingInsuranceBetsState = {
     insuranceBet.betResolve(`${playerName} placed insurance bet and promise resolved`);
     insuranceBet.promiseIsResolved = true;
     if (amount !== 0) {
-      this.game.sendMessageLogMessages(`[${player.nickname}]: Insurance Bet ${amount} chips`);
+      this.game.addMessageToMessageLog(`[${player.nickname}]: Insurance Bet ${amount} chips`);
     } else {
-      this.game.sendMessageLogMessages(`[${player.nickname}]: No Insurance`);
+      this.game.addMessageToMessageLog(`[${player.nickname}]: No Insurance`);
     }
-    this.game.emitInsuranceBets();
-    // emit a message to all players and expect a response within 30s?
   },
   // the function returning a promise doesn't need to be async
   raceAllBetPromisesWithTimer() {
@@ -84,7 +84,8 @@ const gettingInsuranceBetsState = {
     });
     */
 
-    const timerDuration = this.game.timer;
+    // const timerDuration = this.game.timer;
+    const timerDuration = 10000;
     console.log(`Waiting ${timerDuration}ms for insurance bets to be placed.`);
     const timerPromise = new Promise((resolve) => {
       setTimeout(() => {
@@ -104,22 +105,21 @@ const gettingInsuranceBetsState = {
     const dealer = this.game.dealer;
     if (dealer.score === 21) {
       dealer.hand.cards[1].turnFaceUp();
-      this.game.sendMessageLogMessages(`[Dealer]: Has a Blackjack!`);
+      this.game.addMessageToMessageLog(`[Dealer]: Has a Blackjack!`);
       // resolve all insurance plays
       // if insurance betamount > 0 log the message, payout some chips
-      this.game.sendMessageLogMessages(`[Dealer]: Resolving insurance bets`);
+      this.game.addMessageToMessageLog(`[Dealer]: Resolving insurance bets`);
       this.game.insuranceBets.map(insuranceBet => {
         if (!(insuranceBet.amount === 0)) {
-          this.game.sendMessageLogMessages(`[${insuranceBet.player.nickname}]: Wins insurance bet`);
+          this.game.addMessageToMessageLog(`[${insuranceBet.player.nickname}]: Wins insurance bet`);
           insuranceBet.player.chips += (insuranceBet.amount * 3);
           this.game.dealer.chips -= (insuranceBet.amount * 3);
-          this.game.emitCurrentChipsInHand();
-          console.log(insuranceBet.player.chips, this.game.dealer.chips);
+          this.game.gameDataChanged();
         }
       })
       this.game.changeState(dealerHasBlackjackState);
     } else {
-      this.game.sendMessageLogMessages(`[Dealer]: Has no Blackjack. Insurance bets collected by the house.`);
+      this.game.addMessageToMessageLog(`[Dealer]: Has no Blackjack. Insurance bets collected by the house.`);
       this.game.changeState(dealerNoBlackjackState);
     }
   }
