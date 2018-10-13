@@ -263,34 +263,44 @@ test(`dealer bursts after hitting, player doesn't burst`, async () => {
   killServer();
 }, 15000);
 
-test.skip(`players can create separate game rooms and play different games`, async () => {
+test(`players can create separate game rooms and play different games`, async () => {
   await initServer();
 
   for (let i = 0; i < 3; i++) {
     await pages[i].goto(APP);
 
+    await pages[i].waitForSelector('#joinGame');
+    await pages[i].$eval('#joinGame', el => el.click());
+
     dialogValue = "room1";
     await pages[i]
-      .waitForSelector('#createRoom')
+      .waitForSelector('#joinRoom')
       .then(async () => {
-        await pages[i].$eval('#createRoom', el => el.click());
+        await pages[i].$eval('#joinRoom', el => el.click());
       })
       .catch((e) => {
         console.log(e);
       });
-
   }
   
   for (let i = 0; i < 3; i++) {
-    dialogValue = "100"
     await pages[i].waitForSelector('#joinGame');
     await pages[i].$eval('#joinGame', el => el.click());
-    await pages[i].$eval('#goToBettingState', el => el.click());
+  }
 
-    dialogValue = "10"
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 5000);
+  });
+
+  for (let i = 0; i < 3; i++) {
     await pages[i].$eval('#placeBet', el => el.click());
+  }
 
-    await pages[i].$eval('#startRound', el => el.click());
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 5000);
+  });
+
+  for (let i = 0; i < 3; i++) {
     try {
       // if dealer gets Ace, don't buy insurance
       await pages[i].waitForSelector('#dontPlaceInsuranceBet', {timeout:200});
@@ -306,14 +316,14 @@ test.skip(`players can create separate game rooms and play different games`, asy
       .catch((e) => {
         console.log(e)
       });
-
-    const messageLog = await pages[i].$eval('#messageLog', el => el.innerHTML);
-    expect(messageLog).toContain('resolved');
-
   }
+
+  let messages = await pages[0].$eval('#messageLog', el => el.innerHTML);
+  expect(messages).toMatch(/Round over/);
+
   killServer();
 
-}, 13000);
+}, 20000);
 
 describe('feature: players splitting hands', () => {
   test(`split button appears when player can split`, async () => {
