@@ -12,6 +12,7 @@ const StartScreen = require('./startScreen.js');
 const GettingBetsStateScreen = require('./gettingBetsStateScreen.js');
 const GettingPlayersStateScreen = require('./gettingPlayersStateScreen.js');
 const GameTableScreen = require('./gameTableScreen.js');
+const GameInProgressScreen = require('./gameInProgressScreen.js');
 
 class BlackjackTable extends Component {
   constructor(props) {
@@ -188,6 +189,10 @@ class BlackjackTable extends Component {
           countdown={this.state.countdown}
           roomName={this.state.roomName}
           createRoom={this.createRoom}
+        /> : ''}
+        {this.state.gameState !== 'GettingPlayersStateScreen' && !(this.socket.id in this.state.players)?
+        <GameInProgressScreen
+          joinAndChangeNickname={this.joinAndChangeNickname}
         /> : ''}
         {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 
