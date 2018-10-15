@@ -62,22 +62,16 @@ afterAll(() => {
   killServer();
 })
 
-test.only('loads blackjack page', async () => {
+test('loads blackjack page', async () => {
   await initServer();
-  await new Promise((resolve, reject) => {
-    setTimeout(resolve, 1000);
-  });
   await pages[0].goto(APP);
   const titleText = await pages[0].$eval('title', el => el.innerHTML);
   expect(titleText).toContain('Blackjack');
   killServer();
 });
 
-test.only('player can join the game with 1000 chips', async () => {
+test('player can join the game with 1000 chips', async () => {
   await initServer();
-  await new Promise((resolve, reject) => {
-    setTimeout(resolve, 1000);
-  });
   await pages[0].goto(APP);
   // dialogValue = "1000"; // string value expected by puppeteer
   // player no longer gets to choose how many chips he starts with.
