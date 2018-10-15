@@ -23,10 +23,6 @@ const initServer = async (deckType) => {
       console.log(JSON.stringify(data.toString('utf8')));
       resolve();
     });
-
-    await new Promise((resolve, reject) => {
-      setTimeout(resolve, 1000);
-    });
   })
 }
 
@@ -68,6 +64,9 @@ afterAll(() => {
 
 test('loads blackjack page', async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   const titleText = await pages[0].$eval('title', el => el.innerHTML);
   expect(titleText).toContain('Blackjack');
@@ -76,6 +75,9 @@ test('loads blackjack page', async () => {
 
 test('player can join the game with 1000 chips', async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   // dialogValue = "1000"; // string value expected by puppeteer
   // player no longer gets to choose how many chips he starts with.
@@ -87,6 +89,9 @@ test('player can join the game with 1000 chips', async () => {
 
 test('dealer has blackjack, player no blackjack', async () => {
   await initServer(`dealerHasBlackjackDeck`);
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   await pages[0].$eval('#joinGame', el => el.click());
   let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
@@ -129,6 +134,9 @@ test('dealer has blackjack, player no blackjack', async () => {
 test('player stands, game resolves', async () => {
   // non deterministic
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   await pages[0].$eval('#joinGame', el => el.click());
   await new Promise((resolve, reject) => {
@@ -171,6 +179,9 @@ test('player stands, game resolves', async () => {
 
 test('two players join, both players stand, game resolves', async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   await pages[1].goto(APP);
 
@@ -232,6 +243,9 @@ test('two players join, both players stand, game resolves', async () => {
 
 test(`dealer bursts after hitting, player doesn't burst`, async () => {
   await initServer(`bothNoBlackjack`);
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
 
   await pages[0].waitForSelector('#joinGame');
@@ -276,6 +290,9 @@ test(`dealer bursts after hitting, player doesn't burst`, async () => {
 
 test(`players can create separate game rooms and play different games`, async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
 
   for (let i = 0; i < 3; i++) {
     await pages[i].goto(APP);
@@ -339,6 +356,9 @@ test(`players can create separate game rooms and play different games`, async ()
 describe('feature: players splitting hands', () => {
   test(`split button appears when player can split`, async () => {
     await initServer(`playerSplits`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     dialogValue = "100"
@@ -387,6 +407,9 @@ describe('feature: players splitting hands', () => {
 
   test(`split button does not appear when player cannot split`, async () => {
     await initServer(`bothNoBlackjack`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     dialogValue = "100"
@@ -409,6 +432,9 @@ describe('feature: players splitting hands', () => {
 
   test(`bets visually split into two once split button is pressed`, async () => {
     await initServer(`playerSplits`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     await pages[0].waitForSelector('#joinGame');
@@ -437,6 +463,9 @@ describe('feature: players splitting hands', () => {
 
   test(`when player splits with two aces, he automatically gets one card for each hand and stands`, async () => {
     await initServer(`playerSplitsAces`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     await pages[0].waitForSelector('#joinGame');
@@ -463,6 +492,9 @@ describe('feature: players splitting hands', () => {
 
   test(`when player splits with two aces and gets blackjacks, he doesn't get paid 1.5x`, async () => {
     await initServer(`playerSplitsAcesGetsBlackjacks`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     await pages[0].waitForSelector('#joinGame');
@@ -495,6 +527,9 @@ describe('feature: players can place insurance bets', () => {
 
   test(`when dealer's first card is an ace, game status switches to getting insurance bets`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     await pages[0].waitForSelector('#joinGame');
@@ -536,6 +571,9 @@ describe('feature: players can place insurance bets', () => {
 
   test(`insurance buttons appear when dealer gets first card ace, no other buttons`, async () => {
     await initServer(`dealerHasBlackjackDeck`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     await pages[0].waitForSelector('#joinGame');
@@ -561,6 +599,9 @@ describe('feature: players can place insurance bets', () => {
 
   test(`insurance buttons do not appear when dealer has no first card ace`, async () => {
     await initServer(`bothNoBlackjack`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
 
     await pages[0].waitForSelector('#joinGame');
@@ -587,6 +628,9 @@ describe('feature: players can place insurance bets', () => {
 
   test(`insurance buttons appear when dealer gets first card ace, and disappear after player places insurance bet`, async () => {
     await initServer(`dealerHasBlackjackDeckTwoPlayer`);
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
     await pages[0].goto(APP);
     await pages[1].goto(APP);
 
