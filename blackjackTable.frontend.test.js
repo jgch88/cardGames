@@ -42,7 +42,7 @@ beforeAll(async () => {
   */
   browser = await puppeteer.launch({
     headless: true,
-    slowMo: 100,
+    slowMo: 200,
   });
 
   await browser.newPage(); // open tab for 2nd player
