@@ -61,18 +61,21 @@ afterAll(() => {
   killServer();
 })
 
-test('loads blackjack page', async () => {
+test.only('loads blackjack page', async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   const titleText = await pages[0].$eval('title', el => el.innerHTML);
   expect(titleText).toContain('Blackjack');
   killServer();
 });
 
-test('player can join the game with 1000 chips', async () => {
+test.only('player can join the game with 1000 chips', async () => {
   await initServer();
   await new Promise((resolve, reject) => {
-    setTimeout(resolve, 6000);
+    setTimeout(resolve, 1000);
   });
   await pages[0].goto(APP);
   // dialogValue = "1000"; // string value expected by puppeteer
@@ -85,6 +88,9 @@ test('player can join the game with 1000 chips', async () => {
 
 test('dealer has blackjack, player no blackjack', async () => {
   await initServer(`dealerHasBlackjackDeck`);
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000);
+  });
   await pages[0].goto(APP);
   await pages[0].$eval('#joinGame', el => el.click());
   let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
