@@ -22,7 +22,11 @@ const initServer = async (deckType) => {
     childProcess.stdout.on('data', data => {
       console.log(JSON.stringify(data.toString('utf8')));
       resolve();
-    })
+    });
+
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
   })
 }
 
@@ -42,7 +46,7 @@ beforeAll(async () => {
   */
   browser = await puppeteer.launch({
     headless: true,
-    slowMo: 200,
+    slowMo: 100,
   });
 
   await browser.newPage(); // open tab for 2nd player
@@ -83,9 +87,6 @@ test('player can join the game with 1000 chips', async () => {
 
 test('dealer has blackjack, player no blackjack', async () => {
   await initServer(`dealerHasBlackjackDeck`);
-  await new Promise((resolve, reject) => {
-    setTimeout(resolve, 1000);
-  });
   await pages[0].goto(APP);
   await pages[0].$eval('#joinGame', el => el.click());
   let chipsInHand = await pages[0].$eval('#chipsInHand', el => el.innerHTML);
@@ -170,9 +171,6 @@ test('player stands, game resolves', async () => {
 
 test('two players join, both players stand, game resolves', async () => {
   await initServer();
-  await new Promise((resolve, reject) => {
-    setTimeout(resolve, 6000);
-  });
   await pages[0].goto(APP);
   await pages[1].goto(APP);
 
