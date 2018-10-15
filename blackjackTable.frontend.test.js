@@ -40,7 +40,10 @@ beforeAll(async () => {
     slowMo: 50,
   });
   */
-  browser = await puppeteer.launch();
+  browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    dumpio: true,
+  });
 
   await browser.newPage(); // open tab for 2nd player
   await browser.newPage(); // open tab for 3rd player
