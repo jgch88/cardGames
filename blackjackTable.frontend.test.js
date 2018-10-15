@@ -32,12 +32,16 @@ const killServer = () => {
 
 beforeAll(async () => {
 
+  /* local
   browser = await puppeteer.launch({
     executablePath: `chrome.exe`,
     userDataDir: USER_DATA_DIR,
     headless: false,
     slowMo: 50,
   });
+  */
+  browser = await puppeteer.launch();
+
   await browser.newPage(); // open tab for 2nd player
   await browser.newPage(); // open tab for 3rd player
   pages = await browser.pages();
