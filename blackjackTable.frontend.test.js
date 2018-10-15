@@ -62,7 +62,7 @@ afterAll(() => {
   killServer();
 })
 
-test('loads blackjack page', async () => {
+test.only('loads blackjack page', async () => {
   await initServer();
   await new Promise((resolve, reject) => {
     setTimeout(resolve, 1000);

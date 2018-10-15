@@ -190,7 +190,7 @@ class BlackjackTable extends Component {
           roomName={this.state.roomName}
           createRoom={this.createRoom}
         /> : ''}
-        {this.state.gameState !== 'GettingPlayersStateScreen' && !(this.socket.id in this.state.players)?
+        {this.state.gameState !== 'gettingPlayersState' && !(this.socket.id in this.state.players)?
         <GameInProgressScreen
           joinAndChangeNickname={this.joinAndChangeNickname}
         /> : ''}
