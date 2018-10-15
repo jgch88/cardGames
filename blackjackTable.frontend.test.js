@@ -71,6 +71,9 @@ test('loads blackjack page', async () => {
 
 test('player can join the game with 1000 chips', async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 6000);
+  });
   await pages[0].goto(APP);
   // dialogValue = "1000"; // string value expected by puppeteer
   // player no longer gets to choose how many chips he starts with.
@@ -166,6 +169,9 @@ test('player stands, game resolves', async () => {
 
 test('two players join, both players stand, game resolves', async () => {
   await initServer();
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 6000);
+  });
   await pages[0].goto(APP);
   await pages[1].goto(APP);
 
