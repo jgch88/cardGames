@@ -27,7 +27,7 @@ deploy:
   region: ap-southeast-1a
   app: cardGames
   env: cardGames-dev
-  bucket_name: "$AWS_BUCKET_NAME"
+  bucket_name: elasticbeanstalk-ap-southeast-1-111969122051
   skip_cleanup: true
   on:
     branch: master
