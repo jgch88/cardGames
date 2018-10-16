@@ -1,26 +1,36 @@
 language: node_js
-
 node_js:
-  - 8
-
+- 8
 dist: trusty
 sudo: required
 addons:
   chrome: stable
   hostname: localhost
-
 before_install:
-- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost
+  &
 - npm update
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
-
 install:
 - npm install
-
-script:
-  npm run br && jest --silent
-
+script: npm run br && jest --silent
 cache:
   directories:
-    - "node_modules"
+  - node_modules
+services:
+- docker
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: ap-southeast-1a
+  app: cardGames
+  env: cardGames-dev
+  bucket_name: elasticbeanstalk-ap-southeast-1-111969122051
+  on:
+    branch: master
+env:
+  global:
+  - secure: Y7VJ86JUybL4/H1x4IobXaT8TRX183kgqmZ7kWqxgP1xUM6S7njic/nOoPlzpLHMEQCBsff2XyBN1bpPBRg6UDHtd1UmMhe+piQPAqAI2Wu4BXrzzNuvcP5ls225dbTSYmYL70oufjH5mQgIlERqSAdIuiLZbB0LsrCu7VJ95+4DYiAm61l5/yyVALHFCcbW3lpePy5RJPPbkvmLDA/C7VltjLp2XVXiCwdS9CyveDumZLAuaPwnGG+2WB+FsBL9BWYCIhJ5yIc3qduTojTwoPIHmLjttO7E6C8rN0LE6tiK+R8+mAwzaxGBdGmn4TJsIpoCSCKu012wqmLaS7OL/lrM1Zx6OUid90G5+RFmAGpH75CtRztIT6COlYxMe//6zJkBxsqBefYAP/cgjKVRoKi0tESR47oISzWMNmdAM4SorEtt3zSgeAMCQS71ZcFn1KdbzRENcR/Hg0qHu2gCmLTlohHW4DtvAfjkvHmZskbi3elgIFksDeBg8bix4xEMjLeIfeFHyYTBUTwOgNibDnlPmjGpL+7laEHABbfc5k+g0ySQq4X2ncPpSjcV791q93V9ESjIK2pvfT+yaGPpt9nXn8D2gDCcnu0Bm2KSBWAMc+Gn/y3HKvqWmBR2h83N6JvfTDEyo+4TBp2ykST1ZUDbQ5cJnex09B6k+HlfGLY=
+  - secure: r4yIQJZaH9msgq88x6LitBitFzrEKLoyuO4S1Ey4DE4URTRwPdH/PFyLa6AIor3WN4rwFF68+KmNEcCiXSZy4Ee3pM65gQmA+UeSOLs/avTlvxMd865IwUApQiADknvymAlmB0mA1gdUi56XtbhwsST0vMIOCaNvlCIylQLdNsJZisiAc22elJOpx542BG5NYurtNOUzg1wHagqhkrvGO+dIAlQqrDmcUUIOUgdI3DfymZt8SG8xEARxBUGEwV7aUn6XohjZcNh2ES6Lv7vHrkqKRds78PE1MLkzeSbH5Xghrknh0VzKKsmz3hnS6Rjy6JS0dM38UXpbTKJBBlkIPKTxfBvgMX2vvxojQ2MqLVZtXtNVt1JTrGW+Y4d4y2fI3oxBICz8jnxuDYzsgnJ5NpRw4ksro3PCavf9yZsdhAI5CYwRFLBpn1OTvpg39pIplLfpAWZDnzV4zZcDKsEHOYwwPjjwfvkHD6yg2GSomqF60htTGidvb7krEN8ojVKKTP+C749noN5z8tWriGqzvdsPu8WZdbHeXc3QyhqjrVTr5fMcJtG5NcRKXOR4pRnxK1vi2d/X/a25jJKIroMl+nPL+ULcT9YSef/bVrJPkEZtR/5CCyVS1ugOWGzUTWR3PTU1nXrZgsNNKed1FA9CmeM/fhaubAsITuTvHc8QaXw=
