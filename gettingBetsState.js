@@ -1,7 +1,7 @@
 const Bet = require('./bet.js');
 //const checkDealerForNaturalsState = require('./checkDealerForNaturalsState.js');
 
-const TIMER_COUNTDOWN = 5;
+const TIMER_COUNTDOWN = 30;
 
 const gettingBetsState = {
   init(game) {

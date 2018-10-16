@@ -138,12 +138,16 @@ class BlackjackTable extends Component {
 
     };
     this.createRoom = () => {
-      const roomName = window.prompt("Which room would you like to create?", `Game1`);
-      this.socket.emit('createRoom', roomName);
+      const roomName = window.prompt("Which room would you like to join?", `Game0`);
+      if (roomName) {
+        this.socket.emit('createRoom', roomName);
+      }
     };
     this.joinRoom = () => {
       const roomName = window.prompt("Which room would you like to join?", `Game0`);
-      this.socket.emit('joinRoom', roomName);
+      if (roomName) {
+        this.socket.emit('joinRoom', roomName);
+      }
     };
   }
   
