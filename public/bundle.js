@@ -159,12 +159,16 @@ class BlackjackTable extends Component {
       });
     };
     this.createRoom = () => {
-      const roomName = window.prompt("Which room would you like to create?", `Game1`);
-      this.socket.emit('createRoom', roomName);
+      const roomName = window.prompt("Which room would you like to join?", `Game0`);
+      if (roomName) {
+        this.socket.emit('createRoom', roomName);
+      }
     };
     this.joinRoom = () => {
       const roomName = window.prompt("Which room would you like to join?", `Game0`);
-      this.socket.emit('joinRoom', roomName);
+      if (roomName) {
+        this.socket.emit('joinRoom', roomName);
+      }
     };
   }
 
@@ -211,7 +215,8 @@ class BlackjackTable extends Component {
         createRoom: this.createRoom
       }) : '',
       this.state.gameState !== 'gettingPlayersState' && !(this.socket.id in this.state.players) ? h(GameInProgressScreen, {
-        joinAndChangeNickname: this.joinAndChangeNickname
+        joinAndChangeNickname: this.joinAndChangeNickname,
+        countdown: this.state.countdown
       }) : '',
       this.state.gameState === 'gettingBetsState' && this.socket.id in this.state.players ? h(GettingBetsStateScreen, {
         playerName: this.state.players[this.socket.id].nickname,
@@ -1692,7 +1697,8 @@ const GameInProgressScreen = function GameInProgressScreen(props) {
       h(
         "div",
         { "class": "block__text" },
-        "A game is currently in progress. Please join the next round."
+        "A game is currently in progress. Please join the next round... ",
+        props.countdown ? props.countdown : ''
       )
     ),
     h("div", { "class": "block block--height-30" })

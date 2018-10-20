@@ -197,6 +197,7 @@ class BlackjackTable extends Component {
         {this.state.gameState !== 'gettingPlayersState' && !(this.socket.id in this.state.players)?
         <GameInProgressScreen
           joinAndChangeNickname={this.joinAndChangeNickname}
+          countdown={this.state.countdown}
         /> : ''}
         {this.state.gameState === 'gettingBetsState' && (this.socket.id in this.state.players)? 
         <GettingBetsStateScreen 
